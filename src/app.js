@@ -7,16 +7,27 @@ const THEMES = window.GLINT_THEMES;
 const invoke = window.__TAURI__?.core?.invoke;
 
 const SAMPLE = {
-  repo: "peterdsp / desktop",
-  branch: "menu-bar-rewrite",
+  repo: "peterdsp / glint",
+  branch: "main",
   ahead: 5,
   behind: 2,
   files: [
-    { path: "src/menu-bar/panel.tsx", status: "modified", staged: true, delta: "+42" },
-    { path: "src/themes/liquid-glass.css", status: "added", staged: true, delta: "+118" },
-    { path: "docs/architecture.md", status: "modified", staged: false, delta: "−7" },
+    { path: "src/menu-bar/panel.tsx", status: "modified", staged: true, added: 42, removed: 0 },
+    { path: "src/themes/liquid-glass.css", status: "added", staged: true, added: 118, removed: 0 },
+    { path: "docs/architecture.md", status: "modified", staged: false, added: 0, removed: 7 },
   ],
 };
+
+// The currently rendered status; the commit path reads staged files from it.
+let current = SAMPLE;
+
+function repoPath() {
+  try {
+    return localStorage.getItem("glint.repo");
+  } catch {
+    return null;
+  }
+}
 
 function applyTheme(key) {
   const theme = THEMES[key] || THEMES.aurora;
@@ -50,11 +61,26 @@ function buildSwatches() {
   }
 }
 
-function deltaClass(delta) {
-  return delta && delta.trim().startsWith("−") ? "del" : "add";
+function deltaEl(f) {
+  const wrap = document.createElement("span");
+  wrap.className = "file-delta";
+  if (f.added) {
+    const s = document.createElement("span");
+    s.className = "file-stat add";
+    s.textContent = `+${f.added}`;
+    wrap.appendChild(s);
+  }
+  if (f.removed) {
+    const s = document.createElement("span");
+    s.className = "file-stat del";
+    s.textContent = `−${f.removed}`;
+    wrap.appendChild(s);
+  }
+  return wrap;
 }
 
 function render(status) {
+  current = status;
   document.getElementById("repo-name").textContent = status.repo || "—";
   document.getElementById("branch").textContent = status.branch;
   document.getElementById("commit-branch").textContent = status.branch;
@@ -80,23 +106,13 @@ function render(status) {
     const path = document.createElement("span");
     path.className = "file-path";
     path.textContent = f.path;
-    const stat = document.createElement("span");
-    stat.className = "file-stat " + deltaClass(f.delta);
-    stat.textContent = f.delta || "";
-    li.append(check, path, stat);
+    li.append(check, path, deltaEl(f));
     list.appendChild(li);
   }
 }
 
 async function loadStatus() {
-  const path = (() => {
-    try {
-      return localStorage.getItem("glint.repo");
-    } catch {
-      return null;
-    }
-  })();
-
+  const path = repoPath();
   if (invoke && path) {
     try {
       const s = await invoke("get_status", { path });
@@ -105,7 +121,7 @@ async function loadStatus() {
         branch: s.branch,
         ahead: s.ahead,
         behind: s.behind,
-        files: s.files.map((f) => ({ ...f, delta: "" })),
+        files: s.files, // { path, status, staged, added, removed }
       });
       return;
     } catch (e) {
@@ -113,6 +129,37 @@ async function loadStatus() {
     }
   }
   render(SAMPLE);
+}
+
+async function doCommit() {
+  const summaryEl = document.getElementById("commit-summary");
+  const descEl = document.getElementById("commit-desc");
+  const summary = summaryEl.value.trim();
+  const path = repoPath();
+
+  if (!invoke || !path) {
+    console.log("commit (demo — no repo set):", summary);
+    return;
+  }
+  if (!summary) {
+    summaryEl.focus();
+    return;
+  }
+  const files = (current.files || []).filter((f) => f.staged).map((f) => f.path);
+  if (!files.length) return;
+
+  const btn = document.getElementById("commit-btn");
+  btn.style.opacity = "0.6";
+  try {
+    await invoke("commit", { path, files, summary, description: descEl.value });
+    summaryEl.value = "";
+    descEl.value = "";
+    await loadStatus();
+  } catch (e) {
+    console.warn("commit failed:", e);
+  } finally {
+    btn.style.opacity = "";
+  }
 }
 
 function wireActions() {
@@ -126,10 +173,7 @@ function wireActions() {
     }
   };
   document.getElementById("sync").onclick = () => loadStatus();
-  document.getElementById("commit-btn").onclick = () => {
-    // TODO: wire to a Rust `commit` command (staged files + summary/description).
-    console.log("commit:", document.getElementById("commit-summary").value);
-  };
+  document.getElementById("commit-btn").onclick = doCommit;
 }
 
 buildSwatches();
