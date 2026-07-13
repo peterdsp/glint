@@ -69,9 +69,44 @@ selector in the header to point it at a real repo, or it shows sample data.
 
 ## Themes
 
-Each theme is an entry in `src/themes.js` — an accent color, a swatch, and the
-glass tint/ink variables. Drop in another object and it appears as a swatch
-automatically. A future build will read user-authored themes from disk.
+Each built-in theme is an entry in `src/themes.js` — an accent color, a swatch,
+and the glass tint/ink variables. Drop in another object and it appears as a
+swatch automatically.
+
+**Your own themes, from disk.** Glint also reads user-authored themes at launch.
+Drop a `.json` file into the app config dir's `themes/` folder and it shows up as
+a swatch alongside the built-ins:
+
+| OS | Folder |
+|---|---|
+| macOS | `~/Library/Application Support/dev.peterdsp.glint/themes/` |
+| Linux | `~/.config/dev.peterdsp.glint/themes/` |
+| Windows | `%APPDATA%\dev.peterdsp.glint\themes\` |
+
+```json
+{
+  "label": "Nord — arctic",
+  "swatch": "#88c0d0",
+  "vars": {
+    "--accent": "#88c0d0",
+    "--tint": "rgba(46, 52, 64, 0.55)",
+    "--tint-2": "rgba(255, 255, 255, 0.08)",
+    "--field": "rgba(255, 255, 255, 0.10)",
+    "--stroke": "rgba(255, 255, 255, 0.18)",
+    "--ink": "#eceff4",
+    "--ink-2": "#a6adbb"
+  }
+}
+```
+
+The `key` defaults to the file name; invalid files are skipped, never fatal.
+
+## Platforms
+
+Glint targets **macOS, Windows, and Linux**. The glass is native where the OS
+provides it — `NSVisualEffectView` on macOS, Mica on Windows — and falls back to
+the CSS tint on Linux. The tray glyph is a monochrome template on macOS and the
+colored icon elsewhere. Every build is checked on all three in CI.
 
 ## Roadmap
 
@@ -81,6 +116,6 @@ automatically. A future build will read user-authored themes from disk.
 - [x] Diff / merge-conflict "pop-out" window
 - [x] Monochrome template tray icon
 - [x] Vendor the icon font (drop the CDN link) for full offline use
-- [ ] User-authored themes from disk
+- [x] User-authored themes from disk
 
 See the [open issues](https://github.com/peterdsp/glint/issues) for the live backlog.

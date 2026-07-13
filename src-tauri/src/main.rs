@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod git;
+mod theme;
 
 use tauri::{
     menu::{Menu, MenuItem},
@@ -42,6 +43,19 @@ fn push(path: String) -> Result<git::RepoStatus, String> {
 #[tauri::command]
 fn diff(path: String, file: String) -> Result<git::FileDiff, String> {
     git::diff(&path, &file)
+}
+
+/// User-authored themes from the config dir's `themes/` folder (issue #6).
+/// Cross-platform: `app_config_dir` resolves to Application Support / AppData /
+/// ~/.config per OS.
+#[tauri::command]
+fn load_themes(app: tauri::AppHandle) -> Result<Vec<theme::DiskTheme>, String> {
+    let dir = app
+        .path()
+        .app_config_dir()
+        .map_err(|e| e.to_string())?
+        .join("themes");
+    Ok(theme::parse_dir(&dir))
 }
 
 /// Open (or refocus) the diff pop-out for a file. The panel is a transient
@@ -86,7 +100,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
-            get_status, commit, fetch, pull, push, diff, open_diff
+            get_status, commit, fetch, pull, push, diff, open_diff, load_themes
         ])
         .setup(|app| {
             let win = app
@@ -108,20 +122,36 @@ fn main() {
                 );
             }
 
+            // Windows: Mica gives an equivalent frosted backdrop. (Linux has no
+            // native blur — the panel's CSS tint carries it there.)
+            #[cfg(target_os = "windows")]
+            {
+                let _ = window_vibrancy::apply_mica(&win, None);
+            }
+
             let quit = MenuItem::with_id(app, "quit", "Quit Glint", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&quit])?;
 
-            // Monochrome template icon: macOS tints it for light/dark menu bars,
-            // unlike the colored app icon. Embedded so there's no runtime file.
-            let tray_icon = tauri::image::Image::from_bytes(include_bytes!(
-                "../icons/tray-template.png"
-            ))?;
-
-            let _tray = TrayIconBuilder::with_id("glint-tray")
-                .icon(tray_icon)
-                .icon_as_template(true)
+            // Menu-bar icon: a monochrome template on macOS (the system tints it
+            // for light/dark); the colored app icon on Windows/Linux, where
+            // template icons aren't a concept.
+            let mut tray = TrayIconBuilder::with_id("glint-tray")
                 .menu(&menu)
-                .show_menu_on_left_click(false)
+                .show_menu_on_left_click(false);
+
+            #[cfg(target_os = "macos")]
+            {
+                let icon = tauri::image::Image::from_bytes(include_bytes!(
+                    "../icons/tray-template.png"
+                ))?;
+                tray = tray.icon(icon).icon_as_template(true);
+            }
+            #[cfg(not(target_os = "macos"))]
+            {
+                tray = tray.icon(app.default_window_icon().unwrap().clone());
+            }
+
+            let _tray = tray
                 .on_menu_event(|app, event| {
                     if event.id.as_ref() == "quit" {
                         app.exit(0);

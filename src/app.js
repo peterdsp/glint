@@ -55,9 +55,35 @@ function buildSwatches() {
     b.className = "swatch";
     b.dataset.key = key;
     b.style.background = theme.swatch;
-    b.setAttribute("aria-label", `${key} theme`);
+    b.setAttribute("aria-label", `${theme.label || key} theme`);
     b.onclick = () => applyTheme(key);
     wrap.appendChild(b);
+  }
+}
+
+// Merge user-authored themes from disk into the picker (issue #6). No-op in a
+// plain browser (no Tauri) or when the themes/ folder is empty.
+async function loadDiskThemes() {
+  if (!invoke) return;
+  try {
+    const list = await invoke("load_themes");
+    if (!Array.isArray(list) || list.length === 0) return;
+    for (const t of list) {
+      if (!t || !t.key || !t.vars) continue;
+      THEMES[t.key] = {
+        label: t.label || t.key,
+        swatch: t.swatch || t.vars["--accent"] || "#888888",
+        vars: t.vars,
+      };
+    }
+    buildSwatches();
+    let key = "aurora";
+    try {
+      key = localStorage.getItem("glint.theme") || "aurora";
+    } catch {}
+    applyTheme(key); // re-apply so the selection ring lands correctly
+  } catch (e) {
+    console.warn("load_themes failed:", e);
   }
 }
 
@@ -255,3 +281,4 @@ buildSwatches();
 applyTheme(localStorage.getItem("glint.theme") || "aurora");
 wireActions();
 loadStatus();
+loadDiskThemes();
