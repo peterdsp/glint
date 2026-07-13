@@ -76,6 +76,6 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: "Glint ${{ github.ref_name }}"
           releaseBody: "Download the installer for your platform. Existing installs update themselves."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
