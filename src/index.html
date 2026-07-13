@@ -41,6 +41,8 @@
         <button class="commit-btn" id="commit-btn">Commit to <span id="commit-branch">-</span></button>
       </footer>
 
+      <button class="trial-bar" id="trial-bar" type="button" hidden></button>
+
       <div class="theme-bar">
         <div class="section-label">Theme</div>
         <div class="swatches" id="swatches"></div>
@@ -48,6 +50,18 @@
       </div>
 
       <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+      <div class="license-gate" id="license-gate" hidden>
+        <div class="lg-card">
+          <div class="lg-title">Your Glint trial has ended</div>
+          <div class="lg-sub">Keep Glint for a one-time $4.99 on Ko-fi. Already bought? Paste your key below.</div>
+          <button class="lg-buy" id="lg-buy" type="button">Get a license on Ko-fi</button>
+          <div class="lg-or">or enter your license key</div>
+          <input class="lg-input" id="lg-input" placeholder="GLINT-..." spellcheck="false" />
+          <button class="lg-activate" id="lg-activate" type="button">Activate</button>
+          <div class="lg-msg" id="lg-msg"></div>
+        </div>
+      </div>
     </main>
 
     <script src="themes.js"></script>

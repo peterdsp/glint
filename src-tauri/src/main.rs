@@ -2,6 +2,7 @@
 
 mod git;
 mod github;
+mod license;
 mod theme;
 
 use tauri::{
@@ -90,6 +91,85 @@ fn load_themes(app: tauri::AppHandle) -> Result<Vec<theme::DiskTheme>, String> {
     Ok(theme::parse_dir(&dir))
 }
 
+#[cfg_attr(feature = "appstore", allow(dead_code))]
+fn now_secs() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0)
+}
+
+/// Trial / license state. The App Store build is always "licensed" (Apple gates
+/// the purchase); the direct build tracks a 7-day trial then requires a key.
+#[tauri::command]
+fn license_status(app: tauri::AppHandle) -> Result<license::LicenseState, String> {
+    #[cfg(feature = "appstore")]
+    {
+        let _ = app;
+        return Ok(license::licensed_state());
+    }
+    #[cfg(not(feature = "appstore"))]
+    {
+        let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+        std::fs::create_dir_all(&dir).ok();
+        let now = now_secs();
+
+        let fr_path = dir.join("first_run");
+        let first_run = std::fs::read_to_string(&fr_path)
+            .ok()
+            .and_then(|s| s.trim().parse::<u64>().ok())
+            .unwrap_or_else(|| {
+                let _ = std::fs::write(&fr_path, now.to_string());
+                now
+            });
+
+        let license = std::fs::read_to_string(dir.join("license.key"))
+            .ok()
+            .and_then(|k| license::verify(k.trim(), license::pubkey_b64()).ok());
+
+        Ok(license::evaluate(first_run, now, license))
+    }
+}
+
+/// Validate and store a license key, returning the new state.
+#[tauri::command]
+fn activate_license(app: tauri::AppHandle, key: String) -> Result<license::LicenseState, String> {
+    #[cfg(feature = "appstore")]
+    {
+        let _ = (app, key);
+        return Ok(license::licensed_state());
+    }
+    #[cfg(not(feature = "appstore"))]
+    {
+        license::verify(key.trim(), license::pubkey_b64())?;
+        let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+        std::fs::create_dir_all(&dir).ok();
+        std::fs::write(dir.join("license.key"), key.trim()).map_err(|e| e.to_string())?;
+        license_status(app)
+    }
+}
+
+/// Check GitHub Releases for a newer version (direct build only). Returns the
+/// new version string if one is available. The App Store build returns None -
+/// Apple ships updates.
+#[cfg(feature = "updater")]
+#[tauri::command]
+async fn check_update(app: tauri::AppHandle) -> Result<Option<String>, String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let updater = app.updater().map_err(|e| e.to_string())?;
+    match updater.check().await {
+        Ok(Some(update)) => Ok(Some(update.version)),
+        Ok(None) => Ok(None),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+#[cfg(not(feature = "updater"))]
+#[tauri::command]
+async fn check_update() -> Result<Option<String>, String> {
+    Ok(None)
+}
+
 /// Open (or refocus) the diff pop-out for a file. The panel is a transient
 /// menu-bar dropdown; diffs want a real resizable window, so this is separate.
 #[tauri::command]
@@ -129,11 +209,21 @@ fn toggle_panel(win: &WebviewWindow) {
 }
 
 fn main() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_positioner::init())
+    let mut builder = tauri::Builder::default().plugin(tauri_plugin_positioner::init());
+
+    // Self-updater only in the direct (Ko-fi) build; the App Store build omits
+    // the feature entirely.
+    #[cfg(feature = "updater")]
+    {
+        builder = builder
+            .plugin(tauri_plugin_updater::Builder::new().build())
+            .plugin(tauri_plugin_process::init());
+    }
+
+    builder
         .invoke_handler(tauri::generate_handler![
             get_status, commit, fetch, pull, push, diff, open_diff, load_themes,
-            pr_status, open_url
+            pr_status, open_url, license_status, activate_license, check_update
         ])
         .setup(|app| {
             let win = app

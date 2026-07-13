@@ -5,6 +5,23 @@ description = "A glint of Git in your menu bar"
 edition = "2021"
 authors = ["peterdsp"]
 
+[[bin]]
+name = "glint"
+path = "src/main.rs"
+
+# Offline license tooling (not shipped): generate a keypair, mint license keys.
+[[bin]]
+name = "glint-keygen"
+path = "src/bin/keygen.rs"
+
+[features]
+# Default (Ko-fi / direct download): 7-day trial + license gate + self-updater.
+default = ["updater"]
+updater = ["dep:tauri-plugin-updater", "dep:tauri-plugin-process"]
+# App Store build: `--no-default-features --features appstore`. Apple gates the
+# purchase and pushes updates, so no trial, no license gate, no self-updater.
+appstore = []
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
@@ -14,6 +31,13 @@ tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 octocrab = "0.54.0"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+base64 = "0.22"
+rand_core = { version = "0.6", features = ["getrandom"] }
+
+# Self-updater (Ko-fi/direct build only; excluded from the App Store build).
+tauri-plugin-updater = { version = "2", optional = true }
+tauri-plugin-process = { version = "2", optional = true }
 
 # In-process Git via libgit2 (issues #1/#2), vendored + statically linked so the
 # app carries its own copy - no runtime dependency on a `git` binary. On macOS

@@ -1,5 +1,6 @@
-/src-tauri/target
-/src-tauri/gen/schemas
-node_modules
 .DS_Store
+.secrets/
+/src-tauri/gen/schemas
+/src-tauri/target
 icon-src.png
+node_modules

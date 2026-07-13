@@ -176,6 +176,85 @@ function showToast(msg, kind = "") {
   }
 }
 
+// Ko-fi page where licenses are sold (direct build). Update to your handle.
+const KOFI_URL = "https://ko-fi.com/peterdsp";
+
+// Trial / license gate. In a plain browser (no Tauri) everything is unlocked.
+async function loadLicense() {
+  const gate = document.getElementById("license-gate");
+  const bar = document.getElementById("trial-bar");
+  if (!gate || !bar) return;
+  if (!invoke) {
+    gate.hidden = true;
+    bar.hidden = true;
+    return;
+  }
+  let s;
+  try {
+    s = await invoke("license_status");
+  } catch (e) {
+    console.warn("license_status failed:", e);
+    return;
+  }
+  if (!s || s.state === "licensed") {
+    gate.hidden = true;
+    bar.hidden = true;
+  } else if (s.state === "trial") {
+    gate.hidden = true;
+    bar.hidden = false;
+    bar.textContent = `Trial - ${s.days_left} day${s.days_left === 1 ? "" : "s"} left · Get a license`;
+  } else {
+    // expired: block the panel until a valid key is entered
+    bar.hidden = true;
+    gate.hidden = false;
+  }
+}
+
+function wireLicense() {
+  const openKofi = () => {
+    if (invoke) invoke("open_url", { url: KOFI_URL }).catch(() => {});
+  };
+  const bar = document.getElementById("trial-bar");
+  const buy = document.getElementById("lg-buy");
+  const act = document.getElementById("lg-activate");
+  if (bar) bar.onclick = openKofi;
+  if (buy) buy.onclick = openKofi;
+  if (act)
+    act.onclick = async () => {
+      const input = document.getElementById("lg-input");
+      const msg = document.getElementById("lg-msg");
+      const key = (input.value || "").trim();
+      if (!key) {
+        input.focus();
+        return;
+      }
+      msg.textContent = "Checking...";
+      try {
+        const s = await invoke("activate_license", { key });
+        if (s && s.state === "licensed") {
+          msg.textContent = "Activated - thank you!";
+          setTimeout(loadLicense, 700);
+        } else {
+          msg.textContent = "That key isn't valid.";
+        }
+      } catch (e) {
+        msg.textContent = String(e && e.message ? e.message : e);
+      }
+    };
+}
+
+// Check GitHub Releases for a newer version (direct build). No-op if the
+// updater isn't configured or on the App Store build.
+async function checkUpdate() {
+  if (!invoke) return;
+  try {
+    const version = await invoke("check_update");
+    if (version) showToast(`Glint ${version} is available - relaunch to update`);
+  } catch (e) {
+    /* updater not configured yet, or offline - ignore */
+  }
+}
+
 // PR + CI badge next to the branch (issue #3). Hidden unless there's an open
 // PR for the current branch; the CI dot is colored by check-run status.
 async function loadPrStatus() {
@@ -304,5 +383,8 @@ function wireActions() {
 buildSwatches();
 applyTheme(localStorage.getItem("glint.theme") || "aurora");
 wireActions();
+wireLicense();
 loadStatus();
 loadDiskThemes();
+loadLicense();
+checkUpdate();
