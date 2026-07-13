@@ -1,5 +1,5 @@
 /* ============================================================
-   Glint — glint.peterdsp.dev
+   Glint - glint.peterdsp.dev
    Direction B "Menu Bar". Bright macOS light + real glass.
    No framework, no webfont: the system stack is on-brand for a
    native menu-bar app. Theme tokens mirror the app's themes.js.
@@ -12,7 +12,7 @@
   --accent-ink: #2f5fd6;        /* accent legible as text on light ground */
   --accent-soft: rgba(91, 140, 255, 0.12);
 
-  /* page ground — a cool, chosen off-white, biased toward the accent */
+  /* page ground - a cool, chosen off-white, biased toward the accent */
   --bg: #eef1f7;
   --bg-2: #f7f9fc;
   --surface: #ffffff;

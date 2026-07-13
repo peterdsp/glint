@@ -16,7 +16,7 @@ serde_json = "1"
 octocrab = "0.54.0"
 
 # In-process Git via libgit2 (issues #1/#2), vendored + statically linked so the
-# app carries its own copy — no runtime dependency on a `git` binary. On macOS
+# app carries its own copy - no runtime dependency on a `git` binary. On macOS
 # and Linux, https/ssh vendor OpenSSL (libssh2's crypto backend). On Windows the
 # platform crypto (Schannel for TLS, WinCNG for SSH) is used instead, so there's
 # no OpenSSL build to wrangle there.

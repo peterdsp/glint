@@ -1,10 +1,10 @@
-# Glint — Design Language & Pixel Spec
+# Glint - Design Language & Pixel Spec
 
 The single source of truth for how Glint looks. Every number here is extracted
 from the concept mockup. If an implementation disagrees with this document, the
 implementation is wrong. The goal is **pixel-exact parity with the mock**.
 
-> **Reading note — mockup vs. native.** The mockup fakes the desktop behind the
+> **Reading note - mockup vs. native.** The mockup fakes the desktop behind the
 > panel with a per-theme gradient "wallpaper" and a fake macOS menu-bar strip.
 > In the shipping Tauri app those two things are *real* (the OS menu bar; the
 > live desktop seen through `NSVisualEffectView`). Wherever that changes a value,
@@ -13,7 +13,7 @@ implementation is wrong. The goal is **pixel-exact parity with the mock**.
 
 ---
 
-## 1. Design language — the five principles
+## 1. Design language - the five principles
 
 1. **Liquid glass, not flat translucency.** The panel is a physical pane: a
    blurred, saturation-boosted view of what's behind it, with a bright 1px inner
@@ -24,7 +24,7 @@ implementation is wrong. The goal is **pixel-exact parity with the mock**.
    accent fills). No third material.
 3. **The accent carries the theme.** Each theme is one accent color plus a
    tint/ink pair. The accent appears on exactly the interactive commit path
-   (repo badge, sync button, stage checks, commit button) — nothing decorative.
+   (repo badge, sync button, stage checks, commit button) - nothing decorative.
 4. **Glanceable density.** Everything critical fits one 340px-wide dropdown:
    identity → sync state → changes → commit. Type is small and tight; whitespace
    does the separating, not borders.
@@ -56,13 +56,13 @@ it); if used, it sits at `top: -6px; right: 14px`.
 
 This is *the* recipe. Reproduce it exactly.
 
-### 3a. Primary glass — the panel
+### 3a. Primary glass - the panel
 
 ```
 background:        var(--tint)                         /* theme translucent tint */
 backdrop-filter:   blur(30px) saturate(1.6)
 border:            0.5px solid var(--stroke)
-box-shadow:        0 20px 50px rgba(20,20,40,0.35),    /* drop — lifts off desktop */
+box-shadow:        0 20px 50px rgba(20,20,40,0.35),    /* drop - lifts off desktop */
                    inset 0 1px 0 rgba(255,255,255,0.60) /* wet top edge highlight */
 border-radius:     18px
 ```
@@ -74,13 +74,13 @@ Layer order, bottom to top:
 4. Hairline stroke (`0.5px --stroke`)
 5. Inner top highlight (`inset 0 1px 0 rgba(255,255,255,0.6)`)
 
-### 3b. Secondary glass — the theme card (mock only)
+### 3b. Secondary glass - the theme card (mock only)
 
 Same material, lighter shadow: `box-shadow: 0 12px 30px rgba(20,20,40,0.25)`,
 `border-radius: 16px`, `blur(30px)`. *In the app the theme bar is merged into the
 single panel (see §9.7), so this only exists in the mock.*
 
-### 3c. Menu-bar strip glass (mock only — real menu bar in app)
+### 3c. Menu-bar strip glass (mock only - real menu bar in app)
 
 ```
 height:           30 px
@@ -95,14 +95,14 @@ font:              13px / 500
 ### 3d. Inset surfaces (on the glass, no own blur)
 
 Sync stats and the commit box sit on top of the glass. They do **not** blur
-again — they're a slightly more opaque tint with a stroke:
+again - they're a slightly more opaque tint with a stroke:
 
 | Surface | Fill | Border | Radius |
 |---|---|---|---|
 | Sync stat | `var(--tint-2)` | `0.5px var(--stroke)` | 11 px |
 | Commit box | `var(--field)` | `0.5px var(--stroke)` | 12 px |
 
-The commit box fill is the `--field` token, **not** a raw color — on light themes it is
+The commit box fill is the `--field` token, **not** a raw color - on light themes it is
 `rgba(255,255,255,0.50)`, but Midnight flips it to `rgba(255,255,255,0.10)` so the
 box reads as dark glass instead of a bright gray block. A raw white here breaks dark mode.
 
@@ -131,19 +131,19 @@ darkens/blurs, the panel `--tint` alpha is retuned **down** from the mock so the
 Rule of thumb: radius grows with the element's size so every corner looks like
 the same physical bevel. Never introduce a radius outside this scale.
 
-### 4b. Padding & gaps (literal, per region — do not "round to a scale")
+### 4b. Padding & gaps (literal, per region - do not "round to a scale")
 
 | Region | Padding | Internal gap |
 |---|---|---|
 | Header | `14px 16px 12px` | 10 px |
 | Sync row | `12px 16px` (app: `11px 14px`) | 8 px |
 | Sync stat (inner) | `8px 10px` | 7 px |
-| Section label | `2px 16px 4px` | — |
-| File list | `0 10px` (app: `0 8px`) | — |
+| Section label | `2px 16px 4px` | - |
+| File list | `0 10px` (app: `0 8px`) | - |
 | File row | `7px 8px` | 9 px |
-| Commit region | `10px 16px 16px` (app: `8px 14px 12px`) | — |
-| Commit box (inner) | `9px 11px` (app: `8px 11px`) | — |
-| Commit button | `10px` | — |
+| Commit region | `10px 16px 16px` (app: `8px 14px 12px`) | - |
+| Commit box (inner) | `9px 11px` (app: `8px 11px`) | - |
+| Commit button | `10px` | - |
 | Theme bar | `12px 14px` (app: `10px 14px 12px`) | swatches 9 px |
 
 Hairline dividers between regions: `0.5px solid var(--tint-2)`.
@@ -194,10 +194,10 @@ Glass tints per theme:
 this doc recommends the softened `#3a3f4a` for the app.
 
 Midnight is the proof that the material survives dark mode: only the tint flips
-to a dark translucent (`rgba(38,42,58,0.55)`) and ink inverts — structure,
+to a dark translucent (`rgba(38,42,58,0.55)`) and ink inverts - structure,
 radii, blur, and shadow are unchanged.
 
-### 5c. Mockup backdrop gradients (reference only — replaced by real desktop)
+### 5c. Mockup backdrop gradients (reference only - replaced by real desktop)
 
 Used *only* to demonstrate the glass in the mock. The app shows the live desktop
 instead. Kept here so mock and screenshots are reproducible.
@@ -215,9 +215,9 @@ instead. Kept here so mock and screenshots are reproducible.
 | Meaning | Color |
 |---|---|
 | Additions (`+N`) | `#1d9e75` |
-| Deletions (`−N`) | `#d85a30` |
+| Deletions (`-N`) | `#d85a30` |
 
-Note the deletion glyph is a true minus `−` (U+2212), not a hyphen.
+Note the deletion glyph is a true minus `-` (U+2212), not a hyphen.
 
 ---
 
@@ -238,7 +238,7 @@ system-ui`. Monospace: `"SF Mono", ui-monospace, "JetBrains Mono"`.
 | Commit summary | 13 px | 500 | `--ink` | |
 | Commit description | 12 px | 400 | `--ink-2` | |
 | Commit button | 13 px | 500 | `#fff` | |
-| Theme name | 12 px | 400 | `--ink-2` | e.g. "Aurora — translucent, cool" |
+| Theme name | 12 px | 400 | `--ink-2` | e.g. "Aurora - translucent, cool" |
 
 Two weights only: **400** and **500**. Never 600/700. Sentence case
 everywhere except section labels (uppercase) and proper nouns.
@@ -267,7 +267,7 @@ the CDN link) so the app is fully offline.
 ## 8. Accent-fill elements (the commit path)
 
 Every solid-accent element shares one look: `background: var(--accent)`, white
-icon/text, and — on tappable ones — an inner top highlight
+icon/text, and - on tappable ones - an inner top highlight
 `inset 0 1px 0 rgba(255,255,255,0.35)` and `active { transform: scale(0.98) }`.
 
 | Element | Size | Radius | Icon/label |
@@ -287,7 +287,7 @@ Unstaged checkbox: `16×16`, `border: 1.5px solid var(--ink-2)`, no fill.
 Row, `padding 14px 16px 12px`, `gap 10px`, bottom hairline `0.5px var(--tint-2)`.
 Left: repo badge (§8). Center (flex, min-width 0): repo name (14/500, ellipsis)
 over branch line (`git-fork` 13px + 12px `--ink-2`, gap 5px). Right: selector
-icon button — `padding 4px`, `radius 7px`, `--ink-2`, `hover: bg var(--tint-2)`.
+icon button - `padding 4px`, `radius 7px`, `--ink-2`, `hover: bg var(--tint-2)`.
 
 ### 9.2 Sync row
 Three items, `padding 12px 16px`, `gap 8px`.
@@ -304,14 +304,14 @@ Text: `N changed file(s)`.
 ### 9.4 File list
 `padding 0 10px`. Each row: `padding 7px 8px`, `gap 9px`, `radius 9px`,
 `hover: bg var(--tint-2)`.
-- Checkbox (§8) — staged = accent+check, unstaged = 1.5px outline.
+- Checkbox (§8) - staged = accent+check, unstaged = 1.5px outline.
 - Path: 12px **monospace** `--ink`, flex:1, ellipsis.
-- Delta: 11/500, `+N` green `#1d9e75` / `−N` coral `#d85a30`.
+- Delta: 11/500, `+N` green `#1d9e75` / `-N` coral `#d85a30`.
 
 ### 9.5 Commit box
 `radius 12px`, `background var(--field)`, `border 0.5px var(--stroke)`,
 `padding 9px 11px`, `margin-bottom 9px`. Summary input (13/500 `--ink`) over
-description input (12px `--ink-2`, `margin-top 2–3px`).
+description input (12px `--ink-2`, `margin-top 2-3px`).
 
 ### 9.6 Commit button
 Full width, `padding 10px`, `radius 12px`, accent fill, white 13/500, inner top
@@ -326,7 +326,7 @@ Section label `Theme`, then swatch row (`gap 9px`), then theme-name line
 
 **Native:** in the mock the theme bar is a *separate* floating glass card below
 the panel. In the app it's folded into the bottom of the single panel with a top
-hairline `0.5px var(--tint-2)` — one window, one material.
+hairline `0.5px var(--tint-2)` - one window, one material.
 
 ---
 
@@ -338,12 +338,12 @@ hairline `0.5px var(--tint-2)` — one window, one material.
 | Panel loses focus | hide panel (menu-bar convention) |
 | Hover file row / icon button | `background: var(--tint-2)` |
 | Click checkbox | toggle staged; accent fill ⇄ outline |
-| Press accent button | `transform: scale(0.98–0.99)` |
+| Press accent button | `transform: scale(0.98-0.99)` |
 | Click swatch | apply theme tokens instantly; persist; move selection ring |
 | Click selector | choose repo |
 
 No transitions except the swatch ring (`box-shadow 0.15s`) and button press. No
-fades on theme change — tokens swap instantly.
+fades on theme change - tokens swap instantly.
 
 ---
 
@@ -364,7 +364,7 @@ fades on theme change — tokens swap instantly.
 **Material choice:** `HudWindow` is the closest AppKit vibrancy to the mock's
 bright glass. If it reads too gray on dark desktops, evaluate `Popover` /
 `UnderWindowBackground`. The chosen material must land the composited panel
-luminance on the mock — this is the one thing to A/B against a screenshot.
+luminance on the mock - this is the one thing to A/B against a screenshot.
 
 ---
 
@@ -377,8 +377,8 @@ desktop:
 - [ ] Glass shows the desktop blurred and slightly *more saturated* behind it.
 - [ ] Aurora and Midnight both render from the same structure via token swap.
 - [ ] Accent appears on exactly: repo badge, sync button, staged checks, commit
-      button — nowhere else.
-- [ ] File paths are monospace; deltas use `#1d9e75` / `#d85a30` with a true `−`.
+      button - nowhere else.
+- [ ] File paths are monospace; deltas use `#1d9e75` / `#d85a30` with a true `-`.
 - [ ] All radii come from the §4a scale; all type is 400/500 only.
 - [ ] Section labels are 11px uppercase, letter-spacing 0.04em.
 - [ ] Selected swatch shows the double ring (tint + accent).

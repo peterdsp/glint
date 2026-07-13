@@ -1,11 +1,11 @@
 // Glint themes. Each theme is a set of CSS custom properties layered over the
 // window's native vibrancy. Tints are semi-transparent so the desktop shows
-// through the glass. Add a theme by dropping another entry here — that is the
+// through the glass. Add a theme by dropping another entry here - that is the
 // whole "custom theme" surface (a future build reads user themes from disk).
 
 window.GLINT_THEMES = {
   aurora: {
-    label: "Aurora — translucent, cool",
+    label: "Aurora - translucent, cool",
     swatch: "#8ea8ff",
     vars: {
       "--accent": "#5b8cff",
@@ -18,7 +18,7 @@ window.GLINT_THEMES = {
     },
   },
   midnight: {
-    label: "Midnight — deep, glassy dark",
+    label: "Midnight - deep, glassy dark",
     swatch: "#1f2333",
     vars: {
       "--accent": "#7c8cff",
@@ -31,7 +31,7 @@ window.GLINT_THEMES = {
     },
   },
   sunset: {
-    label: "Sunset — warm, vivid",
+    label: "Sunset - warm, vivid",
     swatch: "#ff9a6a",
     vars: {
       "--accent": "#ff7a59",
@@ -44,7 +44,7 @@ window.GLINT_THEMES = {
     },
   },
   forest: {
-    label: "Forest — calm, natural",
+    label: "Forest - calm, natural",
     swatch: "#5fb8a0",
     vars: {
       "--accent": "#1d9e75",
@@ -57,7 +57,7 @@ window.GLINT_THEMES = {
     },
   },
   graphite: {
-    label: "Graphite — quiet, neutral",
+    label: "Graphite - quiet, neutral",
     swatch: "#c2c5cd",
     vars: {
       "--accent": "#3a3f4a",

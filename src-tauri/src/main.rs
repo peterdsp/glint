@@ -47,7 +47,7 @@ fn diff(path: String, file: String) -> Result<git::FileDiff, String> {
 }
 
 /// PR + CI status for the current branch (issue #3). Returns None when there's
-/// no token, no GitHub origin, or no open PR — the panel then shows no badge.
+/// no token, no GitHub origin, or no open PR - the panel then shows no badge.
 #[tauri::command]
 async fn pr_status(path: String) -> Result<Option<github::PrStatus>, String> {
     github::pr_status(&path).await
@@ -109,7 +109,7 @@ fn open_diff(app: tauri::AppHandle, path: String, file: String) -> Result<(), St
     // Seed the target before the page scripts run, then load the diff view.
     let init = format!("window.__GLINT_DIFF__ = {{ repo: {repo_js}, file: {file_js} }};");
     tauri::WebviewWindowBuilder::new(&app, "diff", tauri::WebviewUrl::App("diff.html".into()))
-        .title(format!("Glint — {file}"))
+        .title(format!("Glint - {file}"))
         .inner_size(780.0, 620.0)
         .min_inner_size(460.0, 320.0)
         .initialization_script(&init)
@@ -156,7 +156,7 @@ fn main() {
             }
 
             // Windows: Mica gives an equivalent frosted backdrop. (Linux has no
-            // native blur — the panel's CSS tint carries it there.)
+            // native blur - the panel's CSS tint carries it there.)
             #[cfg(target_os = "windows")]
             {
                 let _ = window_vibrancy::apply_mica(&win, None);

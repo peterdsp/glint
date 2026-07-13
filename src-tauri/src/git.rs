@@ -1,11 +1,11 @@
-// Git backend via libgit2 (the `git2` crate) — in-process, no subprocess.
+// Git backend via libgit2 (the `git2` crate) - in-process, no subprocess.
 //
 // Migrated from shelling out to the `git` CLI (issue #1). Reads run against
 // libgit2 directly, which is faster (no per-call process spawn), removes the
 // hard dependency on a `git` binary on PATH, and gives us a real handle to the
 // object database for native push/pull with credentials next (issue #2).
 //
-// The public surface — `RepoStatus`, `FileChange`, `get_status`, `commit` — is
+// The public surface - `RepoStatus`, `FileChange`, `get_status`, `commit` - is
 // unchanged, so the Tauri commands and the frontend are untouched.
 
 use git2::build::CheckoutBuilder;
@@ -91,7 +91,7 @@ fn current_branch(repo: &Repository) -> String {
 }
 
 /// Commits ahead of / behind the configured upstream branch. `None` when there
-/// is no HEAD or no tracking branch — callers default to (0, 0).
+/// is no HEAD or no tracking branch - callers default to (0, 0).
 fn ahead_behind(repo: &Repository) -> Option<(u32, u32)> {
     let head = repo.head().ok()?;
     let local = head.target()?;
@@ -103,7 +103,7 @@ fn ahead_behind(repo: &Repository) -> Option<(u32, u32)> {
 }
 
 /// Per-path (added, removed) line counts, summing the staged (HEAD→index) and
-/// unstaged (index→workdir) diffs — the equivalent of `git diff --numstat`
+/// unstaged (index→workdir) diffs - the equivalent of `git diff --numstat`
 /// plus `--cached`. Untracked files are excluded (they have no diff), matching
 /// the CLI's behaviour.
 fn line_deltas(repo: &Repository) -> HashMap<String, (u32, u32)> {
@@ -311,7 +311,7 @@ fn remote_callbacks() -> RemoteCallbacks<'static> {
     cb
 }
 
-/// Fetch `origin` (updates remote-tracking refs) and return refreshed status —
+/// Fetch `origin` (updates remote-tracking refs) and return refreshed status -
 /// the ahead/behind counts now reflect the remote without touching the tree.
 pub fn fetch(path: &str) -> Result<RepoStatus, String> {
     let repo = open(path)?;
@@ -342,7 +342,7 @@ pub fn pull(path: &str) -> Result<RepoStatus, String> {
         .head()
         .map_err(err)?
         .name()
-        .ok_or("detached HEAD — cannot pull")?
+        .ok_or("detached HEAD - cannot pull")?
         .to_string();
     let upstream_name = repo
         .branch_upstream_name(&branch_ref)
@@ -360,7 +360,7 @@ pub fn pull(path: &str) -> Result<RepoStatus, String> {
     }
     if !analysis.is_fast_forward() {
         return Err(
-            "pull needs a merge or rebase — Glint does fast-forward only for now".into(),
+            "pull needs a merge or rebase - Glint does fast-forward only for now".into(),
         );
     }
 
@@ -386,7 +386,7 @@ pub fn push(path: &str) -> Result<RepoStatus, String> {
         .head()
         .map_err(err)?
         .name()
-        .ok_or("detached HEAD — nothing to push")?
+        .ok_or("detached HEAD - nothing to push")?
         .to_string();
 
     let rejected: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));
@@ -407,7 +407,7 @@ pub fn push(path: &str) -> Result<RepoStatus, String> {
     }
 
     if let Some(msg) = rejected.borrow().clone() {
-        return Err(format!("push rejected — {msg} (pull first, then push)"));
+        return Err(format!("push rejected - {msg} (pull first, then push)"));
     }
     get_status(path)
 }
@@ -423,7 +423,7 @@ fn strip_eol(bytes: &[u8]) -> String {
         .to_string()
 }
 
-/// Unified diff for a single file — all uncommitted changes (staged and
+/// Unified diff for a single file - all uncommitted changes (staged and
 /// unstaged) against HEAD, as structured hunks the pop-out window renders.
 /// Untracked files show up as all-additions.
 pub fn diff(path: &str, file: &str) -> Result<FileDiff, String> {
@@ -563,7 +563,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 
-    // push / fetch / pull against a local bare "remote" — exercises the real
+    // push / fetch / pull against a local bare "remote" - exercises the real
     // libgit2 transport end-to-end without network or credentials (local
     // transport needs no auth).
     #[test]

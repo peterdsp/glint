@@ -1,4 +1,4 @@
-/* Glint diff pop-out (issue #4). A normal decorated window — opaque, not the
+/* Glint diff pop-out (issue #4). A normal decorated window - opaque, not the
    vibrancy panel. It reuses the panel's theme accent (via themes.js) but has
    its own solid ground so code stays legible. Two grounds: light + midnight. */
 

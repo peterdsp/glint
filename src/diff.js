@@ -51,8 +51,8 @@ function gutter(n) {
 
 function renderDiff(d) {
   const fileEl = document.getElementById("file");
-  fileEl.textContent = d.file || "—";
-  document.title = "Glint — " + (d.file || "Diff");
+  fileEl.textContent = d.file || "-";
+  document.title = "Glint - " + (d.file || "Diff");
 
   let adds = 0;
   let dels = 0;
@@ -63,13 +63,13 @@ function renderDiff(d) {
     }
   }
   document.getElementById("adds").textContent = `+${adds}`;
-  document.getElementById("dels").textContent = `−${dels}`;
+  document.getElementById("dels").textContent = `-${dels}`;
 
   const body = document.getElementById("body");
   body.innerHTML = "";
 
   if (d.binary) {
-    body.innerHTML = '<div class="empty">Binary file — no line diff.</div>';
+    body.innerHTML = '<div class="empty">Binary file - no line diff.</div>';
     return;
   }
   if (!d.hunks || d.hunks.length === 0) {
@@ -92,7 +92,7 @@ function renderDiff(d) {
 
       const sign = document.createElement("span");
       sign.className = "s";
-      sign.textContent = l.kind === "add" ? "+" : l.kind === "del" ? "−" : "";
+      sign.textContent = l.kind === "add" ? "+" : l.kind === "del" ? "-" : "";
 
       const content = document.createElement("span");
       content.className = "c";
@@ -107,7 +107,7 @@ function renderDiff(d) {
 
 async function loadDiff(repo, file) {
   document.getElementById("file").textContent = file;
-  document.title = "Glint — " + file;
+  document.title = "Glint - " + file;
 
   if (!invoke) {
     renderDiff(SAMPLE_DIFF);

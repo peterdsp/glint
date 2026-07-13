@@ -99,7 +99,7 @@ function deltaEl(f) {
   if (f.removed) {
     const s = document.createElement("span");
     s.className = "file-stat del";
-    s.textContent = `−${f.removed}`;
+    s.textContent = `-${f.removed}`;
     wrap.appendChild(s);
   }
   return wrap;
@@ -107,7 +107,7 @@ function deltaEl(f) {
 
 function render(status) {
   current = status;
-  document.getElementById("repo-name").textContent = status.repo || "—";
+  document.getElementById("repo-name").textContent = status.repo || "-";
   document.getElementById("branch").textContent = status.branch;
   document.getElementById("commit-branch").textContent = status.branch;
   document.getElementById("ahead").textContent = status.ahead;
@@ -189,7 +189,7 @@ async function loadPrStatus() {
     if (!pr) return;
     pill.textContent = `#${pr.number}`;
     pill.className = "pr-pill checks-" + (pr.checks || "none");
-    pill.title = `${pr.draft ? "Draft · " : ""}${pr.title} — CI: ${pr.checks}`;
+    pill.title = `${pr.draft ? "Draft · " : ""}${pr.title} - CI: ${pr.checks}`;
     pill.onclick = () => {
       if (pr.url) invoke("open_url", { url: pr.url }).catch(() => {});
     };
@@ -216,7 +216,7 @@ function openDiff(file) {
 async function runSync(cmd, busyMsg, okMsg) {
   const path = repoPath();
   if (!invoke || !path) {
-    showToast("Connect a repo first — the ⌄ button up top", "err");
+    showToast("Connect a repo first - the ⌄ button up top", "err");
     return;
   }
   showToast(busyMsg, "busy");
@@ -256,7 +256,7 @@ async function doCommit() {
   const path = repoPath();
 
   if (!invoke || !path) {
-    console.log("commit (demo — no repo set):", summary);
+    console.log("commit (demo - no repo set):", summary);
     return;
   }
   if (!summary) {

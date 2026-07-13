@@ -1,4 +1,4 @@
-// Glint website — theme switching, interactive panel demo, copy-to-clipboard.
+// Glint website - theme switching, interactive panel demo, copy-to-clipboard.
 // Themes mirror the app's src/themes.js: pick one and the whole page + the
 // demo panels retint live. No framework, no build step.
 

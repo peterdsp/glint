@@ -40,7 +40,7 @@
 <g transform="translate(0,212)">
 <rect x="16.75" y="0.75" width="14.5" height="14.5" rx="4.5" fill="none" stroke="#5a5f6b" stroke-width="1.5" />
 <text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#1b1d22" text-anchor="start" letter-spacing="0">docs/architecture.md</text>
-<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">−7</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">-7</text>
 </g>
 <rect x="14" y="250" width="312" height="44" rx="12" fill="#ffffff" stroke="#ffffff" stroke-width="0.5" />
 <text x="26" y="269" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1b1d22" text-anchor="start" letter-spacing="0">Add liquid-glass theme engine</text>
@@ -55,7 +55,7 @@
 <rect x="90" y="370" width="28" height="28" rx="9" fill="#ffb37a" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="127" y="370" width="28" height="28" rx="9" fill="#8fd6b0" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="164" y="370" width="28" height="28" rx="9" fill="#d7d9df" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
-<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5a5f6b" text-anchor="start" letter-spacing="0">Aurora — liquid glass</text>
+<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5a5f6b" text-anchor="start" letter-spacing="0">Aurora - liquid glass</text>
 </g></g>
 <text x="105.4" y="296.6" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0">Aurora</text>
 </g>
@@ -98,7 +98,7 @@
 <g transform="translate(0,212)">
 <rect x="16.75" y="0.75" width="14.5" height="14.5" rx="4.5" fill="none" stroke="#a7adbf" stroke-width="1.5" />
 <text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#f2f3f8" text-anchor="start" letter-spacing="0">docs/architecture.md</text>
-<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">−7</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">-7</text>
 </g>
 <rect x="14" y="250" width="312" height="44" rx="12" fill="#2b3040" stroke="#3a4050" stroke-width="0.5" />
 <text x="26" y="269" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#f2f3f8" text-anchor="start" letter-spacing="0">Add liquid-glass theme engine</text>
@@ -113,7 +113,7 @@
 <rect x="90" y="370" width="28" height="28" rx="9" fill="#ffb37a" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="127" y="370" width="28" height="28" rx="9" fill="#8fd6b0" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="164" y="370" width="28" height="28" rx="9" fill="#d7d9df" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
-<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#a7adbf" text-anchor="start" letter-spacing="0">Midnight — liquid glass</text>
+<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#a7adbf" text-anchor="start" letter-spacing="0">Midnight - liquid glass</text>
 </g></g>
 <text x="105.4" y="296.6" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0">Midnight</text>
 </g>
@@ -156,7 +156,7 @@
 <g transform="translate(0,212)">
 <rect x="16.75" y="0.75" width="14.5" height="14.5" rx="4.5" fill="none" stroke="#7a5a4e" stroke-width="1.5" />
 <text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#2a1c18" text-anchor="start" letter-spacing="0">docs/architecture.md</text>
-<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">−7</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">-7</text>
 </g>
 <rect x="14" y="250" width="312" height="44" rx="12" fill="#ffffff" stroke="#ffffff" stroke-width="0.5" />
 <text x="26" y="269" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#2a1c18" text-anchor="start" letter-spacing="0">Add liquid-glass theme engine</text>
@@ -171,7 +171,7 @@
 <rect x="90" y="370" width="28" height="28" rx="9" fill="#ffb37a" stroke="#ff7a59" stroke-width="2"/>
 <rect x="127" y="370" width="28" height="28" rx="9" fill="#8fd6b0" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="164" y="370" width="28" height="28" rx="9" fill="#d7d9df" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
-<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#7a5a4e" text-anchor="start" letter-spacing="0">Sunset — liquid glass</text>
+<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#7a5a4e" text-anchor="start" letter-spacing="0">Sunset - liquid glass</text>
 </g></g>
 <text x="105.4" y="296.6" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0">Sunset</text>
 </g>
@@ -214,7 +214,7 @@
 <g transform="translate(0,212)">
 <rect x="16.75" y="0.75" width="14.5" height="14.5" rx="4.5" fill="none" stroke="#4e6a5c" stroke-width="1.5" />
 <text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#17251d" text-anchor="start" letter-spacing="0">docs/architecture.md</text>
-<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">−7</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">-7</text>
 </g>
 <rect x="14" y="250" width="312" height="44" rx="12" fill="#ffffff" stroke="#ffffff" stroke-width="0.5" />
 <text x="26" y="269" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#17251d" text-anchor="start" letter-spacing="0">Add liquid-glass theme engine</text>
@@ -229,7 +229,7 @@
 <rect x="90" y="370" width="28" height="28" rx="9" fill="#ffb37a" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="127" y="370" width="28" height="28" rx="9" fill="#8fd6b0" stroke="#1d9e75" stroke-width="2"/>
 <rect x="164" y="370" width="28" height="28" rx="9" fill="#d7d9df" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
-<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#4e6a5c" text-anchor="start" letter-spacing="0">Forest — liquid glass</text>
+<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#4e6a5c" text-anchor="start" letter-spacing="0">Forest - liquid glass</text>
 </g></g>
 <text x="105.4" y="296.6" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0">Forest</text>
 </g>
@@ -272,7 +272,7 @@
 <g transform="translate(0,212)">
 <rect x="16.75" y="0.75" width="14.5" height="14.5" rx="4.5" fill="none" stroke="#5f636e" stroke-width="1.5" />
 <text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#1b1d22" text-anchor="start" letter-spacing="0">docs/architecture.md</text>
-<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">−7</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">-7</text>
 </g>
 <rect x="14" y="250" width="312" height="44" rx="12" fill="#ffffff" stroke="#ffffff" stroke-width="0.5" />
 <text x="26" y="269" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1b1d22" text-anchor="start" letter-spacing="0">Add liquid-glass theme engine</text>
@@ -287,7 +287,7 @@
 <rect x="90" y="370" width="28" height="28" rx="9" fill="#ffb37a" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="127" y="370" width="28" height="28" rx="9" fill="#8fd6b0" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
 <rect x="164" y="370" width="28" height="28" rx="9" fill="#d7d9df" stroke="#3a3f4a" stroke-width="2"/>
-<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f636e" text-anchor="start" letter-spacing="0">Graphite — liquid glass</text>
+<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f636e" text-anchor="start" letter-spacing="0">Graphite - liquid glass</text>
 </g></g>
 <text x="105.4" y="296.6" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0">Graphite</text>
 </g>

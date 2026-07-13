@@ -98,7 +98,7 @@ def panel(t, x0=0, y0=0, files=True):
     # files
     rows = [("src/menu-bar/panel.tsx", "+42", ADD, True),
             ("src/themes/liquid-glass.css", "+118", ADD, True),
-            ("docs/architecture.md", "−7", DEL, False)]
+            ("docs/architecture.md", "-7", DEL, False)]
     fy = py + 82
     for path, delta, col, staged in rows:
         g.append(f'<g transform="translate(0,{fy})">')
@@ -131,7 +131,7 @@ def panel(t, x0=0, y0=0, files=True):
         ring = f' stroke="{T["accent"]}" stroke-width="2"' if name == t else ' stroke="rgba(0,0,0,0.12)" stroke-width="1"'
         g.append(f'<rect x="{sx}" y="{ty+14}" width="28" height="28" rx="9" fill="{sw}"{ring}/>')
         sx += 37
-    g.append(txt(16, ty + 66, f'{T["label"]} — liquid glass', 12, T["ink2"]))
+    g.append(txt(16, ty + 66, f'{T["label"]} - liquid glass', 12, T["ink2"]))
     g.append('</g>')
     return "\n".join(g), H
 

@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="docs/assets/hero.png" alt="Glint — a liquid-glass menu-bar Git client" width="820" />
+<img src="docs/assets/hero.png" alt="Glint - a liquid-glass menu-bar Git client" width="820" />
 
 # Glint
 
-**A glint of Git in your menu bar** — ultralightweight, liquid glass, themeable.
+**A glint of Git in your menu bar** - ultralightweight, liquid glass, themeable.
 
 </div>
 
@@ -13,14 +13,14 @@ Glint is a menu-bar Git client: a reimagining of GitHub Desktop's ideas built on
 `NSVisualEffectView` translucency for real liquid glass, and ships swappable
 themes as CSS token sets.
 
-- **Tiny.** System webview (WebKit) + a Rust core — no bundled Chromium. Megabytes, not hundreds of them.
+- **Tiny.** System webview (WebKit) + a Rust core - no bundled Chromium. Megabytes, not hundreds of them.
 - **Glassy.** Native vibrancy behind a transparent webview; themes tint the glass.
 - **Menu-bar native.** A tray-positioned panel that toggles on click and dismisses on blur.
-- **Yours.** Every theme is a handful of tokens — drop one in and it appears.
+- **Yours.** Every theme is a handful of tokens - drop one in and it appears.
 
 ## Themes
 
-Same structure, swapped tokens. Light or dark, the glass never changes — only the tint and accent do.
+Same structure, swapped tokens. Light or dark, the glass never changes - only the tint and accent do.
 
 <div align="center">
 <img src="docs/assets/themes.png" alt="Glint's five built-in themes: Aurora, Midnight, Sunset, Forest, Graphite" width="900" />
@@ -30,7 +30,7 @@ Same structure, swapped tokens. Light or dark, the glass never changes — only 
 
 ```
 glint/
-├─ src/                     Frontend (system webview) — HTML/CSS/JS, no framework
+├─ src/                     Frontend (system webview) - HTML/CSS/JS, no framework
 │  ├─ index.html            The glass panel
 │  ├─ styles.css            Glass + theme variables
 │  ├─ themes.js             Theme token sets (add themes here)
@@ -38,12 +38,12 @@ glint/
 │  └─ vendor/tabler/        Vendored icon webfont (offline, no CDN)
 └─ src-tauri/               Rust core
    ├─ src/main.rs           Tray, transparent window, vibrancy, IPC commands
-   ├─ src/git.rs            Git status (via `git` CLI — see note below)
+   ├─ src/git.rs            Git status (via `git` CLI - see note below)
    ├─ tauri.conf.json       Window: transparent, borderless, always-on-top
    └─ capabilities/         Permissions
 ```
 
-The full visual spec lives in **[docs/design-language.md](docs/design-language.md)** —
+The full visual spec lives in **[docs/design-language.md](docs/design-language.md)** -
 the glass recipe, radius scale, the seven-token theme model, and the CSS→AppKit
 mapping, all pixel-exact to the concept.
 
@@ -69,7 +69,7 @@ selector in the header to point it at a real repo, or it shows sample data.
 
 ## Themes
 
-Each built-in theme is an entry in `src/themes.js` — an accent color, a swatch,
+Each built-in theme is an entry in `src/themes.js` - an accent color, a swatch,
 and the glass tint/ink variables. Drop in another object and it appears as a
 swatch automatically.
 
@@ -85,7 +85,7 @@ a swatch alongside the built-ins:
 
 ```json
 {
-  "label": "Nord — arctic",
+  "label": "Nord - arctic",
   "swatch": "#88c0d0",
   "vars": {
     "--accent": "#88c0d0",
@@ -104,7 +104,7 @@ The `key` defaults to the file name; invalid files are skipped, never fatal.
 ## Platforms
 
 Glint targets **macOS, Windows, and Linux**. The glass is native where the OS
-provides it — `NSVisualEffectView` on macOS, Mica on Windows — and falls back to
+provides it - `NSVisualEffectView` on macOS, Mica on Windows - and falls back to
 the CSS tint on Linux. The tray glyph is a monochrome template on macOS and the
 colored icon elsewhere. Every build is checked on all three in CI.
 

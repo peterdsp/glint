@@ -3,7 +3,7 @@
 // The token is borrowed from the GitHub CLI: GH_TOKEN/GITHUB_TOKEN in the
 // environment first, then `gh auth token` (which also covers keychain-stored
 // tokens). Glint stores nothing of its own. If no token is available, every
-// entry point degrades to `Ok(None)` — the panel simply shows no PR badge.
+// entry point degrades to `Ok(None)` - the panel simply shows no PR badge.
 
 use serde::{Deserialize, Serialize};
 
