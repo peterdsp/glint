@@ -109,6 +109,66 @@ function render(status) {
     li.append(check, path, deltaEl(f));
     list.appendChild(li);
   }
+
+  refreshSyncButtons();
+}
+
+// Pull/push are only meaningful when there's something to move.
+function refreshSyncButtons() {
+  const sync = document.getElementById("sync");
+  const pull = document.getElementById("pull-btn");
+  const push = document.getElementById("push-btn");
+  if (sync) sync.disabled = false;
+  if (pull) pull.disabled = !current.behind;
+  if (push) push.disabled = !current.ahead;
+}
+
+function statusToView(path, s) {
+  return {
+    repo: path.split("/").filter(Boolean).slice(-2).join(" / "),
+    branch: s.branch,
+    ahead: s.ahead,
+    behind: s.behind,
+    files: s.files, // { path, status, staged, added, removed }
+  };
+}
+
+let toastTimer = null;
+function showToast(msg, kind = "") {
+  const el = document.getElementById("toast");
+  if (!el) return;
+  el.textContent = msg;
+  el.className = "toast" + (kind ? " " + kind : "");
+  el.hidden = false;
+  clearTimeout(toastTimer);
+  if (kind !== "busy") {
+    toastTimer = setTimeout(() => {
+      el.hidden = true;
+    }, kind === "err" ? 4200 : 2200);
+  }
+}
+
+// Shared runner for the networked commands (fetch/pull/push). Each returns a
+// fresh RepoStatus, which we render; errors from Rust are already user-facing.
+async function runSync(cmd, busyMsg, okMsg) {
+  const path = repoPath();
+  if (!invoke || !path) {
+    showToast("Connect a repo first — the ⌄ button up top", "err");
+    return;
+  }
+  showToast(busyMsg, "busy");
+  ["sync", "pull-btn", "push-btn"].forEach((id) => {
+    const b = document.getElementById(id);
+    if (b) b.disabled = true;
+  });
+  try {
+    const s = await invoke(cmd, { path });
+    render(statusToView(path, s));
+    showToast(typeof okMsg === "function" ? okMsg(s) : okMsg);
+  } catch (e) {
+    showToast(String(e && e.message ? e.message : e), "err");
+    refreshSyncButtons();
+  }
 }
 
 async function loadStatus() {
@@ -116,13 +176,7 @@ async function loadStatus() {
   if (invoke && path) {
     try {
       const s = await invoke("get_status", { path });
-      render({
-        repo: path.split("/").filter(Boolean).slice(-2).join(" / "),
-        branch: s.branch,
-        ahead: s.ahead,
-        behind: s.behind,
-        files: s.files, // { path, status, staged, added, removed }
-      });
+      render(statusToView(path, s));
       return;
     } catch (e) {
       console.warn("get_status failed, using sample:", e);
@@ -172,7 +226,14 @@ function wireActions() {
       loadStatus();
     }
   };
-  document.getElementById("sync").onclick = () => loadStatus();
+  document.getElementById("sync").onclick = () =>
+    runSync("fetch", "Fetching…", (s) =>
+      s.behind || s.ahead ? `${s.behind} to pull · ${s.ahead} to push` : "Up to date"
+    );
+  document.getElementById("pull-btn").onclick = () =>
+    runSync("pull", "Pulling…", "Pulled");
+  document.getElementById("push-btn").onclick = () =>
+    runSync("push", "Pushing…", "Pushed");
   document.getElementById("commit-btn").onclick = doCommit;
 }
 

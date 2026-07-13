@@ -14,9 +14,15 @@ tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 # In-process Git via libgit2. Vendored + statically linked so the app carries
-# its own libgit2 (no Homebrew/system dependency at runtime). Network transport
-# (ssh/https) is intentionally off until native push/pull lands (issue #2).
-git2 = { version = "0.20", default-features = false, features = ["vendored-libgit2"] }
+# its own libgit2 (no Homebrew/system dependency at runtime). https + ssh enable
+# native fetch/push (issue #2); on macOS libssh2's crypto is vendored so the app
+# stays self-contained.
+git2 = { version = "0.20", default-features = false, features = [
+    "vendored-libgit2",
+    "vendored-openssl",
+    "https",
+    "ssh",
+] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 window-vibrancy = "0.5"

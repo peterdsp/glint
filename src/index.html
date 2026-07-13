@@ -19,15 +19,15 @@
       </header>
 
       <section class="sync">
-        <div class="sync-stat">
+        <button class="sync-stat" id="pull-btn" type="button" aria-label="Pull from origin">
           <i class="ti ti-arrow-down" aria-hidden="true"></i>
           <div><div class="sync-num" id="behind">0</div><div class="sync-lbl">to pull</div></div>
-        </div>
-        <div class="sync-stat">
+        </button>
+        <button class="sync-stat" id="push-btn" type="button" aria-label="Push to origin">
           <i class="ti ti-arrow-up" aria-hidden="true"></i>
           <div><div class="sync-num" id="ahead">0</div><div class="sync-lbl">to push</div></div>
-        </div>
-        <button class="sync-btn" id="sync" aria-label="Sync"><i class="ti ti-refresh"></i></button>
+        </button>
+        <button class="sync-btn" id="sync" aria-label="Fetch from origin"><i class="ti ti-refresh"></i></button>
       </section>
 
       <div class="section-label"><span id="files-count">0 changed files</span></div>
@@ -46,6 +46,8 @@
         <div class="swatches" id="swatches"></div>
         <div class="theme-name" id="theme-name"></div>
       </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
     </main>
 
     <script src="themes.js"></script>

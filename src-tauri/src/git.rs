@@ -8,10 +8,16 @@
 // The public surface — `RepoStatus`, `FileChange`, `get_status`, `commit` — is
 // unchanged, so the Tauri commands and the frontend are untouched.
 
-use git2::{Commit, Diff, DiffOptions, Patch, Repository, Status, StatusOptions};
+use git2::build::CheckoutBuilder;
+use git2::{
+    Commit, Cred, CredentialType, Diff, DiffOptions, FetchOptions, Patch, PushOptions,
+    RemoteCallbacks, Repository, Status, StatusOptions,
+};
 use serde::Serialize;
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::Path;
+use std::rc::Rc;
 
 #[derive(Serialize)]
 pub struct FileChange {
@@ -239,6 +245,151 @@ pub fn commit(
     Ok(())
 }
 
+// ---------------------------------------------------------------------------
+// Networked operations (issue #2): fetch / pull / push over the `origin` remote.
+// ---------------------------------------------------------------------------
+
+fn find_origin(repo: &Repository) -> Result<git2::Remote<'_>, String> {
+    repo.find_remote("origin")
+        .map_err(|_| "no `origin` remote is configured for this repository".to_string())
+}
+
+/// Remote callbacks with a credential resolver that covers the common cases:
+/// SSH via the running agent, then the platform credential helper (macOS
+/// Keychain / `git credential`) for HTTPS. An attempt counter guards against
+/// libgit2's retry loop when every method is refused.
+fn remote_callbacks() -> RemoteCallbacks<'static> {
+    let config = git2::Config::open_default().and_then(|mut c| c.snapshot()).ok();
+    let mut cb = RemoteCallbacks::new();
+    let mut attempts = 0usize;
+    cb.credentials(move |url, username, allowed| {
+        attempts += 1;
+        if attempts > 5 {
+            return Err(git2::Error::from_str(
+                "authentication failed (tried SSH agent and credential helper)",
+            ));
+        }
+        // libgit2 asks for the username first on SSH URLs.
+        if allowed.contains(CredentialType::USERNAME) {
+            return Cred::username(username.unwrap_or("git"));
+        }
+        if allowed.contains(CredentialType::SSH_KEY) {
+            return Cred::ssh_key_from_agent(username.unwrap_or("git"));
+        }
+        if allowed.contains(CredentialType::USER_PASS_PLAINTEXT) {
+            if let Some(cfg) = &config {
+                return Cred::credential_helper(cfg, url, username);
+            }
+        }
+        if allowed.contains(CredentialType::DEFAULT) {
+            return Cred::default();
+        }
+        Err(git2::Error::from_str("no supported authentication method"))
+    });
+    cb
+}
+
+/// Fetch `origin` (updates remote-tracking refs) and return refreshed status —
+/// the ahead/behind counts now reflect the remote without touching the tree.
+pub fn fetch(path: &str) -> Result<RepoStatus, String> {
+    let repo = open(path)?;
+    {
+        let mut remote = find_origin(&repo)?;
+        let mut fo = FetchOptions::new();
+        fo.remote_callbacks(remote_callbacks());
+        let no_refspecs: [&str; 0] = [];
+        remote.fetch(&no_refspecs, Some(&mut fo), None).map_err(err)?;
+    }
+    get_status(path)
+}
+
+/// Fetch, then fast-forward the current branch to its upstream. Anything that
+/// would need a merge or rebase is refused with a clear message (that lives in
+/// the pop-out window, issue #4).
+pub fn pull(path: &str) -> Result<RepoStatus, String> {
+    let repo = open(path)?;
+    {
+        let mut remote = find_origin(&repo)?;
+        let mut fo = FetchOptions::new();
+        fo.remote_callbacks(remote_callbacks());
+        let no_refspecs: [&str; 0] = [];
+        remote.fetch(&no_refspecs, Some(&mut fo), None).map_err(err)?;
+    }
+
+    let branch_ref = repo
+        .head()
+        .map_err(err)?
+        .name()
+        .ok_or("detached HEAD — cannot pull")?
+        .to_string();
+    let upstream_name = repo
+        .branch_upstream_name(&branch_ref)
+        .map_err(|_| "no upstream branch is configured for the current branch".to_string())?;
+    let upstream_name = upstream_name.as_str().ok_or("invalid upstream ref name")?.to_string();
+
+    let fetched = {
+        let up = repo.find_reference(&upstream_name).map_err(err)?;
+        repo.reference_to_annotated_commit(&up).map_err(err)?
+    };
+    let (analysis, _) = repo.merge_analysis(&[&fetched]).map_err(err)?;
+
+    if analysis.is_up_to_date() {
+        return get_status(path);
+    }
+    if !analysis.is_fast_forward() {
+        return Err(
+            "pull needs a merge or rebase — Glint does fast-forward only for now".into(),
+        );
+    }
+
+    // A fast-forward force-checkouts HEAD; refuse if the tree is dirty so we can
+    // never discard uncommitted work.
+    if !get_status(path)?.files.is_empty() {
+        return Err("commit or stash your local changes before pulling".into());
+    }
+
+    let mut branch = repo.find_reference(&branch_ref).map_err(err)?;
+    branch.set_target(fetched.id(), "glint: fast-forward pull").map_err(err)?;
+    repo.set_head(&branch_ref).map_err(err)?;
+    repo.checkout_head(Some(CheckoutBuilder::new().force())).map_err(err)?;
+    get_status(path)
+}
+
+/// Push the current branch to the same-named branch on `origin`. Per-ref
+/// rejections (e.g. non-fast-forward) are surfaced as errors rather than
+/// silently succeeding.
+pub fn push(path: &str) -> Result<RepoStatus, String> {
+    let repo = open(path)?;
+    let branch_ref = repo
+        .head()
+        .map_err(err)?
+        .name()
+        .ok_or("detached HEAD — nothing to push")?
+        .to_string();
+
+    let rejected: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));
+    {
+        let mut remote = find_origin(&repo)?;
+        let mut cb = remote_callbacks();
+        let rej = rejected.clone();
+        cb.push_update_reference(move |refname, status| {
+            if let Some(msg) = status {
+                *rej.borrow_mut() = Some(format!("{refname}: {msg}"));
+            }
+            Ok(())
+        });
+        let mut po = PushOptions::new();
+        po.remote_callbacks(cb);
+        let refspec = format!("{branch_ref}:{branch_ref}");
+        remote.push(&[refspec.as_str()], Some(&mut po)).map_err(err)?;
+    }
+
+    if let Some(msg) = rejected.borrow().clone() {
+        return Err(format!("push rejected — {msg} (pull first, then push)"));
+    }
+    get_status(path)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -250,6 +401,18 @@ mod tests {
         let ok = std::process::Command::new("git")
             .arg("-C")
             .arg(dir)
+            .args(args)
+            .status()
+            .expect("spawn git")
+            .success();
+        assert!(ok, "git {args:?} failed");
+    }
+
+    // Run git with an explicit working directory (for `init --bare`/`clone`
+    // whose paths are positional arguments, not `-C` targets).
+    fn run_in(cwd: &Path, args: &[&str]) {
+        let ok = std::process::Command::new("git")
+            .current_dir(cwd)
             .args(args)
             .status()
             .expect("spawn git")
@@ -299,5 +462,55 @@ mod tests {
         assert!(commit(d, &["a.txt".to_string()], "  ", "").is_err());
 
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    // push / fetch / pull against a local bare "remote" — exercises the real
+    // libgit2 transport end-to-end without network or credentials (local
+    // transport needs no auth).
+    #[test]
+    fn push_and_pull_local_remote() {
+        let base = std::env::temp_dir().join(format!("glint-net-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&base);
+        std::fs::create_dir_all(&base).unwrap();
+        let remote = base.join("remote.git");
+        let a = base.join("a");
+        let b = base.join("b");
+
+        // Bare remote + producer repo `a` wired to it.
+        run_in(&base, &["init", "-q", "--bare", "-b", "main", remote.to_str().unwrap()]);
+        std::fs::create_dir_all(&a).unwrap();
+        sh(&a, &["init", "-q", "-b", "main"]);
+        sh(&a, &["config", "user.email", "t@example.com"]);
+        sh(&a, &["config", "user.name", "Tester"]);
+        sh(&a, &["remote", "add", "origin", remote.to_str().unwrap()]);
+        let ap = a.to_str().unwrap();
+
+        std::fs::write(a.join("f.txt"), "v1\n").unwrap();
+        commit(ap, &["f.txt".to_string()], "first", "").unwrap();
+        push(ap).unwrap(); // local branch main -> origin/main
+
+        // Consumer repo `b` clones the remote, then `a` pushes a second commit.
+        run_in(&base, &["clone", "-q", remote.to_str().unwrap(), b.to_str().unwrap()]);
+        sh(&b, &["config", "user.email", "t@example.com"]);
+        sh(&b, &["config", "user.name", "Tester"]);
+        let bp = b.to_str().unwrap();
+
+        std::fs::write(a.join("f.txt"), "v1\nv2\n").unwrap();
+        commit(ap, &["f.txt".to_string()], "second", "").unwrap();
+        push(ap).unwrap();
+
+        // Before pulling, a fetch should show `b` one commit behind.
+        let behind = fetch(bp).unwrap();
+        assert_eq!(behind.behind, 1, "b sees one commit to pull");
+        assert_eq!(behind.ahead, 0);
+
+        // Fast-forward pull brings the second commit into b's working tree.
+        let after = pull(bp).unwrap();
+        assert_eq!(after.behind, 0, "up to date after pull");
+        assert!(after.files.is_empty(), "clean tree after ff pull");
+        let content = std::fs::read_to_string(b.join("f.txt")).unwrap();
+        assert!(content.contains("v2"), "pulled second commit, got {content:?}");
+
+        let _ = std::fs::remove_dir_all(&base);
     }
 }

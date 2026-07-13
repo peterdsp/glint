@@ -54,6 +54,7 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   overflow: hidden;
   color: var(--ink);
+  position: relative;
 }
 
 .head {
@@ -120,6 +121,23 @@ body {
   border-radius: 11px;
   background: var(--tint-2);
   border: 0.5px solid var(--stroke);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.sync-stat:hover {
+  border-color: var(--accent);
+}
+.sync-stat:active {
+  transform: scale(0.98);
+}
+.sync-stat:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.sync-stat:disabled:hover {
+  border-color: var(--stroke);
 }
 .sync-stat > i {
   font-size: 16px;
@@ -148,6 +166,10 @@ body {
 }
 .sync-btn:active {
   transform: scale(0.98);
+}
+.sync-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 
 .section-label {
@@ -297,4 +319,37 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--tint-2);
   border-radius: 4px;
+}
+
+/* Transient status for fetch / pull / push. */
+.toast {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  color: #fff;
+  background: rgba(24, 26, 34, 0.92);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+  animation: toast-in 0.16s ease-out;
+}
+.toast.err {
+  background: rgba(199, 62, 40, 0.95);
+}
+.toast.busy {
+  background: rgba(40, 44, 58, 0.92);
+}
+.toast[hidden] {
+  display: none;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }

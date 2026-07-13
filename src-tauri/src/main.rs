@@ -24,6 +24,21 @@ fn commit(
     git::commit(&path, &files, &summary, &description)
 }
 
+#[tauri::command]
+fn fetch(path: String) -> Result<git::RepoStatus, String> {
+    git::fetch(&path)
+}
+
+#[tauri::command]
+fn pull(path: String) -> Result<git::RepoStatus, String> {
+    git::pull(&path)
+}
+
+#[tauri::command]
+fn push(path: String) -> Result<git::RepoStatus, String> {
+    git::push(&path)
+}
+
 fn toggle_panel(win: &WebviewWindow) {
     if win.is_visible().unwrap_or(false) {
         let _ = win.hide();
@@ -37,7 +52,9 @@ fn toggle_panel(win: &WebviewWindow) {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
-        .invoke_handler(tauri::generate_handler![get_status, commit])
+        .invoke_handler(tauri::generate_handler![
+            get_status, commit, fetch, pull, push
+        ])
         .setup(|app| {
             let win = app
                 .get_webview_window("panel")
