@@ -112,7 +112,7 @@ colored icon elsewhere. Every build is checked on all three in CI.
 
 - [x] Migrate `git.rs` to `git2`
 - [x] Native push/pull + credentials
-- [ ] PR status via `octocrab`
+- [x] PR status via `octocrab`
 - [x] Diff / merge-conflict "pop-out" window
 - [x] Monochrome template tray icon
 - [x] Vendor the icon font (drop the CDN link) for full offline use
