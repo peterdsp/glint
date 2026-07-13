@@ -100,7 +100,11 @@ again — they're a slightly more opaque tint with a stroke:
 | Surface | Fill | Border | Radius |
 |---|---|---|---|
 | Sync stat | `var(--tint-2)` | `0.5px var(--stroke)` | 11 px |
-| Commit box | `rgba(255,255,255,0.50)` | `0.5px var(--stroke)` | 12 px |
+| Commit box | `var(--field)` | `0.5px var(--stroke)` | 12 px |
+
+The commit box fill is the `--field` token, **not** a raw color — on light themes it is
+`rgba(255,255,255,0.50)`, but Midnight flips it to `rgba(255,255,255,0.10)` so the
+box reads as dark glass instead of a bright gray block. A raw white here breaks dark mode.
 
 **Native calibration:** WebKit `backdrop-filter` composites over the transparent
 webview and the `NSVisualEffectView` behind it. Because real vibrancy already
@@ -150,7 +154,7 @@ Hairline dividers between regions: `0.5px solid var(--tint-2)`.
 
 ### 5a. Token model
 
-Six variables define every theme. Nothing in the UI uses a raw color except the
+Seven variables define every theme. Nothing in the UI uses a raw color except the
 two semantic diff colors (§5c).
 
 | Token | Meaning |
@@ -158,6 +162,7 @@ two semantic diff colors (§5c).
 | `--accent` | interactive/brand color (badges, buttons, checks, arrows) |
 | `--tint` | panel glass fill (translucent) |
 | `--tint-2` | inset surface fill + hairline dividers + hover |
+| `--field` | commit-box fill (a hair more opaque than `--tint-2`; flips dark on Midnight) |
 | `--stroke` | hairline borders and highlights |
 | `--ink` | primary text |
 | `--ink-2` | secondary text |
@@ -304,7 +309,7 @@ Text: `N changed file(s)`.
 - Delta: 11/500, `+N` green `#1d9e75` / `−N` coral `#d85a30`.
 
 ### 9.5 Commit box
-`radius 12px`, `background rgba(255,255,255,0.50)`, `border 0.5px var(--stroke)`,
+`radius 12px`, `background var(--field)`, `border 0.5px var(--stroke)`,
 `padding 9px 11px`, `margin-bottom 9px`. Summary input (13/500 `--ink`) over
 description input (12px `--ink-2`, `margin-top 2–3px`).
 
