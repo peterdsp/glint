@@ -78,8 +78,14 @@ fn main() {
             let quit = MenuItem::with_id(app, "quit", "Quit Glint", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&quit])?;
 
+            // Monochrome template icon: macOS tints it for light/dark menu bars,
+            // unlike the colored app icon. Embedded so there's no runtime file.
+            let tray_icon = tauri::image::Image::from_bytes(include_bytes!(
+                "../icons/tray-template.png"
+            ))?;
+
             let _tray = TrayIconBuilder::with_id("glint-tray")
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(tray_icon)
                 .icon_as_template(true)
                 .menu(&menu)
                 .show_menu_on_left_click(false)

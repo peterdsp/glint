@@ -75,11 +75,11 @@ automatically. A future build will read user-authored themes from disk.
 
 ## Roadmap
 
-- [ ] Migrate `git.rs` to `git2`
-- [ ] Native push/pull + credentials
+- [x] Migrate `git.rs` to `git2`
+- [x] Native push/pull + credentials
 - [ ] PR status via `octocrab`
 - [ ] Diff / merge-conflict "pop-out" window
-- [ ] Monochrome template tray icon
+- [x] Monochrome template tray icon
 - [x] Vendor the icon font (drop the CDN link) for full offline use
 - [ ] User-authored themes from disk
 
