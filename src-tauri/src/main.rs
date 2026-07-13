@@ -39,6 +39,39 @@ fn push(path: String) -> Result<git::RepoStatus, String> {
     git::push(&path)
 }
 
+#[tauri::command]
+fn diff(path: String, file: String) -> Result<git::FileDiff, String> {
+    git::diff(&path, &file)
+}
+
+/// Open (or refocus) the diff pop-out for a file. The panel is a transient
+/// menu-bar dropdown; diffs want a real resizable window, so this is separate.
+#[tauri::command]
+fn open_diff(app: tauri::AppHandle, path: String, file: String) -> Result<(), String> {
+    let repo_js = serde_json::to_string(&path).map_err(|e| e.to_string())?;
+    let file_js = serde_json::to_string(&file).map_err(|e| e.to_string())?;
+
+    // Reuse an already-open diff window rather than stacking new ones.
+    if let Some(win) = app.get_webview_window("diff") {
+        let _ = win.eval(&format!(
+            "window.__glintShowDiff && window.__glintShowDiff({repo_js}, {file_js})"
+        ));
+        let _ = win.set_focus();
+        return Ok(());
+    }
+
+    // Seed the target before the page scripts run, then load the diff view.
+    let init = format!("window.__GLINT_DIFF__ = {{ repo: {repo_js}, file: {file_js} }};");
+    tauri::WebviewWindowBuilder::new(&app, "diff", tauri::WebviewUrl::App("diff.html".into()))
+        .title(format!("Glint — {file}"))
+        .inner_size(780.0, 620.0)
+        .min_inner_size(460.0, 320.0)
+        .initialization_script(&init)
+        .build()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 fn toggle_panel(win: &WebviewWindow) {
     if win.is_visible().unwrap_or(false) {
         let _ = win.hide();
@@ -53,7 +86,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
-            get_status, commit, fetch, pull, push
+            get_status, commit, fetch, pull, push, diff, open_diff
         ])
         .setup(|app| {
             let win = app

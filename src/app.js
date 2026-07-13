@@ -106,6 +106,8 @@ function render(status) {
     const path = document.createElement("span");
     path.className = "file-path";
     path.textContent = f.path;
+    path.title = "Open diff";
+    path.onclick = () => openDiff(f.path);
     li.append(check, path, deltaEl(f));
     list.appendChild(li);
   }
@@ -146,6 +148,18 @@ function showToast(msg, kind = "") {
       el.hidden = true;
     }, kind === "err" ? 4200 : 2200);
   }
+}
+
+// Open the diff pop-out for a file (a separate resizable window).
+function openDiff(file) {
+  const path = repoPath();
+  if (!invoke || !path) {
+    showToast("Connect a repo to see diffs", "err");
+    return;
+  }
+  invoke("open_diff", { path, file }).catch((e) =>
+    showToast(String(e && e.message ? e.message : e), "err")
+  );
 }
 
 // Shared runner for the networked commands (fetch/pull/push). Each returns a

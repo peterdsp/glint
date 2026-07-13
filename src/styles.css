@@ -224,6 +224,11 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+}
+.file-path:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 .file-delta {
   display: flex;

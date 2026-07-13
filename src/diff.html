@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="aurora">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glint — Diff</title>
+    <link rel="stylesheet" href="vendor/tabler/tabler-icons.min.css" />
+    <link rel="stylesheet" href="diff.css" />
+  </head>
+  <body>
+    <header class="dhead">
+      <span class="dstatus" id="status" hidden></span>
+      <span class="dfile" id="file">—</span>
+      <span class="dcounts">
+        <span class="add" id="adds">+0</span>
+        <span class="del" id="dels">&minus;0</span>
+      </span>
+    </header>
+    <main class="dbody" id="body"></main>
+
+    <script src="themes.js"></script>
+    <script src="diff.js"></script>
+  </body>
+</html>

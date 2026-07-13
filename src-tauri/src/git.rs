@@ -37,6 +37,28 @@ pub struct RepoStatus {
     pub files: Vec<FileChange>,
 }
 
+#[derive(Serialize)]
+pub struct DiffLine {
+    /// "ctx" | "add" | "del"
+    pub kind: String,
+    pub old_ln: Option<u32>,
+    pub new_ln: Option<u32>,
+    pub content: String,
+}
+
+#[derive(Serialize)]
+pub struct DiffHunk {
+    pub header: String,
+    pub lines: Vec<DiffLine>,
+}
+
+#[derive(Serialize)]
+pub struct FileDiff {
+    pub file: String,
+    pub binary: bool,
+    pub hunks: Vec<DiffHunk>,
+}
+
 /// libgit2 errors carry a rich message; surface just that to the frontend.
 fn err(e: git2::Error) -> String {
     e.message().to_string()
@@ -390,6 +412,83 @@ pub fn push(path: &str) -> Result<RepoStatus, String> {
     get_status(path)
 }
 
+// ---------------------------------------------------------------------------
+// Diff for the pop-out window (issue #4).
+// ---------------------------------------------------------------------------
+
+fn strip_eol(bytes: &[u8]) -> String {
+    String::from_utf8_lossy(bytes)
+        .trim_end_matches('\n')
+        .trim_end_matches('\r')
+        .to_string()
+}
+
+/// Unified diff for a single file — all uncommitted changes (staged and
+/// unstaged) against HEAD, as structured hunks the pop-out window renders.
+/// Untracked files show up as all-additions.
+pub fn diff(path: &str, file: &str) -> Result<FileDiff, String> {
+    let repo = open(path)?;
+    let head_tree = repo.head().ok().and_then(|h| h.peel_to_tree().ok());
+
+    let mut opts = DiffOptions::new();
+    opts.pathspec(file)
+        .include_untracked(true)
+        .recurse_untracked_dirs(true)
+        .context_lines(3);
+
+    let diff = repo
+        .diff_tree_to_workdir_with_index(head_tree.as_ref(), Some(&mut opts))
+        .map_err(err)?;
+
+    let mut out = FileDiff {
+        file: file.to_string(),
+        binary: false,
+        hunks: Vec::new(),
+    };
+
+    for i in 0..diff.deltas().len() {
+        let delta_path = diff
+            .get_delta(i)
+            .and_then(|d| d.new_file().path().or_else(|| d.old_file().path()))
+            .and_then(Path::to_str);
+        if delta_path != Some(file) {
+            continue;
+        }
+
+        let patch = match Patch::from_diff(&diff, i).map_err(err)? {
+            Some(p) => p,
+            None => {
+                out.binary = true;
+                break;
+            }
+        };
+        for h in 0..patch.num_hunks() {
+            let (hunk, count) = patch.hunk(h).map_err(err)?;
+            let mut lines = Vec::new();
+            for l in 0..count {
+                let line = patch.line_in_hunk(h, l).map_err(err)?;
+                let kind = match line.origin() {
+                    '+' => "add",
+                    '-' => "del",
+                    _ => "ctx",
+                };
+                lines.push(DiffLine {
+                    kind: kind.to_string(),
+                    old_ln: line.old_lineno(),
+                    new_ln: line.new_lineno(),
+                    content: strip_eol(line.content()),
+                });
+            }
+            out.hunks.push(DiffHunk {
+                header: strip_eol(hunk.header()),
+                lines,
+            });
+        }
+        break;
+    }
+    Ok(out)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -512,5 +611,45 @@ mod tests {
         assert!(content.contains("v2"), "pulled second commit, got {content:?}");
 
         let _ = std::fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn diff_reports_added_and_removed_lines() {
+        let dir = std::env::temp_dir().join(format!("glint-diff-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let d = dir.to_str().unwrap();
+
+        sh(&dir, &["init", "-q", "-b", "main"]);
+        sh(&dir, &["config", "user.email", "t@example.com"]);
+        sh(&dir, &["config", "user.name", "Tester"]);
+
+        std::fs::write(dir.join("x.txt"), "line1\nline2\nline3\n").unwrap();
+        commit(d, &["x.txt".to_string()], "seed", "").unwrap();
+
+        // Change a line and append one.
+        std::fs::write(dir.join("x.txt"), "line1\nCHANGED\nline3\nline4\n").unwrap();
+        let diffed = diff(d, "x.txt").unwrap();
+        assert!(!diffed.binary);
+        assert!(!diffed.hunks.is_empty(), "expected at least one hunk");
+
+        let all: Vec<&DiffLine> = diffed.hunks.iter().flat_map(|h| &h.lines).collect();
+        assert!(all.iter().any(|l| l.kind == "add"), "an addition");
+        assert!(all.iter().any(|l| l.kind == "del"), "a deletion");
+        assert!(all.iter().any(|l| l.kind == "ctx"), "context lines");
+        assert!(
+            all.iter().any(|l| l.kind == "add" && l.content.contains("CHANGED")),
+            "the changed line is an addition"
+        );
+        // Context lines carry both line numbers; additions only the new one.
+        let add = all.iter().find(|l| l.kind == "add").unwrap();
+        assert!(add.new_ln.is_some() && add.old_ln.is_none());
+
+        // An untracked file diffs as all-additions.
+        std::fs::write(dir.join("new.txt"), "fresh\n").unwrap();
+        let nd = diff(d, "new.txt").unwrap();
+        assert!(nd.hunks.iter().flat_map(|h| &h.lines).all(|l| l.kind == "add"));
+
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

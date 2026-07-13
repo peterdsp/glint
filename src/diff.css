@@ -1,0 +1,206 @@
+/* Glint diff pop-out (issue #4). A normal decorated window — opaque, not the
+   vibrancy panel. It reuses the panel's theme accent (via themes.js) but has
+   its own solid ground so code stays legible. Two grounds: light + midnight. */
+
+:root {
+  --surface: #f6f7fb;
+  --surface-2: #ffffff;
+  --head-bg: rgba(255, 255, 255, 0.86);
+  --fg: var(--ink, #1b1d22);
+  --fg-2: var(--ink-2, #5a5f6b);
+  --line: rgba(20, 24, 40, 0.1);
+  --gutter: rgba(20, 24, 40, 0.42);
+
+  --add-bg: rgba(29, 158, 117, 0.13);
+  --add-fg: #157a58;
+  --add-gutter: rgba(29, 158, 117, 0.28);
+  --del-bg: rgba(216, 90, 48, 0.13);
+  --del-fg: #bd4620;
+  --del-gutter: rgba(216, 90, 48, 0.28);
+  --hunk-bg: rgba(91, 140, 255, 0.09);
+
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --mono: "SF Mono", ui-monospace, "JetBrains Mono", monospace;
+}
+
+:root[data-theme="midnight"] {
+  --surface: #14161f;
+  --surface-2: #191c27;
+  --head-bg: rgba(22, 25, 34, 0.9);
+  --line: rgba(255, 255, 255, 0.1);
+  --gutter: rgba(255, 255, 255, 0.38);
+  --add-bg: rgba(46, 190, 130, 0.16);
+  --add-fg: #52cf9b;
+  --add-gutter: rgba(46, 190, 130, 0.3);
+  --del-bg: rgba(232, 112, 72, 0.16);
+  --del-fg: #f2895f;
+  --del-gutter: rgba(232, 112, 72, 0.3);
+  --hunk-bg: rgba(124, 140, 255, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  background: var(--surface);
+  color: var(--fg);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- header ---- */
+.dhead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  background: var(--head-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--line);
+}
+.dfile {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl; /* keep the filename visible when the path overflows */
+  text-align: left;
+}
+.dstatus {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #fff;
+  background: var(--accent, #5b8cff);
+  flex: none;
+}
+.dstatus[hidden] {
+  display: none;
+}
+.dcounts {
+  display: flex;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  flex: none;
+}
+.dcounts .add {
+  color: var(--add-fg);
+}
+.dcounts .del {
+  color: var(--del-fg);
+}
+
+/* ---- diff body ---- */
+.dbody {
+  flex: 1;
+  overflow: auto;
+  padding-bottom: 24px;
+}
+
+.hunk {
+  border-top: 0.5px solid var(--line);
+}
+.hunk:first-child {
+  border-top: 0;
+}
+.hunk-head {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--fg-2);
+  background: var(--hunk-bg);
+  padding: 5px 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.dl {
+  display: grid;
+  grid-template-columns: 46px 46px 16px 1fr;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.dl .g {
+  text-align: right;
+  padding: 0 8px;
+  color: var(--gutter);
+  -webkit-user-select: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+.dl .s {
+  text-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+  color: var(--gutter);
+}
+.dl .c {
+  padding: 0 12px 0 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 4;
+}
+.dl.add {
+  background: var(--add-bg);
+}
+.dl.add .s,
+.dl.add .c {
+  color: var(--add-fg);
+}
+.dl.add .g {
+  background: var(--add-gutter);
+}
+.dl.del {
+  background: var(--del-bg);
+}
+.dl.del .s,
+.dl.del .c {
+  color: var(--del-fg);
+}
+.dl.del .g {
+  background: var(--del-gutter);
+}
+
+/* ---- empty / error / binary states ---- */
+.empty {
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--fg-2);
+  font-size: 14px;
+}
+.empty.err {
+  color: var(--del-fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 6px;
+  border: 3px solid var(--surface);
+}
