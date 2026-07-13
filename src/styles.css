@@ -94,6 +94,45 @@ body {
   align-items: center;
   gap: 5px;
 }
+.pr-pill {
+  all: unset;
+  cursor: pointer;
+  margin-left: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: var(--tint-2);
+  border: 0.5px solid var(--stroke);
+  border-radius: 999px;
+  padding: 1px 8px 1px 6px;
+}
+.pr-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-2);
+}
+.pr-pill.checks-success::before {
+  background: #1d9e75;
+}
+.pr-pill.checks-failure::before {
+  background: #d85a30;
+}
+.pr-pill.checks-pending::before {
+  background: #e0a63a;
+}
+.pr-pill:hover {
+  border-color: var(--accent);
+}
+.pr-pill[hidden] {
+  display: none;
+}
+
 .icon-btn {
   all: unset;
   cursor: pointer;

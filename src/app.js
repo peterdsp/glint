@@ -176,6 +176,29 @@ function showToast(msg, kind = "") {
   }
 }
 
+// PR + CI badge next to the branch (issue #3). Hidden unless there's an open
+// PR for the current branch; the CI dot is colored by check-run status.
+async function loadPrStatus() {
+  const pill = document.getElementById("pr-pill");
+  if (!pill) return;
+  pill.hidden = true;
+  const path = repoPath();
+  if (!invoke || !path) return;
+  try {
+    const pr = await invoke("pr_status", { path });
+    if (!pr) return;
+    pill.textContent = `#${pr.number}`;
+    pill.className = "pr-pill checks-" + (pr.checks || "none");
+    pill.title = `${pr.draft ? "Draft · " : ""}${pr.title} — CI: ${pr.checks}`;
+    pill.onclick = () => {
+      if (pr.url) invoke("open_url", { url: pr.url }).catch(() => {});
+    };
+    pill.hidden = false;
+  } catch (e) {
+    console.warn("pr_status failed:", e);
+  }
+}
+
 // Open the diff pop-out for a file (a separate resizable window).
 function openDiff(file) {
   const path = repoPath();
@@ -217,6 +240,7 @@ async function loadStatus() {
     try {
       const s = await invoke("get_status", { path });
       render(statusToView(path, s));
+      loadPrStatus(); // fire-and-forget PR + CI badge
       return;
     } catch (e) {
       console.warn("get_status failed, using sample:", e);

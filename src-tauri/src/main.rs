@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod git;
+mod github;
 mod theme;
 
 use tauri::{
@@ -43,6 +44,37 @@ fn push(path: String) -> Result<git::RepoStatus, String> {
 #[tauri::command]
 fn diff(path: String, file: String) -> Result<git::FileDiff, String> {
     git::diff(&path, &file)
+}
+
+/// PR + CI status for the current branch (issue #3). Returns None when there's
+/// no token, no GitHub origin, or no open PR — the panel then shows no badge.
+#[tauri::command]
+async fn pr_status(path: String) -> Result<Option<github::PrStatus>, String> {
+    github::pr_status(&path).await
+}
+
+/// Open an external URL in the user's browser (e.g. the PR page).
+#[tauri::command]
+fn open_url(url: String) -> Result<(), String> {
+    if !(url.starts_with("https://") || url.starts_with("http://")) {
+        return Err("refusing to open a non-http URL".into());
+    }
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open").arg(&url).spawn().map_err(|e| e.to_string())?;
+    }
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "", &url])
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+    #[cfg(target_os = "linux")]
+    {
+        std::process::Command::new("xdg-open").arg(&url).spawn().map_err(|e| e.to_string())?;
+    }
+    Ok(())
 }
 
 /// User-authored themes from the config dir's `themes/` folder (issue #6).
@@ -100,7 +132,8 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
-            get_status, commit, fetch, pull, push, diff, open_diff, load_themes
+            get_status, commit, fetch, pull, push, diff, open_diff, load_themes,
+            pr_status, open_url
         ])
         .setup(|app| {
             let win = app
