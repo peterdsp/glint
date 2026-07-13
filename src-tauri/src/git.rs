@@ -1,17 +1,22 @@
-// Git backend via the `git` CLI (porcelain v2 + numstat).
+// Git backend via libgit2 (the `git2` crate) — in-process, no subprocess.
 //
-// Scaffold stub: shells out to `git` so the build is fast and dependency-free.
-// Planned upgrade (issue #1): migrate to `git2` (libgit2) for in-process reads,
-// then native push/pull with credentials (issue #2).
+// Migrated from shelling out to the `git` CLI (issue #1). Reads run against
+// libgit2 directly, which is faster (no per-call process spawn), removes the
+// hard dependency on a `git` binary on PATH, and gives us a real handle to the
+// object database for native push/pull with credentials next (issue #2).
+//
+// The public surface — `RepoStatus`, `FileChange`, `get_status`, `commit` — is
+// unchanged, so the Tauri commands and the frontend are untouched.
 
+use git2::{Commit, Diff, DiffOptions, Patch, Repository, Status, StatusOptions};
 use serde::Serialize;
 use std::collections::HashMap;
-use std::process::Command;
+use std::path::Path;
 
 #[derive(Serialize)]
 pub struct FileChange {
     pub path: String,
-    /// "modified" | "added" | "deleted" | "renamed" | "copied" | "untracked"
+    /// "modified" | "added" | "deleted" | "renamed" | "untracked"
     pub status: String,
     pub staged: bool,
     pub added: u32,
@@ -26,115 +31,161 @@ pub struct RepoStatus {
     pub files: Vec<FileChange>,
 }
 
-fn git(path: &str, args: &[&str]) -> Result<String, String> {
-    let out = Command::new("git")
-        .arg("-C")
-        .arg(path)
-        .args(args)
-        .output()
-        .map_err(|e| format!("failed to run git: {e}"))?;
-    if !out.status.success() {
-        return Err(String::from_utf8_lossy(&out.stderr).trim().to_string());
-    }
-    Ok(String::from_utf8_lossy(&out.stdout).into_owned())
+/// libgit2 errors carry a rich message; surface just that to the frontend.
+fn err(e: git2::Error) -> String {
+    e.message().to_string()
 }
 
-/// Parse `git diff [--cached] --numstat` into path -> (added, removed).
-fn numstat(path: &str, cached: bool) -> HashMap<String, (u32, u32)> {
-    let mut args = vec!["diff", "--numstat"];
-    if cached {
-        args.insert(1, "--cached");
+fn open(path: &str) -> Result<Repository, String> {
+    Repository::open(path).map_err(err)
+}
+
+pub fn get_status(path: &str) -> Result<RepoStatus, String> {
+    let repo = open(path)?;
+    let branch = current_branch(&repo);
+    let (ahead, behind) = ahead_behind(&repo).unwrap_or((0, 0));
+    let deltas = line_deltas(&repo);
+    let files = collect_files(&repo, &deltas)?;
+    Ok(RepoStatus { branch, ahead, behind, files })
+}
+
+/// Branch shorthand, resolving the unborn case (a fresh repo with no commits,
+/// where `HEAD` is a symbolic ref to a branch that doesn't exist yet).
+fn current_branch(repo: &Repository) -> String {
+    if let Ok(head) = repo.head() {
+        return head.shorthand().unwrap_or("HEAD").to_string();
     }
+    repo.find_reference("HEAD")
+        .ok()
+        .and_then(|r| r.symbolic_target().map(str::to_string))
+        .and_then(|t| t.strip_prefix("refs/heads/").map(str::to_string))
+        .unwrap_or_else(|| "HEAD".to_string())
+}
+
+/// Commits ahead of / behind the configured upstream branch. `None` when there
+/// is no HEAD or no tracking branch — callers default to (0, 0).
+fn ahead_behind(repo: &Repository) -> Option<(u32, u32)> {
+    let head = repo.head().ok()?;
+    let local = head.target()?;
+    let upstream_name = repo.branch_upstream_name(head.name()?).ok()?;
+    let upstream_ref = repo.find_reference(upstream_name.as_str()?).ok()?;
+    let upstream = upstream_ref.target()?;
+    let (ahead, behind) = repo.graph_ahead_behind(local, upstream).ok()?;
+    Some((ahead as u32, behind as u32))
+}
+
+/// Per-path (added, removed) line counts, summing the staged (HEAD→index) and
+/// unstaged (index→workdir) diffs — the equivalent of `git diff --numstat`
+/// plus `--cached`. Untracked files are excluded (they have no diff), matching
+/// the CLI's behaviour.
+fn line_deltas(repo: &Repository) -> HashMap<String, (u32, u32)> {
     let mut map = HashMap::new();
-    if let Ok(text) = git(path, &args) {
-        for line in text.lines() {
-            let mut cols = line.split('\t');
-            let a = cols.next().unwrap_or("0");
-            let r = cols.next().unwrap_or("0");
-            if let Some(p) = cols.next() {
-                // "-" marks binary files; treat as 0.
-                let add = a.parse().unwrap_or(0);
-                let rem = r.parse().unwrap_or(0);
-                let e = map.entry(p.trim().to_string()).or_insert((0, 0));
-                e.0 += add;
-                e.1 += rem;
-            }
+    let index = repo.index().ok();
+
+    // Unstaged: index → working directory.
+    if let Some(index) = &index {
+        if let Ok(diff) = repo.diff_index_to_workdir(Some(index), Some(&mut DiffOptions::new())) {
+            accumulate(&diff, &mut map);
+        }
+    }
+    // Staged: HEAD tree → index (tree is None on an unborn branch).
+    let head_tree = repo.head().ok().and_then(|h| h.peel_to_tree().ok());
+    if let Some(index) = &index {
+        if let Ok(diff) =
+            repo.diff_tree_to_index(head_tree.as_ref(), Some(index), Some(&mut DiffOptions::new()))
+        {
+            accumulate(&diff, &mut map);
         }
     }
     map
 }
 
-pub fn get_status(path: &str) -> Result<RepoStatus, String> {
-    let text = git(path, &["status", "--porcelain=2", "--branch"])?;
-
-    // Line counts: staged (cached) + unstaged, summed per path.
-    let mut deltas = numstat(path, false);
-    for (p, (a, r)) in numstat(path, true) {
-        let e = deltas.entry(p).or_insert((0, 0));
-        e.0 += a;
-        e.1 += r;
-    }
-
-    let mut branch = "HEAD".to_string();
-    let mut ahead = 0;
-    let mut behind = 0;
-    let mut files = Vec::new();
-
-    for line in text.lines() {
-        if let Some(rest) = line.strip_prefix("# branch.head ") {
-            branch = rest.trim().to_string();
-        } else if let Some(rest) = line.strip_prefix("# branch.ab ") {
-            for tok in rest.split_whitespace() {
-                if let Some(a) = tok.strip_prefix('+') {
-                    ahead = a.parse().unwrap_or(0);
-                } else if let Some(b) = tok.strip_prefix('-') {
-                    behind = b.parse().unwrap_or(0);
-                }
-            }
-        } else if let Some(rest) = line.strip_prefix("1 ") {
-            let xy = rest.get(..2).unwrap_or("..");
-            let path = rest.rsplit(' ').next().unwrap_or("").to_string();
-            files.push(make(xy, path, &deltas));
-        } else if let Some(rest) = line.strip_prefix("2 ") {
-            let xy = rest.get(..2).unwrap_or("..");
-            let head = rest.split('\t').next().unwrap_or("");
-            let path = head.rsplit(' ').next().unwrap_or("").to_string();
-            files.push(make(xy, path, &deltas));
-        } else if let Some(rest) = line.strip_prefix("? ") {
-            let path = rest.trim().to_string();
-            let (a, r) = deltas.get(&path).copied().unwrap_or((0, 0));
-            files.push(FileChange {
-                path,
-                status: "untracked".into(),
-                staged: false,
-                added: a,
-                removed: r,
-            });
+fn accumulate(diff: &Diff, map: &mut HashMap<String, (u32, u32)>) {
+    for i in 0..diff.deltas().len() {
+        // line_stats() is (context, additions, deletions).
+        let (add, del) = match Patch::from_diff(diff, i) {
+            Ok(Some(patch)) => match patch.line_stats() {
+                Ok((_, a, d)) => (a as u32, d as u32),
+                Err(_) => continue,
+            },
+            _ => continue,
+        };
+        if add == 0 && del == 0 {
+            continue;
+        }
+        if let Some(path) = diff
+            .get_delta(i)
+            .and_then(|d| d.new_file().path().or_else(|| d.old_file().path()))
+            .and_then(Path::to_str)
+        {
+            let e = map.entry(path.to_string()).or_insert((0, 0));
+            e.0 += add;
+            e.1 += del;
         }
     }
-
-    Ok(RepoStatus { branch, ahead, behind, files })
 }
 
-fn make(xy: &str, path: String, deltas: &HashMap<String, (u32, u32)>) -> FileChange {
-    let x = xy.chars().next().unwrap_or('.');
-    let y = xy.chars().nth(1).unwrap_or('.');
-    let staged = x != '.' && x != '?';
-    let code = if y != '.' { y } else { x };
-    let status = match code {
-        'A' => "added",
-        'D' => "deleted",
-        'R' => "renamed",
-        'C' => "copied",
-        _ => "modified",
+fn collect_files(
+    repo: &Repository,
+    deltas: &HashMap<String, (u32, u32)>,
+) -> Result<Vec<FileChange>, String> {
+    let mut opts = StatusOptions::new();
+    opts.include_untracked(true)
+        .renames_head_to_index(true)
+        .renames_index_to_workdir(true)
+        .exclude_submodules(true);
+
+    let statuses = repo.statuses(Some(&mut opts)).map_err(err)?;
+    let mut files = Vec::new();
+    for entry in statuses.iter() {
+        let s = entry.status();
+        if s.is_ignored() {
+            continue;
+        }
+        let path = match entry.path() {
+            Some(p) if !p.is_empty() => p.to_string(),
+            _ => continue,
+        };
+        let staged = s.intersects(
+            Status::INDEX_NEW
+                | Status::INDEX_MODIFIED
+                | Status::INDEX_DELETED
+                | Status::INDEX_RENAMED
+                | Status::INDEX_TYPECHANGE,
+        );
+        let (added, removed) = deltas.get(&path).copied().unwrap_or((0, 0));
+        files.push(FileChange {
+            path,
+            status: status_label(s),
+            staged,
+            added,
+            removed,
+        });
     }
-    .to_string();
-    let (added, removed) = deltas.get(&path).copied().unwrap_or((0, 0));
-    FileChange { path, status, staged, added, removed }
+    Ok(files)
 }
 
-/// Stage `files` and create a commit. `description` is an optional second
-/// message paragraph. Returns Err with git's stderr on failure.
+fn status_label(s: Status) -> String {
+    let index_change = Status::INDEX_NEW
+        | Status::INDEX_MODIFIED
+        | Status::INDEX_RENAMED
+        | Status::INDEX_TYPECHANGE;
+    if s.contains(Status::WT_NEW) && !s.intersects(index_change) {
+        "untracked"
+    } else if s.intersects(Status::INDEX_DELETED | Status::WT_DELETED) {
+        "deleted"
+    } else if s.intersects(Status::INDEX_RENAMED | Status::WT_RENAMED) {
+        "renamed"
+    } else if s.contains(Status::INDEX_NEW) && !s.contains(Status::WT_MODIFIED) {
+        "added"
+    } else {
+        "modified"
+    }
+    .to_string()
+}
+
+/// Stage `files` and create a commit authored/committed by the repo's
+/// configured identity. `description` is an optional second message paragraph.
 pub fn commit(
     path: &str,
     files: &[String],
@@ -148,27 +199,62 @@ pub fn commit(
         return Err("no files staged for commit".into());
     }
 
-    let mut add = vec!["add", "--"];
-    for f in files {
-        add.push(f.as_str());
-    }
-    git(path, &add)?;
+    let repo = open(path)?;
+    let workdir = repo
+        .workdir()
+        .ok_or("bare repositories cannot be committed to from Glint")?
+        .to_path_buf();
+    let mut index = repo.index().map_err(err)?;
 
-    let mut args = vec!["commit", "-m", summary];
-    if !description.trim().is_empty() {
-        args.push("-m");
-        args.push(description);
+    for f in files {
+        let rel = Path::new(f);
+        // A file present on disk is added/updated; a missing one was deleted.
+        if workdir.join(rel).exists() {
+            index.add_path(rel).map_err(err)?;
+        } else {
+            index.remove_path(rel).map_err(err)?;
+        }
     }
-    git(path, &args)?;
+    index.write().map_err(err)?;
+
+    let tree = repo
+        .find_tree(index.write_tree().map_err(err)?)
+        .map_err(err)?;
+    let sig = repo
+        .signature()
+        .map_err(|e| format!("no git identity configured (user.name / user.email): {}", e.message()))?;
+
+    let message = if description.trim().is_empty() {
+        summary.trim().to_string()
+    } else {
+        format!("{}\n\n{}", summary.trim(), description.trim())
+    };
+
+    // Parent is the current HEAD commit, or none for the first commit.
+    let parent = repo.head().ok().and_then(|h| h.peel_to_commit().ok());
+    let parents: Vec<&Commit> = parent.iter().collect();
+
+    repo.commit(Some("HEAD"), &sig, &sig, &message, &tree, &parents)
+        .map_err(err)?;
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::Path;
 
-    fn run(dir: &str, args: &[&str]) {
-        git(dir, args).unwrap_or_else(|e| panic!("git {args:?} failed: {e}"));
+    // Setup helper: drive real git via the CLI so the test asserts our libgit2
+    // reads against a repo built the ordinary way.
+    fn sh(dir: &Path, args: &[&str]) {
+        let ok = std::process::Command::new("git")
+            .arg("-C")
+            .arg(dir)
+            .args(args)
+            .status()
+            .expect("spawn git")
+            .success();
+        assert!(ok, "git {args:?} failed");
     }
 
     #[test]
@@ -178,29 +264,38 @@ mod tests {
         std::fs::create_dir_all(&dir).unwrap();
         let d = dir.to_str().unwrap();
 
-        run(d, &["init", "-q", "-b", "main"]);
-        run(d, &["config", "user.email", "t@example.com"]);
-        run(d, &["config", "user.name", "Tester"]);
+        sh(&dir, &["init", "-q", "-b", "main"]);
+        sh(&dir, &["config", "user.email", "t@example.com"]);
+        sh(&dir, &["config", "user.name", "Tester"]);
 
-        // Untracked file with 3 lines.
+        // Unborn branch is still reported as "main"; the new file is untracked.
         std::fs::write(dir.join("a.txt"), "one\ntwo\nthree\n").unwrap();
         let st = get_status(d).unwrap();
         assert_eq!(st.branch, "main");
         let f = st.files.iter().find(|f| f.path == "a.txt").expect("a.txt present");
         assert!(!f.staged);
+        assert_eq!(f.status, "untracked");
 
-        // Commit it, then the working tree should be clean.
+        // Commit it via libgit2; the working tree should then be clean.
         commit(d, &["a.txt".to_string()], "add a", "").unwrap();
         let st2 = get_status(d).unwrap();
-        assert!(st2.files.is_empty(), "clean tree after commit");
+        assert!(st2.files.is_empty(), "clean tree after commit, got {:?}", st2.files.len());
+        assert_eq!(st2.branch, "main");
 
-        // Modify: numstat should report added/removed line counts.
+        // Modify: numstat-equivalent should report added/removed counts.
         std::fs::write(dir.join("a.txt"), "one\nTWO\nthree\nfour\n").unwrap();
         let st3 = get_status(d).unwrap();
         let f = st3.files.iter().find(|f| f.path == "a.txt").unwrap();
         assert!(f.added >= 1 && f.removed >= 1, "got +{} -{}", f.added, f.removed);
+        assert_eq!(f.status, "modified");
+
+        // A second commit with a description parent-links correctly.
+        commit(d, &["a.txt".to_string()], "edit a", "more detail").unwrap();
+        let st4 = get_status(d).unwrap();
+        assert!(st4.files.is_empty());
 
         // Empty summary is rejected.
+        std::fs::write(dir.join("a.txt"), "changed\n").unwrap();
         assert!(commit(d, &["a.txt".to_string()], "  ", "").is_err());
 
         let _ = std::fs::remove_dir_all(&dir);
