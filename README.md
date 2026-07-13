@@ -1,15 +1,30 @@
+<div align="center">
+
+<img src="docs/assets/hero.png" alt="Glint — a liquid-glass menu-bar Git client" width="820" />
+
 # Glint
 
-> A glint of Git in your menu bar — ultralightweight, liquid glass, themeable.
+**A glint of Git in your menu bar** — ultralightweight, liquid glass, themeable.
+
+</div>
 
 Glint is a menu-bar Git client: a reimagining of GitHub Desktop's ideas built on
 **Tauri + Rust** instead of Electron. It lives in the macOS menu bar, uses native
 `NSVisualEffectView` translucency for real liquid glass, and ships swappable
 themes as CSS token sets.
 
-- **Tiny.** System webview (WebKit) + a Rust core — no bundled Chromium.
+- **Tiny.** System webview (WebKit) + a Rust core — no bundled Chromium. Megabytes, not hundreds of them.
 - **Glassy.** Native vibrancy behind a transparent webview; themes tint the glass.
-- **Menu-bar native.** Tray-positioned panel that toggles on click and dismisses on blur.
+- **Menu-bar native.** A tray-positioned panel that toggles on click and dismisses on blur.
+- **Yours.** Every theme is a handful of tokens — drop one in and it appears.
+
+## Themes
+
+Same structure, swapped tokens. Light or dark, the glass never changes — only the tint and accent do.
+
+<div align="center">
+<img src="docs/assets/themes.png" alt="Glint's five built-in themes: Aurora, Midnight, Sunset, Forest, Graphite" width="900" />
+</div>
 
 ## Architecture
 
@@ -19,13 +34,18 @@ glint/
 │  ├─ index.html            The glass panel
 │  ├─ styles.css            Glass + theme variables
 │  ├─ themes.js             Theme token sets (add themes here)
-│  └─ app.js                Theme switching + Git rendering, calls Rust over IPC
+│  ├─ app.js                Theme switching + Git rendering, calls Rust over IPC
+│  └─ vendor/tabler/        Vendored icon webfont (offline, no CDN)
 └─ src-tauri/               Rust core
    ├─ src/main.rs           Tray, transparent window, vibrancy, IPC commands
    ├─ src/git.rs            Git status (via `git` CLI — see note below)
    ├─ tauri.conf.json       Window: transparent, borderless, always-on-top
    └─ capabilities/         Permissions
 ```
+
+The full visual spec lives in **[docs/design-language.md](docs/design-language.md)** —
+the glass recipe, radius scale, the seven-token theme model, and the CSS→AppKit
+mapping, all pixel-exact to the concept.
 
 ### Git backend note
 
@@ -60,5 +80,7 @@ automatically. A future build will read user-authored themes from disk.
 - [ ] PR status via `octocrab`
 - [ ] Diff / merge-conflict "pop-out" window
 - [ ] Monochrome template tray icon
-- [ ] Vendor the icon font (drop the CDN link) for full offline use
+- [x] Vendor the icon font (drop the CDN link) for full offline use
 - [ ] User-authored themes from disk
+
+See the [open issues](https://github.com/peterdsp/glint/issues) for the live backlog.

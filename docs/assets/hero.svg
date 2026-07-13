@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<defs><linearGradient id="g0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8ea8ff"/><stop offset="0.55" stop-color="#c9a3ff"/><stop offset="1" stop-color="#ffc4d6"/></linearGradient><filter id="sh" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="20" stdDeviation="26" flood-color="#141428" flood-opacity="0.38"/></filter></defs><rect width="1200" height="760" fill="url(#g0)"/><rect width="1200" height="760" fill="url(#g0)"/>
+<circle cx="250" cy="200" r="320" fill="rgba(255,255,255,0.18)"/>
+<text x="96" y="300" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="92" font-weight="500" fill="#ffffff" text-anchor="start" letter-spacing="0">Glint</text>
+<text x="100" y="356" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="26" font-weight="400" fill="rgba(255,255,255,0.92)" text-anchor="start" letter-spacing="0">A glint of Git in your menu bar.</text>
+<text x="100" y="396" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="18" font-weight="400" fill="rgba(255,255,255,0.82)" text-anchor="start" letter-spacing="0">Ultralightweight · liquid glass · themeable</text>
+<g filter="url(#sh)" transform="translate(674.8,104.80000000000001) scale(1.28)"><g transform="translate(0,0)">
+<rect x="0" y="0" width="340" height="430" rx="18" fill="#eef2ff" stroke="#ffffff" stroke-width="0.5" />
+<rect x="0.5" y="1" width="339" height="428" rx="17.5" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+<rect x="14" y="14" width="30" height="30" rx="9" fill="#5b8cff" />
+<g stroke="#ffffff" fill="none" stroke-width="1.89" stroke-linecap="round" stroke-linejoin="round"><circle cx="23.9" cy="23.05" r="2.72"/><circle cx="23.9" cy="34.95" r="2.72"/><circle cx="34.95" cy="27.3" r="2.72"/><path d="M23.9,24.75 L23.9,33.25"/><path d="M34.95,29 q0,5.1 -11.05,5.1"/></g>
+<text x="54" y="30" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#1b1d22" text-anchor="start" letter-spacing="0">peterdsp / glint</text>
+<g stroke="#5a5f6b" fill="none" stroke-width="1.40" stroke-linecap="round" stroke-linejoin="round"><circle cx="56.4" cy="36.4" r="1.7999999999999998"/><circle cx="63.6" cy="36.4" r="1.7999999999999998"/><circle cx="60" cy="44.2" r="1.7999999999999998"/><path d="M56.4,37.6 q0,3.5999999999999996 3.5999999999999996,4.199999999999999"/><path d="M63.6,37.6 q0,3.5999999999999996 -3.5999999999999996,4.199999999999999"/></g>
+<text x="70" y="44" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5a5f6b" text-anchor="start" letter-spacing="0">main</text>
+<g stroke="#5a5f6b" fill="none" stroke-width="1.78" stroke-linecap="round" stroke-linejoin="round"><path d="M312.0,27.0 L316,23.4 L320.0,27.0"/><path d="M312.0,31.0 L316,34.6 L320.0,31.0"/></g>
+<line x1="14" y1="58" x2="326" y2="58" stroke="#dfe6ff" stroke-width="1"/>
+<rect x="14" y="70" width="142" height="44" rx="11" fill="#dfe6ff" stroke="#ffffff" stroke-width="0.5" />
+<g stroke="#5b8cff" fill="none" stroke-width="1.78" stroke-linecap="round" stroke-linejoin="round"><path d="M32,84.0 L32,100.0 M27.2,94.4 L32,100.0 L36.8,94.4"/></g>
+<text x="48" y="90" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#1b1d22" text-anchor="start" letter-spacing="0">2</text>
+<text x="48" y="105" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5a5f6b" text-anchor="start" letter-spacing="0">to pull</text>
+<rect x="164" y="70" width="142" height="44" rx="11" fill="#dfe6ff" stroke="#ffffff" stroke-width="0.5" />
+<g stroke="#5b8cff" fill="none" stroke-width="1.78" stroke-linecap="round" stroke-linejoin="round"><path d="M182,100.0 L182,84.0 M177.2,89.6 L182,84.0 L186.8,89.6"/></g>
+<text x="198" y="90" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#1b1d22" text-anchor="start" letter-spacing="0">5</text>
+<text x="198" y="105" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#5a5f6b" text-anchor="start" letter-spacing="0">to push</text>
+<rect x="286" y="70" width="40" height="44" rx="11" fill="#5b8cff" />
+<g stroke="#ffffff" fill="none" stroke-width="2.00" stroke-linecap="round" stroke-linejoin="round"><path d="M314.1,90.2 a8.1,8.1 0 1 0 1.8,8.1"/><path d="M310.95,83.0 L314.1,90.2 L306.45,92"/></g>
+<text x="16" y="136" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#5a5f6b" text-anchor="start" letter-spacing="0.5">3 CHANGED FILES</text>
+<g transform="translate(0,152)">
+<rect x="16" y="0" width="16" height="16" rx="5" fill="#5b8cff" />
+<g stroke="#ffffff" fill="none" stroke-width="1.40" stroke-linecap="round" stroke-linejoin="round"><path d="M20.975,8 L23.45,10.75 L27.3,5.25"/></g>
+<text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#1b1d22" text-anchor="start" letter-spacing="0">src/menu-bar/panel.tsx</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#1d9e75" text-anchor="end" letter-spacing="0.5">+42</text>
+</g>
+<g transform="translate(0,182)">
+<rect x="16" y="0" width="16" height="16" rx="5" fill="#5b8cff" />
+<g stroke="#ffffff" fill="none" stroke-width="1.40" stroke-linecap="round" stroke-linejoin="round"><path d="M20.975,8 L23.45,10.75 L27.3,5.25"/></g>
+<text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#1b1d22" text-anchor="start" letter-spacing="0">src/themes/liquid-glass.css</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#1d9e75" text-anchor="end" letter-spacing="0.5">+118</text>
+</g>
+<g transform="translate(0,212)">
+<rect x="16.75" y="0.75" width="14.5" height="14.5" rx="4.5" fill="none" stroke="#5a5f6b" stroke-width="1.5" />
+<text x="41" y="12" font-family="SF Mono, Menlo, monospace" font-size="12" font-weight="400" fill="#1b1d22" text-anchor="start" letter-spacing="0">docs/architecture.md</text>
+<text x="324" y="12" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#d85a30" text-anchor="end" letter-spacing="0.5">−7</text>
+</g>
+<rect x="14" y="250" width="312" height="44" rx="12" fill="#ffffff" stroke="#ffffff" stroke-width="0.5" />
+<text x="26" y="269" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#1b1d22" text-anchor="start" letter-spacing="0">Add liquid-glass theme engine</text>
+<text x="26" y="284" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5a5f6b" text-anchor="start" letter-spacing="0">Summary</text>
+<rect x="14" y="304" width="312" height="38" rx="12" fill="#5b8cff" />
+<rect x="14.5" y="304.5" width="311" height="1" fill="rgba(255,255,255,0.35)"/>
+<text x="170.0" y="328" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0">Commit to main</text>
+<line x1="14" y1="346" x2="326" y2="346" stroke="#dfe6ff" stroke-width="1"/>
+<text x="16" y="360" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#5a5f6b" text-anchor="start" letter-spacing="0.5">THEME</text>
+<rect x="16" y="370" width="28" height="28" rx="9" fill="#8ea8ff" stroke="#5b8cff" stroke-width="2"/>
+<rect x="53" y="370" width="28" height="28" rx="9" fill="#1f2333" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+<rect x="90" y="370" width="28" height="28" rx="9" fill="#ffb37a" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+<rect x="127" y="370" width="28" height="28" rx="9" fill="#8fd6b0" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+<rect x="164" y="370" width="28" height="28" rx="9" fill="#d7d9df" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+<text x="16" y="422" font-family="SF Pro Text, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#5a5f6b" text-anchor="start" letter-spacing="0">Aurora — liquid glass</text>
+</g></g>
+</svg>
