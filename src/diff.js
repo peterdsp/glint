@@ -69,11 +69,11 @@ function renderDiff(d) {
   body.innerHTML = "";
 
   if (d.binary) {
-    body.innerHTML = '<div class="empty">Binary file - no line diff.</div>';
+    body.innerHTML = `<div class="empty">${window.t ? window.t("binaryFile") : "Binary file - no line diff."}</div>`;
     return;
   }
   if (!d.hunks || d.hunks.length === 0) {
-    body.innerHTML = '<div class="empty">No changes in this file.</div>';
+    body.innerHTML = `<div class="empty">${window.t ? window.t("noChanges") : "No changes in this file."}</div>`;
     return;
   }
 
@@ -114,7 +114,7 @@ async function loadDiff(repo, file) {
     return;
   }
   const body = document.getElementById("body");
-  body.innerHTML = '<div class="empty">Loading diff…</div>';
+  body.innerHTML = `<div class="empty">${window.t ? window.t("loadingDiff") : "Loading diff..."}</div>`;
   try {
     const d = await invoke("diff", { path: repo, file });
     renderDiff(d);

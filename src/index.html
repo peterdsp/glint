@@ -22,11 +22,11 @@
       <section class="sync">
         <button class="sync-stat" id="pull-btn" type="button" aria-label="Pull from origin">
           <i class="ti ti-arrow-down" aria-hidden="true"></i>
-          <div><div class="sync-num" id="behind">0</div><div class="sync-lbl">to pull</div></div>
+          <div><div class="sync-num" id="behind">0</div><div class="sync-lbl" data-i18n="toPull">to pull</div></div>
         </button>
         <button class="sync-stat" id="push-btn" type="button" aria-label="Push to origin">
           <i class="ti ti-arrow-up" aria-hidden="true"></i>
-          <div><div class="sync-num" id="ahead">0</div><div class="sync-lbl">to push</div></div>
+          <div><div class="sync-num" id="ahead">0</div><div class="sync-lbl" data-i18n="toPush">to push</div></div>
         </button>
         <button class="sync-btn" id="sync" aria-label="Fetch from origin"><i class="ti ti-refresh"></i></button>
       </section>
@@ -36,8 +36,8 @@
 
       <footer class="commit">
         <div class="commit-box">
-          <input class="commit-summary" id="commit-summary" placeholder="Summary" />
-          <input class="commit-desc" id="commit-desc" placeholder="Description (optional)" />
+          <input class="commit-summary" id="commit-summary" placeholder="Summary" data-i18n-ph="summary" />
+          <input class="commit-desc" id="commit-desc" placeholder="Description (optional)" data-i18n-ph="descriptionOptional" />
         </div>
         <button class="commit-btn" id="commit-btn">Commit to <span id="commit-branch">-</span></button>
       </footer>
@@ -48,48 +48,54 @@
 
       <div class="settings" id="settings" hidden>
         <div class="set-head">
-          <span class="set-title">Settings</span>
+          <span class="set-title" data-i18n="settings">Settings</span>
           <button class="icon-btn" id="settings-close" aria-label="Done"><i class="ti ti-x"></i></button>
         </div>
         <div class="set-body">
           <section class="set-section">
-            <div class="section-label">Theme</div>
+            <div class="section-label" data-i18n="theme">Theme</div>
             <div class="swatches" id="swatches"></div>
             <div class="theme-name" id="theme-name"></div>
           </section>
 
           <section class="set-section">
-            <div class="section-label">License</div>
-            <div class="set-license" id="set-license">-</div>
-            <button class="set-btn accent" id="set-buy" type="button">Get a license on Ko-fi</button>
-            <input class="lg-input" id="set-key" placeholder="Paste license key" spellcheck="false" />
-            <button class="set-btn" id="set-activate" type="button">Activate key</button>
+            <div class="section-label" data-i18n="language">Language</div>
+            <div class="lang-row" id="lang-row"></div>
           </section>
 
           <section class="set-section">
-            <div class="section-label">Updates</div>
+            <div class="section-label" data-i18n="license">License</div>
+            <div class="set-license" id="set-license">-</div>
+            <button class="set-btn accent" id="set-buy" type="button" data-i18n="getLicenseKofi">Get a license on Ko-fi</button>
+            <input class="lg-input" id="set-key" placeholder="Paste license key" data-i18n-ph="pasteKey" spellcheck="false" />
+            <button class="set-btn" id="set-activate" type="button" data-i18n="activateKey">Activate key</button>
+          </section>
+
+          <section class="set-section">
+            <div class="section-label" data-i18n="updates">Updates</div>
             <div class="set-row">
               <span class="set-version" id="set-version">Glint</span>
-              <button class="set-btn slim" id="set-update" type="button">Check now</button>
+              <button class="set-btn slim" id="set-update" type="button" data-i18n="checkNow">Check now</button>
             </div>
-            <div class="set-hint" id="set-update-msg">Updates install automatically in the background.</div>
+            <div class="set-hint" id="set-update-msg" data-i18n="updatesAuto">Updates install automatically in the background.</div>
           </section>
         </div>
       </div>
 
       <div class="license-gate" id="license-gate" hidden>
         <div class="lg-card">
-          <div class="lg-title">Your Glint trial has ended</div>
-          <div class="lg-sub">Keep Glint for a one-time $4.99 on Ko-fi. Already bought? Paste your key below.</div>
-          <button class="lg-buy" id="lg-buy" type="button">Get a license on Ko-fi</button>
-          <div class="lg-or">or enter your license key</div>
-          <input class="lg-input" id="lg-input" placeholder="GLINT-..." spellcheck="false" />
-          <button class="lg-activate" id="lg-activate" type="button">Activate</button>
+          <div class="lg-title" data-i18n="trialEndedTitle">Your Glint trial has ended</div>
+          <div class="lg-sub" data-i18n="trialEndedSub">Keep Glint for a one-time $4.99 on Ko-fi. Already bought? Paste your key below.</div>
+          <button class="lg-buy" id="lg-buy" type="button" data-i18n="getLicenseKofi">Get a license on Ko-fi</button>
+          <div class="lg-or" data-i18n="orEnterKey">or enter your license key</div>
+          <input class="lg-input" id="lg-input" placeholder="GLINT-..." data-i18n-ph="pasteKey" spellcheck="false" />
+          <button class="lg-activate" id="lg-activate" type="button" data-i18n="activate">Activate</button>
           <div class="lg-msg" id="lg-msg"></div>
         </div>
       </div>
     </main>
 
+    <script src="i18n.js"></script>
     <script src="themes.js"></script>
     <script src="app.js"></script>
   </body>

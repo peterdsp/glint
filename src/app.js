@@ -109,13 +109,13 @@ function render(status) {
   current = status;
   document.getElementById("repo-name").textContent = status.repo || "-";
   document.getElementById("branch").textContent = status.branch;
-  document.getElementById("commit-branch").textContent = status.branch;
+  document.getElementById("commit-btn").textContent = t("commitTo", { branch: status.branch });
   document.getElementById("ahead").textContent = status.ahead;
   document.getElementById("behind").textContent = status.behind;
 
   const n = status.files.length;
   document.getElementById("files-count").textContent =
-    `${n} changed file${n === 1 ? "" : "s"}`;
+    n === 1 ? t("changedFile") : t("changedFiles", { n });
 
   const list = document.getElementById("files");
   list.innerHTML = "";
@@ -132,7 +132,7 @@ function render(status) {
     const path = document.createElement("span");
     path.className = "file-path";
     path.textContent = f.path;
-    path.title = "Open diff";
+    path.title = t("openDiff");
     path.onclick = () => openDiff(f.path);
     li.append(check, path, deltaEl(f));
     list.appendChild(li);
@@ -191,15 +191,15 @@ async function activateKey(inputId, msgId) {
     input.focus();
     return;
   }
-  if (msg) msg.textContent = "Checking...";
+  if (msg) msg.textContent = t("activating");
   try {
     const s = await invoke("activate_license", { key });
     if (s && s.state === "licensed") {
-      if (msg) msg.textContent = "Activated - thank you!";
+      if (msg) msg.textContent = t("activated");
       input.value = "";
       setTimeout(loadLicense, 600);
     } else if (msg) {
-      msg.textContent = "That key isn't valid.";
+      msg.textContent = t("keyInvalid");
     }
   } catch (e) {
     if (msg) msg.textContent = String(e && e.message ? e.message : e);
@@ -215,7 +215,7 @@ async function loadLicense() {
   if (!invoke) {
     if (gate) gate.hidden = true;
     if (bar) bar.hidden = true;
-    if (setLic) setLic.textContent = "Unlocked (development)";
+    if (setLic) setLic.textContent = t("unlockedDev");
     return;
   }
   let s;
@@ -230,19 +230,20 @@ async function loadLicense() {
   if (s.state === "licensed") {
     if (gate) gate.hidden = true;
     if (bar) bar.hidden = true;
-    if (setLic) setLic.textContent = s.email ? `Licensed to ${s.email}` : "Licensed - thank you!";
+    if (setLic) setLic.textContent = s.email ? t("licensedTo", { email: s.email }) : t("licensedThanks");
   } else if (s.state === "trial") {
     if (gate) gate.hidden = true;
     if (bar) {
       bar.hidden = false;
-      bar.textContent = `Trial - ${s.days_left} day${s.days_left === 1 ? "" : "s"} left · Get a license`;
+      bar.textContent = s.days_left === 1 ? t("trialBanner1") : t("trialBanner", { n: s.days_left });
     }
-    if (setLic) setLic.textContent = `Free trial - ${s.days_left} day${s.days_left === 1 ? "" : "s"} left`;
+    if (setLic)
+      setLic.textContent = s.days_left === 1 ? t("freeTrialLeft1") : t("freeTrialLeft", { n: s.days_left });
   } else {
     // expired: block the base panel until a valid key is entered
     if (bar) bar.hidden = true;
     if (gate) gate.hidden = false;
-    if (setLic) setLic.textContent = "Trial ended - enter a license key";
+    if (setLic) setLic.textContent = t("trialEndedShort");
   }
 }
 
@@ -253,6 +254,30 @@ function wireLicense() {
   if (buy) buy.onclick = openKofi;
   const act = document.getElementById("lg-activate");
   if (act) act.onclick = () => activateKey("lg-input", "lg-msg");
+}
+
+// Language selector (Settings). Switching re-renders dynamic strings too.
+function buildLangSelector() {
+  const wrap = document.getElementById("lang-row");
+  if (!wrap || !window.GLINT_LOCALES) return;
+  wrap.innerHTML = "";
+  const cur = window.currentLocale();
+  for (const l of window.GLINT_LOCALES) {
+    const b = document.createElement("button");
+    b.className = "lang-btn";
+    b.type = "button";
+    b.textContent = l.label;
+    b.setAttribute("aria-pressed", String(l.code === cur));
+    b.onclick = () => changeLocale(l.code);
+    wrap.appendChild(b);
+  }
+}
+
+function changeLocale(code) {
+  window.setLocale(code); // updates data-i18n text + persists
+  buildLangSelector();
+  render(current); // re-render file count + commit button
+  loadLicense(); // re-render trial / license strings
 }
 
 // Settings overlay: theme picker + license + updates.
@@ -273,12 +298,12 @@ function wireSettings() {
   if (upd)
     upd.onclick = async () => {
       if (!invoke) return;
-      if (msg) msg.textContent = "Checking for updates...";
+      if (msg) msg.textContent = t("checkingUpdates");
       try {
         const updated = await invoke("update_now");
-        if (msg) msg.textContent = updated ? "Update found - installing..." : "You're on the latest version.";
+        if (msg) msg.textContent = updated ? t("updateFound") : t("upToDateVersion");
       } catch (e) {
-        if (msg) msg.textContent = "Update check unavailable right now.";
+        if (msg) msg.textContent = t("updateUnavailable");
       }
     };
 
@@ -331,7 +356,7 @@ async function loadPrStatus() {
 function openDiff(file) {
   const path = repoPath();
   if (!invoke || !path) {
-    showToast("Connect a repo to see diffs", "err");
+    showToast(t("connectRepoDiff"), "err");
     return;
   }
   invoke("open_diff", { path, file }).catch((e) =>
@@ -344,7 +369,7 @@ function openDiff(file) {
 async function runSync(cmd, busyMsg, okMsg) {
   const path = repoPath();
   if (!invoke || !path) {
-    showToast("Connect a repo first - the ⌄ button up top", "err");
+    showToast(t("connectRepo"), "err");
     return;
   }
   showToast(busyMsg, "busy");
@@ -410,7 +435,7 @@ async function doCommit() {
 
 function wireActions() {
   document.getElementById("switch-repo").onclick = () => {
-    const path = window.prompt("Path to a Git repository:");
+    const path = window.prompt(t("switchRepoPrompt"));
     if (path) {
       try {
         localStorage.setItem("glint.repo", path);
@@ -419,17 +444,19 @@ function wireActions() {
     }
   };
   document.getElementById("sync").onclick = () =>
-    runSync("fetch", "Fetching…", (s) =>
-      s.behind || s.ahead ? `${s.behind} to pull · ${s.ahead} to push` : "Up to date"
+    runSync("fetch", t("fetching"), (s) =>
+      s.behind || s.ahead ? t("syncCounts", { behind: s.behind, ahead: s.ahead }) : t("upToDate")
     );
   document.getElementById("pull-btn").onclick = () =>
-    runSync("pull", "Pulling…", "Pulled");
+    runSync("pull", t("pulling"), t("pulled"));
   document.getElementById("push-btn").onclick = () =>
-    runSync("push", "Pushing…", "Pushed");
+    runSync("push", t("pushing"), t("pushed"));
   document.getElementById("commit-btn").onclick = doCommit;
 }
 
+if (window.applyI18n) window.applyI18n();
 buildSwatches();
+buildLangSelector();
 applyTheme(localStorage.getItem("glint.theme") || "aurora");
 wireActions();
 wireLicense();

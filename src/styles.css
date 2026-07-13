@@ -566,6 +566,29 @@ body {
   margin-top: 0;
   padding: 6px 12px;
 }
+.lang-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.lang-btn {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  padding: 7px 4px;
+  border-radius: 9px;
+  background: var(--tint-2);
+  border: 0.5px solid var(--stroke);
+  color: var(--ink);
+}
+.lang-btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
 .set-btn:active {
   transform: scale(0.99);
 }
