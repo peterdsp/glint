@@ -86,7 +86,20 @@ This compiles out the trial, license gate, and updater. From there it's the stan
 
 ## How the trial + license work
 
-- First launch writes a timestamp to the app config dir (`first_run`). For 7 days the app is fully usable.
+- First launch records a timestamp. For 7 days the app is fully usable, with a "Trial - N days left" banner and a Theme/License/Updates screen behind the gear icon (theme changes live in Settings, not on the base screen).
 - After 7 days, a blocking gate asks for a license key or a Ko-fi purchase.
-- A license key is an Ed25519-signed token (`payload.signature`, base64url). The app verifies it against the embedded public key. Perpetual keys have no expiry; time-limited keys carry an `exp`.
-- The stored key lives at `<app config dir>/license.key`. Everything is offline; nothing phones home.
+- A license key is an Ed25519-signed token (`payload.signature`, base64url). The app verifies it against the embedded public key. Perpetual keys have no expiry; time-limited keys carry an `exp`. Everything is offline; nothing phones home.
+
+## Anti-piracy
+
+- The trial start and the license are pinned in the **OS Keychain** (Keychain on macOS, Credential Manager on Windows, secret-service on Linux) **and** the config file. The trial start used is the earliest found in either store, so deleting the config file does not reset the trial - both stores would have to be wiped, and the Keychain entry is hard to find.
+- License keys are Ed25519-signed, so they cannot be forged without the private key.
+- What this does NOT stop: one buyer **sharing** their key with others (offline keys are inherently copyable). To prevent that you need online activation - e.g. a tiny Cloudflare Worker + KV that records device activations per key and caps them at N. That's the recommended next step if key-sharing becomes a problem; the client already sends nothing, so it's an additive change.
+
+## Silent auto-update (no prompts, no passwords)
+
+- On launch the direct build checks GitHub Releases and, if a newer signed build exists, downloads and installs it and relaunches - no dialogs. There's also a "Check now" button in Settings.
+- **Password-free requires signing + notarization.** macOS only allows a silent in-place update when the app is signed with a Developer ID and notarized; otherwise Gatekeeper warns. Add these repo secrets so `release.yml` signs and notarizes:
+  - `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD`, `APPLE_SIGNING_IDENTITY`, `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID`
+  - (optional, Windows) `WINDOWS_CERTIFICATE`, `WINDOWS_CERTIFICATE_PASSWORD`
+- Until those are set, builds are unsigned: updates still work but the OS shows a warning on first open.

@@ -478,6 +478,98 @@ body {
   min-height: 14px;
 }
 
+/* Settings overlay (theme picker, license, updates). */
+.settings {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--tint) 94%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+}
+.settings[hidden] {
+  display: none;
+}
+.set-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 0.5px solid var(--tint-2);
+}
+.set-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.set-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 14px 16px;
+  min-height: 0;
+}
+.set-section {
+  padding: 12px 0;
+  border-bottom: 0.5px solid var(--tint-2);
+}
+.set-section:last-child {
+  border-bottom: 0;
+}
+.set-license {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  margin: 2px 0 4px;
+}
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.set-version {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.set-hint {
+  font-size: 11px;
+  color: var(--ink-2);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+.set-btn {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 9px;
+  border-radius: 10px;
+  background: var(--tint-2);
+  color: var(--ink);
+  border: 0.5px solid var(--stroke);
+  margin-top: 8px;
+}
+.set-btn.accent {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.set-btn.slim {
+  width: auto;
+  margin-top: 0;
+  padding: 6px 12px;
+}
+.set-btn:active {
+  transform: scale(0.99);
+}
+
 /* Transient status for fetch / pull / push. */
 .toast {
   position: absolute;

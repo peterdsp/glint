@@ -179,14 +179,43 @@ function showToast(msg, kind = "") {
 // Ko-fi page where licenses are sold (direct build). Update to your handle.
 const KOFI_URL = "https://ko-fi.com/peterdsp";
 
-// Trial / license gate. In a plain browser (no Tauri) everything is unlocked.
+function openKofi() {
+  if (invoke) invoke("open_url", { url: KOFI_URL }).catch(() => {});
+}
+
+async function activateKey(inputId, msgId) {
+  const input = document.getElementById(inputId);
+  const msg = document.getElementById(msgId);
+  const key = (input.value || "").trim();
+  if (!key) {
+    input.focus();
+    return;
+  }
+  if (msg) msg.textContent = "Checking...";
+  try {
+    const s = await invoke("activate_license", { key });
+    if (s && s.state === "licensed") {
+      if (msg) msg.textContent = "Activated - thank you!";
+      input.value = "";
+      setTimeout(loadLicense, 600);
+    } else if (msg) {
+      msg.textContent = "That key isn't valid.";
+    }
+  } catch (e) {
+    if (msg) msg.textContent = String(e && e.message ? e.message : e);
+  }
+}
+
+// Trial / license state drives the gate (base screen) and the settings panel.
+// In a plain browser (no Tauri) everything is unlocked.
 async function loadLicense() {
   const gate = document.getElementById("license-gate");
   const bar = document.getElementById("trial-bar");
-  if (!gate || !bar) return;
+  const setLic = document.getElementById("set-license");
   if (!invoke) {
-    gate.hidden = true;
-    bar.hidden = true;
+    if (gate) gate.hidden = true;
+    if (bar) bar.hidden = true;
+    if (setLic) setLic.textContent = "Unlocked (development)";
     return;
   }
   let s;
@@ -196,62 +225,82 @@ async function loadLicense() {
     console.warn("license_status failed:", e);
     return;
   }
-  if (!s || s.state === "licensed") {
-    gate.hidden = true;
-    bar.hidden = true;
+  if (!s) return;
+
+  if (s.state === "licensed") {
+    if (gate) gate.hidden = true;
+    if (bar) bar.hidden = true;
+    if (setLic) setLic.textContent = s.email ? `Licensed to ${s.email}` : "Licensed - thank you!";
   } else if (s.state === "trial") {
-    gate.hidden = true;
-    bar.hidden = false;
-    bar.textContent = `Trial - ${s.days_left} day${s.days_left === 1 ? "" : "s"} left · Get a license`;
+    if (gate) gate.hidden = true;
+    if (bar) {
+      bar.hidden = false;
+      bar.textContent = `Trial - ${s.days_left} day${s.days_left === 1 ? "" : "s"} left · Get a license`;
+    }
+    if (setLic) setLic.textContent = `Free trial - ${s.days_left} day${s.days_left === 1 ? "" : "s"} left`;
   } else {
-    // expired: block the panel until a valid key is entered
-    bar.hidden = true;
-    gate.hidden = false;
+    // expired: block the base panel until a valid key is entered
+    if (bar) bar.hidden = true;
+    if (gate) gate.hidden = false;
+    if (setLic) setLic.textContent = "Trial ended - enter a license key";
   }
 }
 
 function wireLicense() {
-  const openKofi = () => {
-    if (invoke) invoke("open_url", { url: KOFI_URL }).catch(() => {});
-  };
   const bar = document.getElementById("trial-bar");
-  const buy = document.getElementById("lg-buy");
-  const act = document.getElementById("lg-activate");
   if (bar) bar.onclick = openKofi;
+  const buy = document.getElementById("lg-buy");
   if (buy) buy.onclick = openKofi;
-  if (act)
-    act.onclick = async () => {
-      const input = document.getElementById("lg-input");
-      const msg = document.getElementById("lg-msg");
-      const key = (input.value || "").trim();
-      if (!key) {
-        input.focus();
-        return;
-      }
-      msg.textContent = "Checking...";
-      try {
-        const s = await invoke("activate_license", { key });
-        if (s && s.state === "licensed") {
-          msg.textContent = "Activated - thank you!";
-          setTimeout(loadLicense, 700);
-        } else {
-          msg.textContent = "That key isn't valid.";
-        }
-      } catch (e) {
-        msg.textContent = String(e && e.message ? e.message : e);
-      }
-    };
+  const act = document.getElementById("lg-activate");
+  if (act) act.onclick = () => activateKey("lg-input", "lg-msg");
 }
 
-// Check GitHub Releases for a newer version (direct build). No-op if the
-// updater isn't configured or on the App Store build.
-async function checkUpdate() {
+// Settings overlay: theme picker + license + updates.
+function wireSettings() {
+  const panel = document.getElementById("settings");
+  const open = document.getElementById("settings-btn");
+  const close = document.getElementById("settings-close");
+  if (open && panel) open.onclick = () => { panel.hidden = false; };
+  if (close && panel) close.onclick = () => { panel.hidden = true; };
+
+  const buy = document.getElementById("set-buy");
+  if (buy) buy.onclick = openKofi;
+  const act = document.getElementById("set-activate");
+  if (act) act.onclick = () => activateKey("set-key", "set-license");
+
+  const upd = document.getElementById("set-update");
+  const msg = document.getElementById("set-update-msg");
+  if (upd)
+    upd.onclick = async () => {
+      if (!invoke) return;
+      if (msg) msg.textContent = "Checking for updates...";
+      try {
+        const updated = await invoke("update_now");
+        if (msg) msg.textContent = updated ? "Update found - installing..." : "You're on the latest version.";
+      } catch (e) {
+        if (msg) msg.textContent = "Update check unavailable right now.";
+      }
+    };
+
+  // App version.
+  if (invoke)
+    invoke("app_version")
+      .then((v) => {
+        const el = document.getElementById("set-version");
+        if (el && v) el.textContent = `Glint ${v}`;
+      })
+      .catch(() => {});
+}
+
+// Silent background auto-update on launch (direct build). Downloads, installs,
+// and relaunches with no prompts. No-op if the updater isn't configured, on the
+// App Store build, or offline - the app just keeps running.
+async function autoUpdate() {
   if (!invoke) return;
   try {
-    const version = await invoke("check_update");
-    if (version) showToast(`Glint ${version} is available - relaunch to update`);
+    await invoke("update_now");
   } catch (e) {
-    /* updater not configured yet, or offline - ignore */
+    /* not configured / offline - ignore */
   }
 }
 
@@ -384,7 +433,8 @@ buildSwatches();
 applyTheme(localStorage.getItem("glint.theme") || "aurora");
 wireActions();
 wireLicense();
+wireSettings();
 loadStatus();
 loadDiskThemes();
 loadLicense();
-checkUpdate();
+autoUpdate();

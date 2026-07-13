@@ -99,6 +99,29 @@ fn now_secs() -> u64 {
         .unwrap_or(0)
 }
 
+// Secure storage (OS Keychain / Credential Manager / secret-service). Used to
+// pin the trial start and the license so deleting a plain file can't reset the
+// trial. Falls back silently when no secret service is available.
+#[cfg(not(feature = "appstore"))]
+const KEYRING_SERVICE: &str = "dev.peterdsp.glint";
+
+#[cfg(not(feature = "appstore"))]
+fn kv_get(key: &str) -> Option<String> {
+    keyring::Entry::new(KEYRING_SERVICE, key)
+        .ok()?
+        .get_password()
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+}
+
+#[cfg(not(feature = "appstore"))]
+fn kv_set(key: &str, val: &str) {
+    if let Ok(entry) = keyring::Entry::new(KEYRING_SERVICE, key) {
+        let _ = entry.set_password(val);
+    }
+}
+
 /// Trial / license state. The App Store build is always "licensed" (Apple gates
 /// the purchase); the direct build tracks a 7-day trial then requires a key.
 #[tauri::command]
@@ -114,17 +137,21 @@ fn license_status(app: tauri::AppHandle) -> Result<license::LicenseState, String
         std::fs::create_dir_all(&dir).ok();
         let now = now_secs();
 
+        // Trial start = the EARLIEST timestamp found in the Keychain or the
+        // config file. Clearing one store won't reset the trial; both must go,
+        // and the Keychain entry is hard to find. On first run, seed both.
         let fr_path = dir.join("first_run");
-        let first_run = std::fs::read_to_string(&fr_path)
+        let file_fr = std::fs::read_to_string(&fr_path)
             .ok()
-            .and_then(|s| s.trim().parse::<u64>().ok())
-            .unwrap_or_else(|| {
-                let _ = std::fs::write(&fr_path, now.to_string());
-                now
-            });
+            .and_then(|s| s.trim().parse::<u64>().ok());
+        let key_fr = kv_get("first_run").and_then(|s| s.parse::<u64>().ok());
+        let first_run = [file_fr, key_fr].into_iter().flatten().min().unwrap_or(now);
+        let _ = std::fs::write(&fr_path, first_run.to_string());
+        kv_set("first_run", &first_run.to_string());
 
-        let license = std::fs::read_to_string(dir.join("license.key"))
-            .ok()
+        // License: Keychain first, then the config file.
+        let license = kv_get("license")
+            .or_else(|| std::fs::read_to_string(dir.join("license.key")).ok())
             .and_then(|k| license::verify(k.trim(), license::pubkey_b64()).ok());
 
         Ok(license::evaluate(first_run, now, license))
@@ -144,30 +171,40 @@ fn activate_license(app: tauri::AppHandle, key: String) -> Result<license::Licen
         license::verify(key.trim(), license::pubkey_b64())?;
         let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
         std::fs::create_dir_all(&dir).ok();
-        std::fs::write(dir.join("license.key"), key.trim()).map_err(|e| e.to_string())?;
+        std::fs::write(dir.join("license.key"), key.trim()).ok();
+        kv_set("license", key.trim());
         license_status(app)
     }
 }
 
-/// Check GitHub Releases for a newer version (direct build only). Returns the
-/// new version string if one is available. The App Store build returns None -
-/// Apple ships updates.
+#[tauri::command]
+fn app_version() -> String {
+    env!("CARGO_PKG_VERSION").to_string()
+}
+
+/// Silent background update (direct build): check GitHub Releases, and if a
+/// newer signed build exists, download + install it and relaunch - no prompts,
+/// no admin password (the app is signed/notarized; see docs/RELEASE.md).
+/// Returns true if an update was applied. The App Store build is a no-op.
 #[cfg(feature = "updater")]
 #[tauri::command]
-async fn check_update(app: tauri::AppHandle) -> Result<Option<String>, String> {
+async fn update_now(app: tauri::AppHandle) -> Result<bool, String> {
     use tauri_plugin_updater::UpdaterExt;
     let updater = app.updater().map_err(|e| e.to_string())?;
-    match updater.check().await {
-        Ok(Some(update)) => Ok(Some(update.version)),
-        Ok(None) => Ok(None),
-        Err(e) => Err(e.to_string()),
-    }
+    let Some(update) = updater.check().await.map_err(|e| e.to_string())? else {
+        return Ok(false);
+    };
+    update
+        .download_and_install(|_downloaded, _total| {}, || {})
+        .await
+        .map_err(|e| e.to_string())?;
+    app.restart();
 }
 
 #[cfg(not(feature = "updater"))]
 #[tauri::command]
-async fn check_update() -> Result<Option<String>, String> {
-    Ok(None)
+async fn update_now() -> Result<bool, String> {
+    Ok(false)
 }
 
 /// Open (or refocus) the diff pop-out for a file. The panel is a transient
@@ -223,7 +260,8 @@ fn main() {
     builder
         .invoke_handler(tauri::generate_handler![
             get_status, commit, fetch, pull, push, diff, open_diff, load_themes,
-            pr_status, open_url, license_status, activate_license, check_update
+            pr_status, open_url, license_status, activate_license, update_now,
+            app_version
         ])
         .setup(|app| {
             let win = app

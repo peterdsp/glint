@@ -16,6 +16,7 @@
           <div class="repo-branch"><i class="ti ti-git-fork" aria-hidden="true"></i><span id="branch">-</span><button class="pr-pill" id="pr-pill" type="button" hidden></button></div>
         </div>
         <button class="icon-btn" id="switch-repo" aria-label="Switch repository"><i class="ti ti-selector"></i></button>
+        <button class="icon-btn" id="settings-btn" aria-label="Settings"><i class="ti ti-settings"></i></button>
       </header>
 
       <section class="sync">
@@ -43,13 +44,38 @@
 
       <button class="trial-bar" id="trial-bar" type="button" hidden></button>
 
-      <div class="theme-bar">
-        <div class="section-label">Theme</div>
-        <div class="swatches" id="swatches"></div>
-        <div class="theme-name" id="theme-name"></div>
-      </div>
-
       <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+      <div class="settings" id="settings" hidden>
+        <div class="set-head">
+          <span class="set-title">Settings</span>
+          <button class="icon-btn" id="settings-close" aria-label="Done"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="set-body">
+          <section class="set-section">
+            <div class="section-label">Theme</div>
+            <div class="swatches" id="swatches"></div>
+            <div class="theme-name" id="theme-name"></div>
+          </section>
+
+          <section class="set-section">
+            <div class="section-label">License</div>
+            <div class="set-license" id="set-license">-</div>
+            <button class="set-btn accent" id="set-buy" type="button">Get a license on Ko-fi</button>
+            <input class="lg-input" id="set-key" placeholder="Paste license key" spellcheck="false" />
+            <button class="set-btn" id="set-activate" type="button">Activate key</button>
+          </section>
+
+          <section class="set-section">
+            <div class="section-label">Updates</div>
+            <div class="set-row">
+              <span class="set-version" id="set-version">Glint</span>
+              <button class="set-btn slim" id="set-update" type="button">Check now</button>
+            </div>
+            <div class="set-hint" id="set-update-msg">Updates install automatically in the background.</div>
+          </section>
+        </div>
+      </div>
 
       <div class="license-gate" id="license-gate" hidden>
         <div class="lg-card">
