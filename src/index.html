@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="aurora">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glint</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="panel" role="application" aria-label="Glint Git panel">
+      <header class="head">
+        <span class="repo-icon" aria-hidden="true"><i class="ti ti-git-branch"></i></span>
+        <div class="repo-meta">
+          <div class="repo-name" id="repo-name">—</div>
+          <div class="repo-branch"><i class="ti ti-git-fork" aria-hidden="true"></i><span id="branch">—</span></div>
+        </div>
+        <button class="icon-btn" id="switch-repo" aria-label="Switch repository"><i class="ti ti-selector"></i></button>
+      </header>
+
+      <section class="sync">
+        <div class="sync-stat">
+          <i class="ti ti-arrow-down" aria-hidden="true"></i>
+          <div><div class="sync-num" id="behind">0</div><div class="sync-lbl">to pull</div></div>
+        </div>
+        <div class="sync-stat">
+          <i class="ti ti-arrow-up" aria-hidden="true"></i>
+          <div><div class="sync-num" id="ahead">0</div><div class="sync-lbl">to push</div></div>
+        </div>
+        <button class="sync-btn" id="sync" aria-label="Sync"><i class="ti ti-refresh"></i></button>
+      </section>
+
+      <div class="section-label"><span id="files-count">0 changed files</span></div>
+      <ul class="files" id="files"></ul>
+
+      <footer class="commit">
+        <div class="commit-box">
+          <input class="commit-summary" id="commit-summary" placeholder="Summary" />
+          <input class="commit-desc" id="commit-desc" placeholder="Description (optional)" />
+        </div>
+        <button class="commit-btn" id="commit-btn">Commit to <span id="commit-branch">—</span></button>
+      </footer>
+
+      <div class="theme-bar">
+        <div class="section-label">Theme</div>
+        <div class="swatches" id="swatches"></div>
+        <div class="theme-name" id="theme-name"></div>
+      </div>
+    </main>
+
+    <script src="themes.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

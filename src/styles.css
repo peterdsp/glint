@@ -1,0 +1,282 @@
+/* Glint — liquid-glass menu-bar Git client.
+   The window is transparent; native macOS vibrancy sits behind this layer.
+   Each theme is a set of CSS custom properties applied to :root. */
+
+:root {
+  --accent: #5b8cff;
+  --tint: rgba(255, 255, 255, 0.42);
+  --tint-2: rgba(255, 255, 255, 0.3);
+  --stroke: rgba(255, 255, 255, 0.6);
+  --ink: #1b1d22;
+  --ink-2: #5a5f6b;
+  --added: #1d9e75;
+  --removed: #d85a30;
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --mono: "SF Mono", ui-monospace, "JetBrains Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html,
+body {
+  background: transparent;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+.panel {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: var(--tint);
+  border: 0.5px solid var(--stroke);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  overflow: hidden;
+  color: var(--ink);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 11px;
+  border-bottom: 0.5px solid var(--tint-2);
+}
+.repo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 17px;
+  flex: none;
+}
+.repo-meta {
+  flex: 1;
+  min-width: 0;
+}
+.repo-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.repo-branch {
+  font-size: 12px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.icon-btn {
+  all: unset;
+  cursor: pointer;
+  color: var(--ink-2);
+  display: flex;
+  padding: 4px;
+  border-radius: 7px;
+  font-size: 18px;
+}
+.icon-btn:hover {
+  background: var(--tint-2);
+}
+
+.sync {
+  display: flex;
+  gap: 8px;
+  padding: 11px 14px;
+}
+.sync-stat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border-radius: 11px;
+  background: var(--tint-2);
+  border: 0.5px solid var(--stroke);
+}
+.sync-stat > i {
+  font-size: 16px;
+  color: var(--accent);
+}
+.sync-num {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+}
+.sync-lbl {
+  font-size: 11px;
+  color: var(--ink-2);
+}
+.sync-btn {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  border-radius: 11px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+}
+.sync-btn:active {
+  transform: scale(0.96);
+}
+
+.section-label {
+  padding: 2px 16px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.files {
+  list-style: none;
+  padding: 0 8px;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+.file {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 8px;
+  border-radius: 9px;
+}
+.file:hover {
+  background: var(--tint-2);
+}
+.check {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.check.on {
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+}
+.check.off {
+  border: 1.5px solid var(--ink-2);
+}
+.file-path {
+  font-size: 12px;
+  font-family: var(--mono);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-stat {
+  font-size: 11px;
+  font-weight: 500;
+}
+.file-stat.add {
+  color: var(--added);
+}
+.file-stat.del {
+  color: var(--removed);
+}
+
+.commit {
+  padding: 8px 14px 12px;
+}
+.commit-box {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 0.5px solid var(--stroke);
+  padding: 8px 11px;
+  margin-bottom: 9px;
+}
+.commit-summary,
+.commit-desc {
+  all: unset;
+  display: block;
+  width: 100%;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.commit-summary {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.commit-desc {
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-top: 3px;
+}
+.commit-btn {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.commit-btn:active {
+  transform: scale(0.99);
+}
+
+.theme-bar {
+  padding: 10px 14px 12px;
+  border-top: 0.5px solid var(--tint-2);
+}
+.swatches {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin-top: 2px;
+}
+.swatch {
+  all: unset;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.15s;
+}
+.theme-name {
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-top: 9px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--tint-2);
+  border-radius: 4px;
+}
