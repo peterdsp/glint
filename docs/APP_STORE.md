@@ -17,7 +17,7 @@ self-updater - Apple gates the purchase and pushes updates).
 | Field | Value |
 |---|---|
 | Platform | macOS |
-| Name | `Glint` (fallback: `Glint: Menu Bar Git`) |
+| Name | `Glint: Menu Bar Git` (the plain `Glint` was already taken on the store; app ID 6790709729) |
 | Primary language | English (U.S.) |
 | Bundle ID | `dev.peterdsp.glint` |
 | SKU | `glint-macos` |
@@ -87,8 +87,18 @@ App icon (1024 x 1024) is `src-tauri/icons/icon.png`, already in the build.
 - Answer Apple's privacy questionnaire as **Data Not Collected**.
 - **Privacy policy URL:** `https://glint.peterdsp.dev/privacy.html` (written and deployed - see `site/privacy.html`). Answers "Data Not Collected".
 
+## Already done in App Store Connect (app ID 6790709729)
+
+The listing is fully populated:
+- App record created: `Glint: Menu Bar Git`, macOS, bundle `dev.peterdsp.glint`, SKU `glint-macos`.
+- Version 1.0 metadata: promotional text, description, keywords, support + marketing URLs, copyright, and the 3 screenshots.
+- App Information: subtitle `Git in your menu bar`, category Developer Tools / Productivity.
+- Pricing: `$2.99` USD base, applied to all 175 regions (Apple auto-adjusts the rest).
+- App Privacy: `Data Not Collected`, privacy policy URL set, and published.
+
 ## What still needs you
 
-Building, signing (Apple Distribution + Mac Installer certs), and uploading the
-`appstore` build via Xcode or Transporter, then submitting for review. Those are
-native-tool and legal steps that cannot be done from a browser.
+These are native-tool and legal steps that cannot be done from a browser:
+- **Paid Apps Agreement + tax + banking** (App Store Connect -> Business). Required before the price can go live.
+- **Build, sign, and upload** the `appstore` build (Apple Distribution + Mac Installer certs) via Xcode or Transporter.
+- Once the build is attached, **submit for review** from the version page.
