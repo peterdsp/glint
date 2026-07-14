@@ -116,12 +116,12 @@ function wireCopy() {
         try { document.execCommand("copy"); } catch (_) {}
         ta.remove();
       }
+      const t = window.GLINT_T || ((k) => k);
       btn.classList.add("copied");
-      const prev = label ? label.textContent : "";
-      if (label) label.textContent = "Copied";
+      if (label) label.textContent = t("copiedLabel");
       setTimeout(() => {
         btn.classList.remove("copied");
-        if (label) label.textContent = prev || "Copy";
+        if (label) label.textContent = t("copyLabel");
       }, 1600);
     });
   });
@@ -140,3 +140,22 @@ applyTheme(saved);
 
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+// --- live menu-bar clock: the viewer's local time, in their locale format ---
+function startClock() {
+  const el = document.querySelector(".mb-clock");
+  if (!el) return;
+  const tick = () => {
+    try {
+      el.textContent = new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    } catch (e) {
+      /* leave the fallback text */
+    }
+  };
+  tick();
+  setInterval(tick, 15000);
+}
+startClock();

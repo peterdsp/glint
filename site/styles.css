@@ -137,6 +137,13 @@ a { color: inherit; }
 .mb-gh { color: var(--ink-2); display: flex; }
 .mb-gh:hover { color: var(--ink); }
 .mb-clock { font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.mb-lang { display: flex; gap: 1px; }
+.lang-btn {
+  all: unset; cursor: pointer; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.02em; color: var(--ink-3); padding: 2px 5px; border-radius: 6px;
+}
+.lang-btn:hover { color: var(--ink); }
+.lang-btn.active { color: var(--accent-ink); background: var(--accent-soft); }
 @media (max-width: 620px) {
   .mb-menus .mb-item:not(.strong) { display: none; }
   .mb-clock { display: none; }
