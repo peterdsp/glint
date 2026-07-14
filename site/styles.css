@@ -146,6 +146,10 @@ a { color: inherit; }
 section { padding: clamp(64px, 9vw, 120px) 24px; }
 .hero, .features, .themes-inner, .how, .download { max-width: var(--maxw); margin: 0 auto; }
 
+.hero-appicon {
+  display: block; width: 76px; height: 76px; margin-bottom: 20px;
+  filter: drop-shadow(0 12px 26px rgba(30, 40, 90, 0.28));
+}
 .eyebrow, .section-eyebrow {
   font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--accent-ink);

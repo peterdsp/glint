@@ -503,6 +503,58 @@ function wireActions() {
   document.getElementById("commit-btn").onclick = doCommit;
 }
 
+// Presentation mode (menu bar vs Dock window): detect the saved choice, or
+// show the first-run chooser. Switching writes the choice and relaunches.
+async function initMode() {
+  if (!invoke) return "menubar"; // plain-browser preview
+  let mode;
+  try {
+    mode = await invoke("app_mode");
+  } catch {
+    mode = "menubar";
+  }
+  if (mode) {
+    document.body.dataset.mode = mode;
+    const active = document.getElementById(
+      mode === "dock" ? "set-mode-dock" : "set-mode-menubar"
+    );
+    if (active) active.classList.add("active");
+    return mode;
+  }
+  // First run: show only the chooser (hide the repo view and onboarding so
+  // nothing bleeds through until a mode is picked).
+  const mp = document.getElementById("modepick");
+  const rv = document.getElementById("repo-view");
+  const ob = document.getElementById("onboard");
+  if (rv) rv.hidden = true;
+  if (ob) ob.hidden = true;
+  if (mp) mp.hidden = false;
+  return null;
+}
+
+function wireMode() {
+  const pick = (mode) => invoke && invoke("set_app_mode", { mode }).catch(() => {});
+  const map = {
+    "mp-menubar": "menubar",
+    "mp-dock": "dock",
+    "set-mode-menubar": "menubar",
+    "set-mode-dock": "dock",
+  };
+  for (const [id, mode] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el) el.onclick = () => pick(mode);
+  }
+}
+
+async function boot() {
+  loadDiskThemes();
+  loadLicense();
+  autoUpdate();
+  const mode = await initMode();
+  if (mode === null) return; // first run: only the chooser until a mode is picked
+  loadStatus();
+}
+
 if (window.applyI18n) window.applyI18n();
 buildSwatches();
 buildLangSelector();
@@ -510,7 +562,5 @@ applyTheme(localStorage.getItem("glint.theme") || "aurora");
 wireActions();
 wireLicense();
 wireSettings();
-loadStatus();
-loadDiskThemes();
-loadLicense();
-autoUpdate();
+wireMode();
+boot();

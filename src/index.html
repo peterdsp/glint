@@ -56,6 +56,23 @@
         <div class="ob-hint" data-i18n="obHint">Push and pull use your existing SSH keys, or a GitHub token you can add in Settings.</div>
       </div>
 
+      <div class="modepick" id="modepick" hidden>
+        <div class="mp-title" data-i18n="mpTitle">How should Glint live?</div>
+        <div class="mp-sub" data-i18n="mpSub">Pick how you want to open it. You can change this later in Settings.</div>
+        <div class="mp-options">
+          <button class="mp-card" id="mp-menubar" type="button">
+            <span class="mp-ic"><i class="ti ti-layout-navbar-collapse"></i></span>
+            <span class="mp-name" data-i18n="mpMenubar">Menu bar</span>
+            <span class="mp-desc" data-i18n="mpMenubarDesc">An icon in the menu bar; the panel drops down on click. No Dock icon.</span>
+          </button>
+          <button class="mp-card" id="mp-dock" type="button">
+            <span class="mp-ic"><i class="ti ti-app-window"></i></span>
+            <span class="mp-name" data-i18n="mpDock">Dock window</span>
+            <span class="mp-desc" data-i18n="mpDockDesc">A normal app window that lives in the Dock, like most apps.</span>
+          </button>
+        </div>
+      </div>
+
       <div class="settings" id="settings" hidden>
         <div class="set-head">
           <span class="set-title" data-i18n="settings">Settings</span>
@@ -71,6 +88,15 @@
           <section class="set-section">
             <div class="section-label" data-i18n="language">Language</div>
             <div class="lang-row" id="lang-row"></div>
+          </section>
+
+          <section class="set-section">
+            <div class="section-label" data-i18n="displayMode">Show Glint in</div>
+            <div class="mode-row">
+              <button class="mode-opt" id="set-mode-menubar" type="button" data-i18n="mpMenubar">Menu bar</button>
+              <button class="mode-opt" id="set-mode-dock" type="button" data-i18n="mpDock">Dock window</button>
+            </div>
+            <div class="set-hint" data-i18n="displayModeHint">Switching relaunches Glint.</div>
           </section>
 
           <section class="set-section">

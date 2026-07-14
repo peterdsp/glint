@@ -195,6 +195,60 @@ fn pick_repo(app: tauri::AppHandle) -> Option<String> {
         .map(|p| p.to_string_lossy().into_owned())
 }
 
+// ---------------------------------------------------------------------------
+// Presentation mode: a menu-bar dropdown, or a regular Dock window. Chosen on
+// first launch and stored in a small config file so the Rust side can read it
+// at startup - before the webview loads - to set the macOS activation policy
+// and window style.
+// ---------------------------------------------------------------------------
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Mode {
+    MenuBar,
+    Dock,
+    FirstRun,
+}
+
+fn mode_path(app: &tauri::AppHandle) -> Option<std::path::PathBuf> {
+    app.path().app_config_dir().ok().map(|d| d.join("mode"))
+}
+
+fn read_mode(app: &tauri::AppHandle) -> Mode {
+    let raw = mode_path(app)
+        .and_then(|p| std::fs::read_to_string(p).ok())
+        .map(|s| s.trim().to_string());
+    match raw.as_deref() {
+        Some("dock") => Mode::Dock,
+        Some("menubar") => Mode::MenuBar,
+        _ => Mode::FirstRun,
+    }
+}
+
+/// The chosen presentation mode ("menubar" | "dock"), or null on first run so
+/// the UI can show the chooser.
+#[tauri::command]
+fn app_mode(app: tauri::AppHandle) -> Option<String> {
+    match read_mode(&app) {
+        Mode::MenuBar => Some("menubar".into()),
+        Mode::Dock => Some("dock".into()),
+        Mode::FirstRun => None,
+    }
+}
+
+/// Persist the presentation mode and relaunch so it applies cleanly from
+/// startup (activation policy and window style are set before the UI loads).
+#[tauri::command]
+fn set_app_mode(app: tauri::AppHandle, mode: String) -> Result<(), String> {
+    let m = if mode == "dock" { "dock" } else { "menubar" };
+    if let Some(p) = mode_path(&app) {
+        if let Some(dir) = p.parent() {
+            let _ = std::fs::create_dir_all(dir);
+        }
+        std::fs::write(&p, m).map_err(|e| e.to_string())?;
+    }
+    app.restart()
+}
+
 /// Store (empty string clears) a GitHub token in the OS Keychain. The sandboxed
 /// App Store build authenticates HTTPS git and PR/CI status entirely from this,
 /// since it cannot reach `~/.ssh`, the credential helper, or the gh CLI. Other
@@ -299,12 +353,28 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_status, commit, fetch, pull, push, diff, open_diff, load_themes,
             pr_status, open_url, license_status, activate_license, update_now,
-            app_version, set_github_token, github_token_set, pick_repo
+            app_version, set_github_token, github_token_set, pick_repo,
+            app_mode, set_app_mode
         ])
         .setup(|app| {
             let win = app
                 .get_webview_window("panel")
                 .expect("panel window missing");
+
+            let mode = read_mode(app.handle());
+
+            // macOS activation policy: a menu-bar app has no Dock icon
+            // (Accessory); a Dock app - and the first-run chooser, so it shows
+            // as a normal foreground window - is Regular.
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::ActivationPolicy;
+                let policy = match mode {
+                    Mode::MenuBar => ActivationPolicy::Accessory,
+                    _ => ActivationPolicy::Regular,
+                };
+                let _ = app.set_activation_policy(policy);
+            }
 
             // Native macOS translucency (NSVisualEffectView) behind the webview.
             // The web layer paints its themed glass tint on top of this.
@@ -328,57 +398,108 @@ fn main() {
                 let _ = window_vibrancy::apply_mica(&win, None);
             }
 
-            let quit = MenuItem::with_id(app, "quit", "Quit Glint", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&quit])?;
-
-            // Menu-bar icon: a monochrome template on macOS (the system tints it
-            // for light/dark); the colored app icon on Windows/Linux, where
-            // template icons aren't a concept.
-            let mut tray = TrayIconBuilder::with_id("glint-tray")
-                .menu(&menu)
-                .show_menu_on_left_click(false);
-
-            #[cfg(target_os = "macos")]
-            {
-                let icon = tauri::image::Image::from_bytes(include_bytes!(
-                    "../icons/tray-template.png"
-                ))?;
-                tray = tray.icon(icon).icon_as_template(true);
+            // Window presentation per mode. The menu-bar panel stays hidden
+            // until the tray is clicked; the Dock window (and the first-run
+            // chooser) are shown up front.
+            match mode {
+                Mode::Dock => {
+                    let _ = win.set_decorations(true);
+                    let _ = win.set_always_on_top(false);
+                    let _ = win.set_resizable(true);
+                    let _ = win.set_min_size(Some(tauri::LogicalSize::new(340.0, 480.0)));
+                    let _ = win.set_size(tauri::LogicalSize::new(380.0, 620.0));
+                    let _ = win.center();
+                    let _ = win.show();
+                    let _ = win.set_focus();
+                }
+                Mode::FirstRun => {
+                    let _ = win.center();
+                    let _ = win.show();
+                    let _ = win.set_focus();
+                }
+                Mode::MenuBar => {}
             }
-            #[cfg(not(target_os = "macos"))]
-            {
-                tray = tray.icon(app.default_window_icon().unwrap().clone());
-            }
 
-            let _tray = tray
-                .on_menu_event(|app, event| {
-                    if event.id.as_ref() == "quit" {
-                        app.exit(0);
-                    }
-                })
-                .on_tray_icon_event(|tray, event| {
-                    tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
-                    if let TrayIconEvent::Click {
-                        button: MouseButton::Left,
-                        button_state: MouseButtonState::Up,
-                        ..
-                    } = event
-                    {
-                        if let Some(win) = tray.app_handle().get_webview_window("panel") {
-                            toggle_panel(&win);
+            // The tray icon only exists in menu-bar mode; a Dock app doesn't
+            // need one, and the first-run window is already visible.
+            if mode == Mode::MenuBar {
+                let quit = MenuItem::with_id(app, "quit", "Quit Glint", true, None::<&str>)?;
+                let menu = Menu::with_items(app, &[&quit])?;
+
+                // Menu-bar icon: a monochrome template on macOS (the system
+                // tints it for light/dark); the colored app icon elsewhere,
+                // where template icons aren't a concept.
+                let mut tray = TrayIconBuilder::with_id("glint-tray")
+                    .menu(&menu)
+                    .show_menu_on_left_click(false);
+
+                #[cfg(target_os = "macos")]
+                {
+                    let icon = tauri::image::Image::from_bytes(include_bytes!(
+                        "../icons/tray-template.png"
+                    ))?;
+                    tray = tray.icon(icon).icon_as_template(true);
+                }
+                #[cfg(not(target_os = "macos"))]
+                {
+                    tray = tray.icon(app.default_window_icon().unwrap().clone());
+                }
+
+                let _tray = tray
+                    .on_menu_event(|app, event| {
+                        if event.id.as_ref() == "quit" {
+                            app.exit(0);
                         }
-                    }
-                })
-                .build(app)?;
+                    })
+                    .on_tray_icon_event(|tray, event| {
+                        tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
+                        if let TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event
+                        {
+                            if let Some(win) = tray.app_handle().get_webview_window("panel") {
+                                toggle_panel(&win);
+                            }
+                        }
+                    })
+                    .build(app)?;
+            }
 
             Ok(())
         })
-        // Menu-bar UX: dismiss the panel when it loses focus.
-        .on_window_event(|win, event| {
-            if let tauri::WindowEvent::Focused(false) = event {
+        .on_window_event(|win, event| match event {
+            // Menu-bar UX: dismiss the panel when it loses focus. In Dock mode
+            // it is a normal window, so leave it be.
+            tauri::WindowEvent::Focused(false)
+                if read_mode(win.app_handle()) == Mode::MenuBar =>
+            {
                 let _ = win.hide();
             }
+            // Dock mode: closing the window hides it (the app stays in the
+            // Dock) rather than quitting.
+            tauri::WindowEvent::CloseRequested { api, .. }
+                if read_mode(win.app_handle()) == Mode::Dock =>
+            {
+                api.prevent_close();
+                let _ = win.hide();
+            }
+            _ => {}
         })
-        .run(tauri::generate_context!())
-        .expect("error while running Glint");
+        .build(tauri::generate_context!())
+        .expect("error while building Glint")
+        .run(|app_handle, event| {
+            // Dock mode: clicking the Dock icon with the window closed
+            // (hidden) reopens it, the way a normal Mac app behaves.
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Reopen { .. } = event {
+                if let Some(win) = app_handle.get_webview_window("panel") {
+                    let _ = win.show();
+                    let _ = win.set_focus();
+                }
+            }
+            #[cfg(not(target_os = "macos"))]
+            let _ = (app_handle, event);
+        });
 }
