@@ -19,6 +19,7 @@
         <button class="icon-btn" id="settings-btn" aria-label="Settings"><i class="ti ti-settings"></i></button>
       </header>
 
+      <div class="repo-view" id="repo-view">
       <section class="sync">
         <button class="sync-stat" id="pull-btn" type="button" aria-label="Pull from origin">
           <i class="ti ti-arrow-down" aria-hidden="true"></i>
@@ -41,10 +42,19 @@
         </div>
         <button class="commit-btn" id="commit-btn">Commit to <span id="commit-branch">-</span></button>
       </footer>
+      </div>
 
       <button class="trial-bar" id="trial-bar" type="button" hidden></button>
 
       <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+      <div class="onboard" id="onboard" hidden>
+        <div class="ob-icon"><i class="ti ti-git-branch"></i></div>
+        <div class="ob-title" data-i18n="obTitle">Connect a repository</div>
+        <div class="ob-sub" data-i18n="obSub">Point Glint at a Git repo on your Mac - one you cloned from GitHub, GitLab, Bitbucket, or any other remote.</div>
+        <button class="ob-btn" id="ob-open" type="button" data-i18n="obOpen">Open a repository</button>
+        <div class="ob-hint" data-i18n="obHint">Push and pull use your existing SSH keys, or a GitHub token you can add in Settings.</div>
+      </div>
 
       <div class="settings" id="settings" hidden>
         <div class="set-head">

@@ -1,25 +1,13 @@
 // Glint frontend controller: theme switching + Git status rendering.
 // Talks to the Rust core over Tauri IPC (window.__TAURI__, enabled via
-// withGlobalTauri). When run outside Tauri (e.g. a plain browser) or when no
-// repo is set, it falls back to sample data so the UI is always populated.
+// withGlobalTauri). Until a repository is connected it shows the onboarding
+// card; there is no placeholder repo data.
 
 const THEMES = window.GLINT_THEMES;
 const invoke = window.__TAURI__?.core?.invoke;
 
-const SAMPLE = {
-  repo: "peterdsp / glint",
-  branch: "main",
-  ahead: 5,
-  behind: 2,
-  files: [
-    { path: "src/menu-bar/panel.tsx", status: "modified", staged: true, added: 42, removed: 0 },
-    { path: "src/themes/liquid-glass.css", status: "added", staged: true, added: 118, removed: 0 },
-    { path: "docs/architecture.md", status: "modified", staged: false, added: 0, removed: 7 },
-  ],
-};
-
 // The currently rendered status; the commit path reads staged files from it.
-let current = SAMPLE;
+let current = { files: [] };
 
 function repoPath() {
   try {
@@ -417,19 +405,56 @@ async function runSync(cmd, busyMsg, okMsg) {
   }
 }
 
+// Swap between the onboarding card and the repository view.
+function showOnboard(on) {
+  const ob = document.getElementById("onboard");
+  const rv = document.getElementById("repo-view");
+  if (ob) ob.hidden = !on;
+  if (rv) rv.hidden = on;
+}
+
 async function loadStatus() {
   const path = repoPath();
   if (invoke && path) {
     try {
       const s = await invoke("get_status", { path });
+      showOnboard(false);
       render(statusToView(path, s));
       loadPrStatus(); // fire-and-forget PR + CI badge
       return;
     } catch (e) {
-      console.warn("get_status failed, using sample:", e);
+      // The saved path is gone or not a Git repo - forget it and re-onboard.
+      console.warn("get_status failed:", e);
+      try {
+        localStorage.removeItem("glint.repo");
+      } catch {}
     }
   }
-  render(SAMPLE);
+  showOnboard(true);
+}
+
+// Native folder picker to connect a repository. Validates the choice by loading
+// its status; a non-repo folder is rejected with a clear message.
+async function connectRepo() {
+  if (!invoke) return;
+  let path;
+  try {
+    path = await invoke("pick_repo");
+  } catch (e) {
+    return;
+  }
+  if (!path) return;
+  try {
+    const s = await invoke("get_status", { path });
+    try {
+      localStorage.setItem("glint.repo", path);
+    } catch {}
+    showOnboard(false);
+    render(statusToView(path, s));
+    loadPrStatus();
+  } catch (e) {
+    showToast(t("notARepo"), "err");
+  }
 }
 
 async function doCommit() {
@@ -464,15 +489,9 @@ async function doCommit() {
 }
 
 function wireActions() {
-  document.getElementById("switch-repo").onclick = () => {
-    const path = window.prompt(t("switchRepoPrompt"));
-    if (path) {
-      try {
-        localStorage.setItem("glint.repo", path);
-      } catch {}
-      loadStatus();
-    }
-  };
+  document.getElementById("switch-repo").onclick = connectRepo;
+  const obOpen = document.getElementById("ob-open");
+  if (obOpen) obOpen.onclick = connectRepo;
   document.getElementById("sync").onclick = () =>
     runSync("fetch", t("fetching"), (s) =>
       s.behind || s.ahead ? t("syncCounts", { behind: s.behind, ahead: s.ahead }) : t("upToDate")

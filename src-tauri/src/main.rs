@@ -181,6 +181,20 @@ fn app_version() -> String {
     env!("CARGO_PKG_VERSION").to_string()
 }
 
+/// Native folder picker for connecting a repository. Returns the chosen path,
+/// or None if the user cancels. The frontend then validates it is a real Git
+/// repo by loading its status.
+#[tauri::command]
+fn pick_repo(app: tauri::AppHandle) -> Option<String> {
+    use tauri_plugin_dialog::DialogExt;
+    app.dialog()
+        .file()
+        .set_title("Choose a Git repository")
+        .blocking_pick_folder()
+        .and_then(|p| p.into_path().ok())
+        .map(|p| p.to_string_lossy().into_owned())
+}
+
 /// Store (empty string clears) a GitHub token in the OS Keychain. The sandboxed
 /// App Store build authenticates HTTPS git and PR/CI status entirely from this,
 /// since it cannot reach `~/.ssh`, the credential helper, or the gh CLI. Other
@@ -268,7 +282,9 @@ fn toggle_panel(win: &WebviewWindow) {
 }
 
 fn main() {
-    let mut builder = tauri::Builder::default().plugin(tauri_plugin_positioner::init());
+    let mut builder = tauri::Builder::default()
+        .plugin(tauri_plugin_positioner::init())
+        .plugin(tauri_plugin_dialog::init());
 
     // Self-updater only in the direct (Ko-fi) build; the App Store build omits
     // the feature entirely.
@@ -283,7 +299,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_status, commit, fetch, pull, push, diff, open_diff, load_themes,
             pr_status, open_url, license_status, activate_license, update_now,
-            app_version, set_github_token, github_token_set
+            app_version, set_github_token, github_token_set, pick_repo
         ])
         .setup(|app| {
             let win = app
