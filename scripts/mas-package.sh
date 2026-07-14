@@ -34,11 +34,11 @@ fi
 # 1. Build the sandboxed app bundle only (the .pkg is produced below).
 cd "$ROOT/src-tauri"
 if command -v cargo-tauri >/dev/null 2>&1 || cargo tauri --version >/dev/null 2>&1; then
-  cargo tauri build --no-default-features --features appstore \
-    --config tauri.appstore.conf.json --bundles app
+  cargo tauri build --config tauri.appstore.conf.json --bundles app \
+    -- --no-default-features --features appstore
 else
-  tauri build --no-default-features --features appstore \
-    --config tauri.appstore.conf.json --bundles app
+  tauri build --config tauri.appstore.conf.json --bundles app \
+    -- --no-default-features --features appstore
 fi
 
 APP="$(ls -d "$ROOT/src-tauri/target/release/bundle/macos/"*.app | head -1)"

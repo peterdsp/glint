@@ -1,9 +1,19 @@
 # App Store Connect - ready-to-paste metadata
 
 Everything to fill the Mac App Store listing. Copy each field in. Assets are in
-`docs/assets/store/`. The App Store build is `cargo tauri build
---no-default-features --features appstore` (no trial, no license gate, no
-self-updater - Apple gates the purchase and pushes updates).
+`docs/assets/store/`. The App Store build is the sandboxed `appstore` variant
+(no trial, no license gate, no self-updater - Apple gates the purchase and
+pushes updates). Build + sign + package it with `scripts/mas-package.sh`.
+
+### Sandbox auth (important)
+
+The Mac App Store requires App Sandbox, which blocks Glint's normal auth
+(SSH agent, git credential helper, and the gh CLI all reach outside the app
+bundle). The `appstore` build therefore authenticates from a **GitHub token the
+user saves in Settings** (stored in the Keychain): HTTPS push/pull and PR/CI
+status use that token. SSH remotes are not available in the App Store build;
+the Ko-fi build keeps full SSH + gh-CLI support. See `src-tauri/src/git.rs` and
+`src-tauri/src/github.rs` (both gated on `feature = "appstore"`).
 
 ## Prerequisites (yours - one-time)
 
@@ -96,9 +106,22 @@ The listing is fully populated:
 - Pricing: `$2.99` USD base, applied to all 175 regions (Apple auto-adjusts the rest).
 - App Privacy: `Data Not Collected`, privacy policy URL set, and published.
 
+## Build and package (automated)
+
+`scripts/mas-package.sh` does the whole native side: builds the sandboxed
+`appstore` app, embeds the `Glint Mac App Store` provisioning profile
+(`src-tauri/embedded.provisionprofile`, gitignored), signs with the Apple
+Distribution cert + `entitlements.appstore.plist`, and produces a signed
+`Glint.pkg` (installer signed with the 3rd Party Mac Developer Installer cert).
+
 ## What still needs you
 
-These are native-tool and legal steps that cannot be done from a browser:
-- **Paid Apps Agreement + tax + banking** (App Store Connect -> Business). Required before the price can go live.
-- **Build, sign, and upload** the `appstore` build (Apple Distribution + Mac Installer certs) via Xcode or Transporter.
-- Once the build is attached, **submit for review** from the version page.
+- **Upload** `Glint.pkg` to App Store Connect (app id 6790709729) with an App
+  Store Connect API key (a `.p8` in `~/.appstoreconnect/private_keys/`):
+  `xcrun altool --upload-app -t macos -f Glint.pkg --apiKey <KEY_ID> --apiIssuer <ISSUER_ID>`
+  or drag it into Transporter.app. (The upload needs a credential, so it is not
+  automated here.)
+- Once the build is processed, attach it to the 1.0 version and **submit for
+  review** from the version page.
+- The **Paid Apps Agreement + tax + banking** must be active for the price to go
+  live (reported already done on this account).

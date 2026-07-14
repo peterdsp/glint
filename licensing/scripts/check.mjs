@@ -43,4 +43,4 @@ console.log("PUBLIC KEY (tweetnacl):", stdEncode(pair.publicKey));
 console.log("SAMPLE LICENSE KEY:");
 console.log(key);
 console.log("\nVerify it with the app's crypto:");
-console.log(`  cd ../src-tauri && cargo run -q --bin glint-keygen -- verify "${key}" "${stdEncode(pair.publicKey)}"`);
+console.log(`  cd ../src-tauri && cargo run -q --features keygen --bin glint-keygen -- verify "${key}" "${stdEncode(pair.publicKey)}"`);

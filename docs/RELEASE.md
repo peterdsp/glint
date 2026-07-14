@@ -32,7 +32,7 @@ Generate the keypair that mints license keys:
 
 ```sh
 cd src-tauri
-cargo run --bin glint-keygen -- new
+cargo run --features keygen --bin glint-keygen -- new
 ```
 
 It prints a PUBLIC key and a PRIVATE key.
@@ -68,9 +68,9 @@ Create a $4.99 shop item / digital product. Delivery: link buyers to the latest 
 ```sh
 cd src-tauri
 # perpetual license
-cargo run --bin glint-keygen -- sign buyer@example.com <PRIVATE_KEY_B64>
+cargo run --features keygen --bin glint-keygen -- sign buyer@example.com <PRIVATE_KEY_B64>
 # or time-limited (e.g. 365 days)
-cargo run --bin glint-keygen -- sign buyer@example.com <PRIVATE_KEY_B64> 365
+cargo run --features keygen --bin glint-keygen -- sign buyer@example.com <PRIVATE_KEY_B64> 365
 ```
 
 Send the printed key to the buyer. They paste it into Glint when the trial ends (or anytime) to unlock it. Helpers: `glint-keygen pubkey <PRIVATE_KEY_B64>` prints the public key to embed; `glint-keygen verify <KEY> <PUBLIC_KEY_B64>` checks a key with the app's exact rules.

@@ -5,3 +5,6 @@
 icon-src.png
 licensing/node_modules/
 node_modules
+
+# Mac App Store provisioning profile (account-specific, regenerable at developer.apple.com)
+src-tauri/embedded.provisionprofile

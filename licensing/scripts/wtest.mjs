@@ -66,10 +66,10 @@ check("email contains a license key", !!key);
 
 // Verify the emailed key with the app's exact crypto.
 if (key) {
-  const pub = execSync(`cargo run -q --bin glint-keygen -- pubkey "${seed}"`, {
+  const pub = execSync(`cargo run -q --features keygen --bin glint-keygen -- pubkey "${seed}"`, {
     cwd: new URL("../../src-tauri", import.meta.url),
   }).toString().trim();
-  const verify = execSync(`cargo run -q --bin glint-keygen -- verify "${key}" "${pub}"`, {
+  const verify = execSync(`cargo run -q --features keygen --bin glint-keygen -- verify "${key}" "${pub}"`, {
     cwd: new URL("../../src-tauri", import.meta.url),
   }).toString().trim();
   check("emailed key verifies in the app (ed25519-dalek)", verify.startsWith("VALID"));

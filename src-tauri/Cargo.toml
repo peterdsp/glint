@@ -9,10 +9,13 @@ authors = ["peterdsp"]
 name = "glint"
 path = "src/main.rs"
 
-# Offline license tooling (not shipped): generate a keypair, mint license keys.
+# Offline license tooling. Gated behind the `keygen` feature so it is never
+# built (and therefore never bundled into a release .app) unless asked for
+# explicitly: `cargo run --features keygen --bin glint-keygen -- ...`.
 [[bin]]
 name = "glint-keygen"
 path = "src/bin/keygen.rs"
+required-features = ["keygen"]
 
 [features]
 # Default (Ko-fi / direct download): 7-day trial + license gate + self-updater.
@@ -21,6 +24,9 @@ updater = ["dep:tauri-plugin-updater", "dep:tauri-plugin-process"]
 # App Store build: `--no-default-features --features appstore`. Apple gates the
 # purchase and pushes updates, so no trial, no license gate, no self-updater.
 appstore = []
+# Build the offline license key generator (glint-keygen). Off by default so the
+# tool never ends up inside a shipped bundle.
+keygen = []
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
