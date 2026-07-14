@@ -19,10 +19,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APP_CERT="Apple Distribution: PETROS DHESPOLLARI (YTS4KJBX3P)"
-PKG_CERT="3rd Party Mac Developer Installer: PETROS DHESPOLLARI (YTS4KJBX3P)"
+# Signing identities and profile default to the local setup, but CI overrides
+# them via env (MAS_APP / MAS_INST / PROFILE) after importing certs into a
+# temporary keychain. Same script runs locally and in the release workflow.
+APP_CERT="${MAS_APP:-Apple Distribution: PETROS DHESPOLLARI (YTS4KJBX3P)}"
+PKG_CERT="${MAS_INST:-3rd Party Mac Developer Installer: PETROS DHESPOLLARI (YTS4KJBX3P)}"
 ENTITLEMENTS="$ROOT/src-tauri/entitlements.appstore.plist"
-PROFILE="$ROOT/src-tauri/embedded.provisionprofile"
+PROFILE="${PROFILE:-$ROOT/src-tauri/embedded.provisionprofile}"
 
 if [ ! -f "$PROFILE" ]; then
   echo "Missing $PROFILE" >&2
@@ -31,17 +34,17 @@ if [ ! -f "$PROFILE" ]; then
   exit 1
 fi
 
-# 1. Build the sandboxed app bundle only (the .pkg is produced below).
+# 1. Build the sandboxed app bundle (the .pkg is produced below). Builds for
+#    the host arch (arm64 on Apple silicon runners/machines). To ship a
+#    universal build later, add `--target universal-apple-darwin` here once the
+#    x86_64 toolchain is in place.
 cd "$ROOT/src-tauri"
-if command -v cargo-tauri >/dev/null 2>&1 || cargo tauri --version >/dev/null 2>&1; then
-  cargo tauri build --config tauri.appstore.conf.json --bundles app \
-    -- --no-default-features --features appstore
-else
-  tauri build --config tauri.appstore.conf.json --bundles app \
-    -- --no-default-features --features appstore
-fi
+TAURI="cargo tauri"
+command -v cargo-tauri >/dev/null 2>&1 || cargo tauri --version >/dev/null 2>&1 || TAURI="tauri"
+$TAURI build --config tauri.appstore.conf.json --bundles app \
+  -- --no-default-features --features appstore
 
-APP="$(ls -d "$ROOT/src-tauri/target/release/bundle/macos/"*.app | head -1)"
+APP="$(ls -d "$ROOT/src-tauri/target/release/bundle/macos/"*.app 2>/dev/null | head -1)"
 echo "Built app bundle: $APP"
 
 # 2. Embed the provisioning profile.
@@ -59,6 +62,7 @@ codesign --verify --deep --strict --verbose=2 "$APP"
 
 # 4. Build the signed installer package.
 PKG="$ROOT/src-tauri/target/release/bundle/Glint.pkg"
+mkdir -p "$(dirname "$PKG")"
 productbuild --component "$APP" /Applications --sign "$PKG_CERT" "$PKG"
 echo "Packaged: $PKG"
 
