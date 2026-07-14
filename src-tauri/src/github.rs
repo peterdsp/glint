@@ -17,7 +17,20 @@ pub struct PrStatus {
     pub checks: String,
 }
 
-/// Resolve a GitHub token the way the gh CLI would see it.
+/// A GitHub token the user stored in Glint (OS Keychain). Sandbox-safe: no
+/// subprocess and no home-directory access, so it works inside the Mac App
+/// Store sandbox where `gh` and `~/.config/gh` are unreachable.
+pub fn stored_github_token() -> Option<String> {
+    keyring::Entry::new("dev.peterdsp.glint", "gh_token")
+        .ok()?
+        .get_password()
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+}
+
+/// Resolve a GitHub token: environment first, then the token stored in the
+/// Keychain, then (outside the App Store sandbox only) the gh CLI.
 pub fn resolve_token() -> Option<String> {
     for var in ["GH_TOKEN", "GITHUB_TOKEN"] {
         if let Ok(v) = std::env::var(var) {
@@ -27,14 +40,22 @@ pub fn resolve_token() -> Option<String> {
             }
         }
     }
-    let out = std::process::Command::new("gh")
-        .args(["auth", "token", "--hostname", "github.com"])
-        .output()
-        .ok()?;
-    if out.status.success() {
-        let t = String::from_utf8_lossy(&out.stdout).trim().to_string();
-        if !t.is_empty() {
-            return Some(t);
+    if let Some(t) = stored_github_token() {
+        return Some(t);
+    }
+    // The App Store build is sandboxed and cannot spawn `gh`; it relies on the
+    // Keychain token above. Every other build still borrows the gh CLI token.
+    #[cfg(not(feature = "appstore"))]
+    {
+        let out = std::process::Command::new("gh")
+            .args(["auth", "token", "--hostname", "github.com"])
+            .output()
+            .ok()?;
+        if out.status.success() {
+            let t = String::from_utf8_lossy(&out.stdout).trim().to_string();
+            if !t.is_empty() {
+                return Some(t);
+            }
         }
     }
     None

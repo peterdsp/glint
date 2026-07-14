@@ -280,18 +280,48 @@ function changeLocale(code) {
   loadLicense(); // re-render trial / license strings
 }
 
-// Settings overlay: theme picker + license + updates.
+// Reflect whether a GitHub token is stored, without ever showing the secret.
+async function refreshGhStatus() {
+  const st = document.getElementById("gh-status");
+  if (!st || !invoke) return;
+  try {
+    const set = await invoke("github_token_set");
+    st.textContent = set ? t("ghTokenActive") : t("ghTokenNone");
+  } catch (e) {
+    st.textContent = t("ghTokenNone");
+  }
+}
+
+// Settings overlay: theme picker + GitHub + license + updates.
 function wireSettings() {
   const panel = document.getElementById("settings");
   const open = document.getElementById("settings-btn");
   const close = document.getElementById("settings-close");
-  if (open && panel) open.onclick = () => { panel.hidden = false; };
+  if (open && panel) open.onclick = () => { panel.hidden = false; refreshGhStatus(); };
   if (close && panel) close.onclick = () => { panel.hidden = true; };
 
   const buy = document.getElementById("set-buy");
   if (buy) buy.onclick = openKofi;
   const act = document.getElementById("set-activate");
   if (act) act.onclick = () => activateKey("set-key", "set-license");
+
+  // GitHub token: stored in the OS Keychain, never read back into the UI.
+  const ghSave = document.getElementById("gh-save");
+  if (ghSave)
+    ghSave.onclick = async () => {
+      if (!invoke) return;
+      const field = document.getElementById("gh-token");
+      const token = field ? field.value.trim() : "";
+      try {
+        await invoke("set_github_token", { token });
+        if (field) field.value = "";
+        refreshGhStatus();
+      } catch (e) {
+        const st = document.getElementById("gh-status");
+        if (st) st.textContent = t("ghTokenError");
+      }
+    };
+  refreshGhStatus();
 
   const upd = document.getElementById("set-update");
   const msg = document.getElementById("set-update-msg");

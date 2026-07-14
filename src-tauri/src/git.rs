@@ -281,32 +281,48 @@ fn find_origin(repo: &Repository) -> Result<git2::Remote<'_>, String> {
 /// Keychain / `git credential`) for HTTPS. An attempt counter guards against
 /// libgit2's retry loop when every method is refused.
 fn remote_callbacks() -> RemoteCallbacks<'static> {
+    #[cfg(not(feature = "appstore"))]
     let config = git2::Config::open_default().and_then(|mut c| c.snapshot()).ok();
     let mut cb = RemoteCallbacks::new();
     let mut attempts = 0usize;
-    cb.credentials(move |url, username, allowed| {
+    cb.credentials(move |_url, username, allowed| {
         attempts += 1;
         if attempts > 5 {
             return Err(git2::Error::from_str(
-                "authentication failed (tried SSH agent and credential helper)",
+                "authentication failed (add a GitHub token in Settings, or check your SSH agent)",
             ));
         }
         // libgit2 asks for the username first on SSH URLs.
         if allowed.contains(CredentialType::USERNAME) {
             return Cred::username(username.unwrap_or("git"));
         }
-        if allowed.contains(CredentialType::SSH_KEY) {
-            return Cred::ssh_key_from_agent(username.unwrap_or("git"));
-        }
+        // HTTPS with a token stored in the Keychain. This is the only path that
+        // works inside the Mac App Store sandbox, and a fine fallback elsewhere.
         if allowed.contains(CredentialType::USER_PASS_PLAINTEXT) {
-            if let Some(cfg) = &config {
-                return Cred::credential_helper(cfg, url, username);
+            if let Some(tok) = crate::github::stored_github_token() {
+                return Cred::userpass_plaintext("x-access-token", &tok);
             }
         }
-        if allowed.contains(CredentialType::DEFAULT) {
-            return Cred::default();
+        // SSH agent and the platform credential helper both need to reach
+        // outside the app bundle, so they are unavailable in the sandboxed
+        // App Store build.
+        #[cfg(not(feature = "appstore"))]
+        {
+            if allowed.contains(CredentialType::SSH_KEY) {
+                return Cred::ssh_key_from_agent(username.unwrap_or("git"));
+            }
+            if allowed.contains(CredentialType::USER_PASS_PLAINTEXT) {
+                if let Some(cfg) = &config {
+                    return Cred::credential_helper(cfg, _url, username);
+                }
+            }
+            if allowed.contains(CredentialType::DEFAULT) {
+                return Cred::default();
+            }
         }
-        Err(git2::Error::from_str("no supported authentication method"))
+        Err(git2::Error::from_str(
+            "no supported authentication method (add a GitHub token in Settings)",
+        ))
     });
     cb
 }

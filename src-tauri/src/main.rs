@@ -102,7 +102,6 @@ fn now_secs() -> u64 {
 // Secure storage (OS Keychain / Credential Manager / secret-service). Used to
 // pin the trial start and the license so deleting a plain file can't reset the
 // trial. Falls back silently when no secret service is available.
-#[cfg(not(feature = "appstore"))]
 const KEYRING_SERVICE: &str = "dev.peterdsp.glint";
 
 #[cfg(not(feature = "appstore"))]
@@ -180,6 +179,29 @@ fn activate_license(app: tauri::AppHandle, key: String) -> Result<license::Licen
 #[tauri::command]
 fn app_version() -> String {
     env!("CARGO_PKG_VERSION").to_string()
+}
+
+/// Store (empty string clears) a GitHub token in the OS Keychain. The sandboxed
+/// App Store build authenticates HTTPS git and PR/CI status entirely from this,
+/// since it cannot reach `~/.ssh`, the credential helper, or the gh CLI. Other
+/// builds treat it as an optional fallback ahead of the gh CLI.
+#[tauri::command]
+fn set_github_token(token: String) -> Result<(), String> {
+    let entry = keyring::Entry::new(KEYRING_SERVICE, "gh_token").map_err(|e| e.to_string())?;
+    let t = token.trim();
+    if t.is_empty() {
+        let _ = entry.delete_credential();
+        Ok(())
+    } else {
+        entry.set_password(t).map_err(|e| e.to_string())
+    }
+}
+
+/// Whether a GitHub token is currently stored. Never returns the token itself,
+/// so Settings can show its state without the secret round-tripping to the UI.
+#[tauri::command]
+fn github_token_set() -> bool {
+    crate::github::stored_github_token().is_some()
 }
 
 /// Silent background update (direct build): check GitHub Releases, and if a
@@ -261,7 +283,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_status, commit, fetch, pull, push, diff, open_diff, load_themes,
             pr_status, open_url, license_status, activate_license, update_now,
-            app_version
+            app_version, set_github_token, github_token_set
         ])
         .setup(|app| {
             let win = app

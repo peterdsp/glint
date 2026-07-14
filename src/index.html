@@ -64,6 +64,14 @@
           </section>
 
           <section class="set-section">
+            <div class="section-label" data-i18n="github">GitHub</div>
+            <div class="set-license" id="gh-status">-</div>
+            <input class="lg-input" id="gh-token" placeholder="ghp_..." data-i18n-ph="ghTokenPlaceholder" spellcheck="false" type="password" autocomplete="off" />
+            <button class="set-btn" id="gh-save" type="button" data-i18n="saveToken">Save token</button>
+            <div class="set-hint" data-i18n="ghTokenHint">Used for PR status and HTTPS push/pull. Leave the field empty and save to remove it.</div>
+          </section>
+
+          <section class="set-section">
             <div class="section-label" data-i18n="license">License</div>
             <div class="set-license" id="set-license">-</div>
             <button class="set-btn accent" id="set-buy" type="button" data-i18n="getLicenseKofi">Get a license on Ko-fi</button>
