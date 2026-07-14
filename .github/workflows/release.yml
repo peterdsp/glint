@@ -61,10 +61,16 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           # Public key for verifying license keys, embedded at build time.
           GLINT_LICENSE_PUBKEY: ${{ secrets.GLINT_LICENSE_PUBKEY }}
-          # NOTE: macOS/Windows code-signing env vars are intentionally omitted
-          # until real certs exist - passing EMPTY Apple cert secrets makes
-          # `security import` fail. Add them back (see docs/RELEASE.md) once you
-          # have a Developer ID cert, for notarized, password-free updates.
+          # macOS Developer ID signing + notarization so the Ko-fi / GitHub
+          # build opens without a Gatekeeper warning. Ignored on Windows/Linux
+          # runners. tauri-action imports the cert into a temp keychain, signs
+          # the .app/.dmg, then notarizes and staples.
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "Glint ${{ github.ref_name }}"
