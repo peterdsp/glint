@@ -1,0 +1,17 @@
+{
+  "name": "glint-licensing",
+  "private": true,
+  "type": "module",
+  "description": "Ko-fi webhook that mints and emails Glint license keys",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "node scripts/check.mjs"
+  },
+  "dependencies": {
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

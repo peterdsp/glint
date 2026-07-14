@@ -59,7 +59,11 @@ Create a $4.99 shop item / digital product. Delivery: link buyers to the latest 
 3. `release.yml` builds signed installers for macOS (Intel + Apple silicon), Windows, and Linux, generates `latest.json`, and attaches everything to a **draft** GitHub Release.
 4. Review the draft, then publish it. Existing installs check `releases/latest/download/latest.json` and update themselves.
 
-## Minting a license key for a buyer
+## License delivery
+
+**Automatic (recommended):** deploy the Cloudflare Worker in `licensing/`. Ko-fi calls it on each purchase and it mints + emails the key to the buyer, no manual step. See [licensing/README.md](../licensing/README.md).
+
+**Manual (fallback / testing):**
 
 ```sh
 cd src-tauri
@@ -69,7 +73,7 @@ cargo run --bin glint-keygen -- sign buyer@example.com <PRIVATE_KEY_B64>
 cargo run --bin glint-keygen -- sign buyer@example.com <PRIVATE_KEY_B64> 365
 ```
 
-Send the printed key to the buyer. They paste it into Glint when the trial ends (or anytime) to unlock it.
+Send the printed key to the buyer. They paste it into Glint when the trial ends (or anytime) to unlock it. Helpers: `glint-keygen pubkey <PRIVATE_KEY_B64>` prints the public key to embed; `glint-keygen verify <KEY> <PUBLIC_KEY_B64>` checks a key with the app's exact rules.
 
 ---
 

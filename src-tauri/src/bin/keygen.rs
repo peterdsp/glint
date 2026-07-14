@@ -12,7 +12,7 @@
 // can mint licenses.
 
 use base64::Engine;
-use ed25519_dalek::{Signer, SigningKey};
+use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn b64url() -> base64::engine::GeneralPurpose {
@@ -27,10 +27,14 @@ fn main() {
     match args.first().map(String::as_str) {
         Some("new") => new_keypair(),
         Some("sign") => sign(&args[1..]),
+        Some("pubkey") => pubkey(&args[1..]),
+        Some("verify") => verify(&args[1..]),
         _ => {
             eprintln!("usage:");
             eprintln!("  glint-keygen new");
             eprintln!("  glint-keygen sign <email> <private_key_b64> [days]");
+            eprintln!("  glint-keygen pubkey <private_key_b64>");
+            eprintln!("  glint-keygen verify <license_key> <public_key_b64>");
             std::process::exit(2);
         }
     }
@@ -71,4 +75,43 @@ fn sign(args: &[String]) {
 
     println!("LICENSE KEY for {email}{}\n", exp.map(|_| " (time-limited)").unwrap_or(" (perpetual)"));
     println!("{key}");
+}
+
+/// Print the public key for a given private key (to embed / cross-check).
+fn pubkey(args: &[String]) {
+    let priv_b64 = args.first().expect("usage: pubkey <private_key_b64>");
+    let sk_bytes = std64().decode(priv_b64.trim()).expect("private key must be base64");
+    let sk_arr: [u8; 32] = sk_bytes.as_slice().try_into().expect("private key must be 32 bytes");
+    let sk = SigningKey::from_bytes(&sk_arr);
+    println!("{}", std64().encode(sk.verifying_key().to_bytes()));
+}
+
+/// Verify a license key against a public key, using the app's exact rules. Exits
+/// 0 and prints the payload on success, non-zero on failure. Used to prove that
+/// keys minted elsewhere (e.g. the Cloudflare Worker via tweetnacl) are accepted.
+fn verify(args: &[String]) {
+    let (key, pk_b64) = match (args.first(), args.get(1)) {
+        (Some(k), Some(p)) => (k, p),
+        _ => {
+            eprintln!("usage: verify <license_key> <public_key_b64>");
+            std::process::exit(2);
+        }
+    };
+    let pk_bytes = std64().decode(pk_b64.trim()).expect("public key must be base64");
+    let pk_arr: [u8; 32] = pk_bytes.as_slice().try_into().expect("public key must be 32 bytes");
+    let vk = VerifyingKey::from_bytes(&pk_arr).expect("invalid public key");
+
+    let (payload_b64, sig_b64) = key.trim().split_once('.').expect("key must be payload.signature");
+    let payload = b64url().decode(payload_b64).expect("payload not base64url");
+    let sig_bytes = b64url().decode(sig_b64).expect("signature not base64url");
+    let sig_arr: [u8; 64] = sig_bytes.as_slice().try_into().expect("signature must be 64 bytes");
+    let sig = Signature::from_bytes(&sig_arr);
+
+    match vk.verify(&payload, &sig) {
+        Ok(()) => println!("VALID: {}", String::from_utf8_lossy(&payload)),
+        Err(_) => {
+            eprintln!("INVALID: signature does not match");
+            std::process::exit(1);
+        }
+    }
 }
