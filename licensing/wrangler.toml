@@ -5,9 +5,9 @@ compatibility_date = "2024-11-01"
 [vars]
 # "Display Name <address@your-verified-domain>" - verify the domain in Resend.
 FROM_EMAIL = "Glint <licenses@peterdsp.dev>"
-# The Glint Ko-fi item code(s), comma-separated. Find it in the item's share
-# URL: ko-fi.com/s/XXXXXXXX -> GLINT_ITEM_CODES = "XXXXXXXX".
-GLINT_ITEM_CODES = ""
+# The Glint Ko-fi item code(s), comma-separated. From the item's share URL
+# ko-fi.com/s/c2c1f5857a. Add more codes here if you create variations.
+GLINT_ITEM_CODES = "c2c1f5857a"
 
 # Optional: KV for idempotency + "look up a buyer's key" support. Create with
 # `wrangler kv namespace create LICENSES`, then paste the id and uncomment.
