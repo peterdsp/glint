@@ -358,6 +358,40 @@ a.price:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line))
 .price-amt { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); font-variant-numeric: tabular-nums; }
 .price-where { font-size: 12px; color: var(--ink-2); }
 .hero-trial { margin-top: 14px; font-size: 13px; color: var(--ink-3); }
+
+/* Pricing */
+.pricing { text-align: center; }
+.pricing .lede { margin-inline: auto; }
+.pricing .section-eyebrow, .pricing h2 { justify-content: center; }
+.plan-grid { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; margin: 34px auto 0; max-width: 720px; }
+.plan {
+  position: relative; flex: 1 1 300px; max-width: 340px; text-align: left;
+  padding: 24px 22px; border-radius: 18px; background: var(--surface);
+  border: 1px solid var(--line); box-shadow: var(--shadow-md);
+  display: flex; flex-direction: column;
+}
+.plan-featured {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.plan-badge {
+  align-self: flex-start; font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink);
+  background: var(--accent-soft); padding: 4px 9px; border-radius: 999px; margin-bottom: 14px;
+}
+.plan-badge-soon { color: var(--ink-3); background: var(--surface-2); }
+.plan-name { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.plan-price { font-size: 34px; font-weight: 720; letter-spacing: -0.02em; color: var(--ink); margin: 2px 0 16px; font-variant-numeric: tabular-nums; }
+.plan-price span { font-size: 13px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; }
+.plan-list { list-style: none; padding: 0; margin: 0 0 20px; display: flex; flex-direction: column; gap: 10px; }
+.plan-list li { position: relative; padding-left: 24px; font-size: 14px; color: var(--ink-2); line-height: 1.4; }
+.plan-list li::before {
+  content: ""; position: absolute; left: 4px; top: 3px; width: 5px; height: 9px;
+  border: solid var(--accent); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.plan .btn { margin-top: auto; justify-content: center; }
+.is-disabled { opacity: 0.5; cursor: default; pointer-events: none; }
+.pricing-note { max-width: 640px; margin: 26px auto 0; font-size: 13px; color: var(--ink-3); line-height: 1.6; }
 .dl-note { font-size: 13px; color: var(--ink-3); margin-top: 20px; }
 
 /* ============ Footer ============ */

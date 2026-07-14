@@ -147,9 +147,11 @@ function startClock() {
   if (!el) return;
   const tick = () => {
     try {
+      // 24-hour, no AM/PM - matches the macOS menu bar. Local timezone.
       el.textContent = new Date().toLocaleTimeString([], {
         hour: "numeric",
         minute: "2-digit",
+        hour12: false,
       });
     } catch (e) {
       /* leave the fallback text */
