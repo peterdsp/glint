@@ -187,9 +187,10 @@ def themes_strip():
     body.append('</svg>')
     return "\n".join(body)
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-open("hero.svg", "w").write(hero())
-open("themes.svg", "w").write(themes_strip())
-for name in ["hero", "themes"]:
-    subprocess.run(["rsvg-convert", "-z", "2", f"{name}.svg", "-o", f"{name}.png"], check=True)
-    print(name, "->", os.path.getsize(f"{name}.png"), "bytes")
+if __name__ == "__main__":
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    open("hero.svg", "w").write(hero())
+    open("themes.svg", "w").write(themes_strip())
+    for name in ["hero", "themes"]:
+        subprocess.run(["rsvg-convert", "-z", "2", f"{name}.svg", "-o", f"{name}.png"], check=True)
+        print(name, "->", os.path.getsize(f"{name}.png"), "bytes")
