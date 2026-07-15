@@ -353,20 +353,20 @@ function buildBackgroundField() {
   };
 
   const tickers = [];
-  const COUNT = window.innerWidth < 640 ? 18 : 30;
+  const COUNT = window.innerWidth < 640 ? 34 : 58;
   for (let i = 0; i < COUNT; i++) {
     const el = document.createElement("span");
     el.className = "bg-num";
     el.style.left = Math.round(Math.random() * 94) + "%";
     el.style.top = Math.round(Math.random() * 100) + "%";
-    el.style.fontSize = (12 + Math.round(Math.random() * 24)) + "px";
-    el.style.setProperty("--o", (0.05 + Math.random() * 0.06).toFixed(3));
-    el.style.animationDuration = (16 + Math.random() * 26).toFixed(1) + "s";
+    el.style.fontSize = (12 + Math.round(Math.random() * 26)) + "px";
+    el.style.setProperty("--o", (0.09 + Math.random() * 0.09).toFixed(3));
+    el.style.animationDuration = (14 + Math.random() * 24).toFixed(1) + "s";
     el.style.animationDelay = (-Math.random() * 42).toFixed(1) + "s";
-    if (Math.random() < 0.28) el.classList.add("bg-accent");
+    if (Math.random() < 0.32) el.classList.add("bg-accent");
 
     const kind = Math.random();
-    if (kind < 0.45) {
+    if (kind < 0.55) {
       const rate = rates[Math.floor(Math.random() * rates.length)];
       el.dataset.rate = String(rate);
       el.dataset.seed = String(Math.floor(rate * midnightSecs));
