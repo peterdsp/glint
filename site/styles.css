@@ -99,6 +99,28 @@ body {
   transition: --accent 0.25s;
 }
 
+/* ---------- ambient background: faint, drifting Git numbers ---------- */
+.bg-field {
+  position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+  contain: strict;
+}
+.bg-num {
+  position: absolute; font-family: var(--mono); font-variant-numeric: tabular-nums;
+  white-space: nowrap; letter-spacing: 0.02em; font-weight: 500; color: var(--ink);
+  opacity: 0; transform: translateY(0); will-change: transform, opacity;
+  animation-name: bg-drift; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+.bg-num.bg-accent { color: var(--accent); }
+@keyframes bg-drift {
+  0%   { opacity: 0; transform: translateY(26px); }
+  12%  { opacity: var(--o, 0.06); }
+  88%  { opacity: var(--o, 0.06); }
+  100% { opacity: 0; transform: translateY(-52px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg-num { animation: none; opacity: var(--o, 0.06); transform: none; }
+}
+
 .skip {
   position: absolute; left: 12px; top: -60px; z-index: 100;
   background: var(--accent); color: #fff; padding: 8px 14px; border-radius: 8px;

@@ -325,7 +325,76 @@ function startGithubStream() {
   fetchBatch().then(() => { if (!document.hidden) start(); });
 }
 
+// --- ambient background field: faint Git numbers drifting site-wide ---
+// A fixed layer behind all content. Most items are static Git snippets; a
+// share are live counters (seeded to "today so far") so the scale figures
+// live everywhere, not just the Live section. Kept very low-opacity so text
+// stays perfectly readable, and paused while the tab is hidden.
+function buildBackgroundField() {
+  if (document.querySelector(".bg-field")) return;
+  const field = document.createElement("div");
+  field.className = "bg-field";
+  field.setAttribute("aria-hidden", "true");
+
+  const fmt = new Intl.NumberFormat();
+  const now = new Date();
+  const midnightSecs = (now - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 1000;
+
+  const rates = [412, 74000, 186, 26, 5, 33, 903, 1240];
+  const phrases = [
+    "git push", "git commit", "+42", "-7", "↑5 ↓2", "merged #482",
+    "branch main", "stage 3 files", "pull origin", "+118", "fork", "★ 1.2k",
+    "HEAD~1", "rebase -i", "origin/main",
+  ];
+  const hex = () => {
+    let s = "";
+    for (let i = 0; i < 7; i++) s += "0123456789abcdef"[Math.floor(Math.random() * 16)];
+    return s;
+  };
+
+  const tickers = [];
+  const COUNT = window.innerWidth < 640 ? 18 : 30;
+  for (let i = 0; i < COUNT; i++) {
+    const el = document.createElement("span");
+    el.className = "bg-num";
+    el.style.left = Math.round(Math.random() * 94) + "%";
+    el.style.top = Math.round(Math.random() * 100) + "%";
+    el.style.fontSize = (12 + Math.round(Math.random() * 24)) + "px";
+    el.style.setProperty("--o", (0.05 + Math.random() * 0.06).toFixed(3));
+    el.style.animationDuration = (16 + Math.random() * 26).toFixed(1) + "s";
+    el.style.animationDelay = (-Math.random() * 42).toFixed(1) + "s";
+    if (Math.random() < 0.28) el.classList.add("bg-accent");
+
+    const kind = Math.random();
+    if (kind < 0.45) {
+      const rate = rates[Math.floor(Math.random() * rates.length)];
+      el.dataset.rate = String(rate);
+      el.dataset.seed = String(Math.floor(rate * midnightSecs));
+      el.textContent = fmt.format(Number(el.dataset.seed));
+      tickers.push(el);
+    } else if (kind < 0.72) {
+      el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+    } else {
+      el.textContent = hex();
+    }
+    field.appendChild(el);
+  }
+  document.body.prepend(field);
+
+  if (!tickers.length) return;
+  const start = performance.now();
+  const update = () => {
+    const elapsed = (performance.now() - start) / 1000;
+    for (const el of tickers) {
+      el.textContent = fmt.format(Math.floor(Number(el.dataset.seed) + Number(el.dataset.rate) * elapsed));
+    }
+  };
+  update();
+  setInterval(() => { if (!document.hidden) update(); }, 140);
+}
+
 // --- boot ---
+buildBackgroundField();
 buildMenubarSwatches();
 buildDemoSwatches();
 buildThemeList();
