@@ -360,7 +360,7 @@ function buildBackgroundField() {
     el.style.left = Math.round(Math.random() * 94) + "%";
     el.style.top = Math.round(Math.random() * 100) + "%";
     el.style.fontSize = (12 + Math.round(Math.random() * 26)) + "px";
-    el.style.setProperty("--o", (0.09 + Math.random() * 0.09).toFixed(3));
+    el.style.setProperty("--o", (0.14 + Math.random() * 0.11).toFixed(3));
     el.style.animationDuration = (14 + Math.random() * 24).toFixed(1) + "s";
     el.style.animationDelay = (-Math.random() * 42).toFixed(1) + "s";
     if (Math.random() < 0.32) el.classList.add("bg-accent");
