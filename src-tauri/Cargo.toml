@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "A glint of Git in your menu bar"
 edition = "2021"
 authors = ["peterdsp"]
+license-file = "../LICENSE"
 
 [[bin]]
 name = "glint"

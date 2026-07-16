@@ -4,6 +4,8 @@
 
 # Glint
 
+[![License: Proprietary](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+
 **A glint of Git in your menu bar** - ultralightweight, liquid glass, themeable.
 
 </div>
@@ -119,3 +121,15 @@ colored icon elsewhere. Every build is checked on all three in CI.
 - [x] User-authored themes from disk
 
 See the [open issues](https://github.com/peterdsp/glint/issues) for the live backlog.
+
+## License
+
+Copyright (c) 2026 Petros Dhespollari. All rights reserved.
+
+Glint is proprietary, source-visible software. The source may be reviewed for
+personal educational purposes, but copying, redistribution, derivative works,
+competing use, commercial reuse, AI training, and circumvention of the paid
+license system are prohibited without written permission.
+
+Official builds may be used under the end-user terms in [LICENSE](LICENSE).
+Third-party components remain under their respective licenses.

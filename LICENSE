@@ -1,0 +1,254 @@
+Glint Proprietary Software License
+
+Copyright (c) 2026 Petros Dhespollari. All rights reserved.
+
+This repository is source-visible proprietary software. It is not open source.
+No rights are granted except those expressly stated in this license.
+
+1. DEFINITIONS
+
+"Glint" means the Glint application and all first-party source code,
+executables, documentation, website content, designs, themes, artwork, icons,
+branding, release infrastructure, licensing systems, update systems, API
+integrations, configuration, and other materials in this repository.
+
+"Source Materials" means the human-readable source code and all other
+non-binary materials included in this repository.
+
+"Official Build" means a binary release of Glint distributed by Petros
+Dhespollari through an official Glint download channel, the Apple App Store,
+or another channel expressly authorised in writing by Petros Dhespollari.
+
+"License Key" means a key, receipt, entitlement, token, purchase record, or
+other mechanism used to authorise access to Glint.
+
+"You" means any individual or legal entity accessing, possessing, installing,
+or using Glint.
+
+2. OWNERSHIP AND RESERVATION OF RIGHTS
+
+Glint is licensed, not sold. All intellectual property rights in Glint,
+including copyright, trademark, trade dress, design rights, database rights,
+and trade secret rights where applicable, are and remain the exclusive
+property of Petros Dhespollari.
+
+The Glint name, logo, visual identity, product appearance, and associated
+branding are proprietary identifiers of Petros Dhespollari. This license does
+not grant permission to use them except to identify an unmodified Official
+Build truthfully.
+
+All rights not expressly granted by this license are reserved.
+
+3. SOURCE MATERIALS
+
+You may view and study the Source Materials solely for personal,
+non-commercial educational review and for preparing a good-faith contribution
+to the official Glint repository.
+
+You may reproduce, modify, compile, and run the Source Materials locally only
+to the extent reasonably necessary to prepare and test a good-faith
+contribution for submission to the official Glint repository. You may not
+publish, distribute, deploy, or use that copy for any other purpose.
+
+Access to the Source Materials grants no other permission to copy, use,
+modify, compile, distribute, publish, deploy, or create derivative works from
+them except where applicable law requires it.
+
+4. END-USER LICENSE FOR OFFICIAL BUILDS
+
+If You lawfully obtain an Official Build, Petros Dhespollari grants You a
+limited, personal, non-exclusive, non-transferable, non-sublicensable,
+revocable license to install and use that Official Build for its intended
+purpose on devices You own or control, subject to:
+
+  (a) this license;
+  (b) the terms of the official distribution channel;
+  (c) any purchase, trial, subscription, or License Key conditions presented
+      when You obtain or activate Glint; and
+  (d) payment of any applicable fees.
+
+A personal License Key may be used only by the person or organisation to whom
+it was issued. It may not be published, shared, sold, transferred, pooled, or
+used to activate copies for third parties.
+
+The rights in this section apply only to Official Builds. Building or running
+the Source Materials is governed by Section 3.
+
+5. RESTRICTIONS
+
+Except as expressly permitted by Sections 3 and 4, required by applicable law,
+or authorised in writing by Petros Dhespollari, You may not:
+
+  (a) copy, reproduce, republish, upload, distribute, mirror, or otherwise
+      make available any part of Glint;
+  (b) modify, adapt, translate, port, compile, or create derivative works
+      based on Glint or the Source Materials;
+  (c) use Glint or any part of it in a commercial product, paid service, or
+      revenue-generating activity not expressly authorised by an Official
+      Build license;
+  (d) use Glint or any part of it to develop, improve, market, or operate a
+      competing Git client, developer tool, menu-bar application, or service;
+  (e) sell, resell, rent, lease, lend, sublicense, assign, transfer, or
+      commercially exploit Glint, an Official Build, or a License Key;
+  (f) host, deploy, or offer Glint or a substantially similar derivative as a
+      service to third parties;
+  (g) remove, alter, hide, or misrepresent any copyright, trademark,
+      attribution, licensing, or proprietary notice;
+  (h) use the Glint name, logo, icons, screenshots, themes, visual design,
+      trade dress, or branding in another product or in a way that suggests
+      affiliation, sponsorship, or endorsement;
+  (i) reverse engineer, decompile, disassemble, decrypt, or otherwise attempt
+      to derive source code, private keys, signing material, or non-public
+      implementation details from an Official Build, except to the limited
+      extent that applicable law expressly permits despite this restriction;
+  (j) bypass, disable, tamper with, emulate, defeat, or interfere with any
+      trial limit, purchase check, License Key verification, signature check,
+      update mechanism, access control, or other technical protection;
+  (k) forge, generate without authorisation, extract, disclose, or misuse any
+      License Key, signing key, entitlement, purchase record, or activation
+      credential;
+  (l) use Glint, the Source Materials, documentation, designs, screenshots, or
+      other repository content to train, fine-tune, evaluate, benchmark, or
+      supply data to a machine learning model or artificial intelligence
+      system;
+  (m) use automated extraction, scraping, indexing, or dataset-building tools
+      to collect substantial portions of Glint or the Source Materials;
+  (n) maintain or use a fork or other repository copy except as permitted by
+      mandatory hosting-platform terms or for preparing a good-faith pull
+      request to the official repository. Hosting-platform rights apply only
+      within that platform and do not grant independent rights to use,
+      modify, compile, distribute, or exploit Glint; or
+  (o) assist, encourage, or enable another person or entity to do any of the
+      prohibited acts above.
+
+Nothing in this license limits rights that cannot lawfully be excluded,
+including mandatory rights concerning backup copies, observation, study,
+testing, or interoperability under applicable law. Any such activity must
+remain strictly within the scope required by that law and may not be used to
+create or distribute a competing product or to prejudice the legitimate
+interests or normal exploitation of Glint.
+
+6. CONTRIBUTIONS
+
+Unless a separate written agreement applies, by intentionally submitting
+code, documentation, designs, bug fixes, ideas, or other material for
+inclusion in Glint, You:
+
+  (a) represent that You have the right to submit the contribution;
+  (b) grant Petros Dhespollari a perpetual, irrevocable, worldwide,
+      transferable, sublicensable, royalty-free license to use, reproduce,
+      modify, distribute, license, sell, and otherwise exploit the
+      contribution for any purpose; and
+  (c) understand that the contribution does not grant You ownership of Glint
+      or any right to distribute Glint.
+
+7. THIRD-PARTY MATERIALS
+
+Glint includes or depends on third-party software and materials. Those
+components remain subject to their own copyright notices and license terms.
+This license applies only to the first-party portions of Glint owned by Petros
+Dhespollari and does not restrict rights separately granted under a
+third-party license.
+
+Nothing in this license revokes rights granted directly by the repository
+owner to GitHub or another hosting platform under the platform terms governing
+a public repository. Those platform rights do not grant other users any
+additional off-platform rights or any rights beyond the applicable platform
+terms and this license.
+
+Third-party names and trademarks are the property of their respective owners.
+Glint is an independent product and is not affiliated with or endorsed by
+GitHub, GitLab, Apple, Microsoft, the Git project, or other third parties
+unless expressly stated.
+
+8. FEEDBACK
+
+If You provide suggestions, ideas, or feedback about Glint without a separate
+written agreement, You grant Petros Dhespollari a perpetual, irrevocable,
+worldwide, royalty-free right to use and incorporate that feedback without
+restriction or compensation.
+
+9. TERMINATION
+
+This license terminates automatically and immediately if You breach any of its
+terms. On termination, You must stop using Glint and permanently delete or
+destroy all copies in Your possession or control, except where retaining an
+Official Build is required by applicable law.
+
+Sections concerning ownership, restrictions, contributions, third-party
+materials, warranty, liability, indemnity, and general terms survive
+termination.
+
+10. NO WARRANTY
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, GLINT IS PROVIDED "AS IS" AND "AS
+AVAILABLE", WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED, OR STATUTORY.
+PETROS DHESPOLLARI DISCLAIMS ALL WARRANTIES, INCLUDING MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, QUIET ENJOYMENT, ACCURACY, SECURITY,
+AVAILABILITY, AND NON-INFRINGEMENT.
+
+GLINT INTERACTS WITH SOURCE-CODE REPOSITORIES, CREDENTIAL STORES, NETWORK
+SERVICES, AND VERSION-CONTROL OPERATIONS. YOU ARE SOLELY RESPONSIBLE FOR
+MAINTAINING BACKUPS, REVIEWING OPERATIONS BEFORE CONFIRMING THEM, PROTECTING
+YOUR CREDENTIALS, AND DETERMINING WHETHER GLINT IS SUITABLE FOR YOUR USE.
+
+11. LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, PETROS DHESPOLLARI SHALL NOT BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, PUNITIVE, OR
+CONSEQUENTIAL LOSS OR DAMAGE, INCLUDING LOSS OF DATA, SOURCE CODE, REPOSITORY
+HISTORY, CREDENTIALS, PROFITS, REVENUE, BUSINESS, GOODWILL, OR USE, ARISING
+FROM OR RELATED TO GLINT OR THIS LICENSE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH LOSS OR DAMAGE.
+
+WHERE LIABILITY CANNOT BE EXCLUDED, THE TOTAL AGGREGATE LIABILITY ARISING FROM
+OR RELATED TO GLINT SHALL NOT EXCEED THE AMOUNT YOU PAID FOR GLINT DURING THE
+TWELVE MONTHS BEFORE THE EVENT GIVING RISE TO THE CLAIM.
+
+Nothing in this license excludes or limits liability where exclusion or
+limitation is prohibited by applicable law.
+
+12. INDEMNITY
+
+To the maximum extent permitted by law, You agree to defend, indemnify, and
+hold harmless Petros Dhespollari from claims, losses, liabilities, damages,
+costs, and expenses, including reasonable legal fees, arising from Your
+unauthorised distribution, commercial exploitation, infringement, misuse of
+a License Key, circumvention of technical protections, or other violation of
+this license.
+
+13. GOVERNING LAW AND JURISDICTION
+
+This license is governed by the laws of Greece and applicable European Union
+law, without regard to conflict-of-law rules.
+
+Unless mandatory consumer law requires otherwise, the courts of Thessaloniki,
+Greece have exclusive jurisdiction over disputes arising from or related to
+Glint or this license.
+
+14. GENERAL TERMS
+
+If any provision of this license is found unenforceable, it shall be enforced
+to the maximum lawful extent and the remaining provisions shall remain in
+effect.
+
+Failure to enforce a provision is not a waiver. You may not assign or transfer
+Your rights under this license without prior written permission. Petros
+Dhespollari may assign this license together with ownership of Glint.
+
+This license and any applicable official purchase or distribution terms form
+the entire agreement concerning Your use of Glint, unless a separate written
+agreement signed by Petros Dhespollari states otherwise.
+
+15. COMMERCIAL AND OTHER LICENSING
+
+For commercial licensing, OEM licensing, redistribution, enterprise use,
+source licensing, or any permission not expressly granted here, contact:
+
+Petros Dhespollari
+Website: https://peterdsp.dev
+
+Any additional permission must be granted in a written agreement signed by
+Petros Dhespollari.
+
+All rights not expressly granted are reserved.

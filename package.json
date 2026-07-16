@@ -2,6 +2,7 @@
   "name": "glint",
   "version": "1.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "description": "A glint of Git in your menu bar - ultralightweight, liquid glass, themeable.",
   "scripts": {
     "dev": "cargo tauri dev",

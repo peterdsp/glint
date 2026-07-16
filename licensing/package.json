@@ -1,6 +1,7 @@
 {
   "name": "glint-licensing",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "description": "Ko-fi webhook that mints and emails Glint license keys",
   "scripts": {
