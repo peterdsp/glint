@@ -627,3 +627,14 @@ a.price:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line))
   .panel-drop { animation: none; }
   .feature:hover { transform: none; }
 }
+
+/* ============================================================
+   Language switch crossfade (View Transitions API).
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 320ms;
+    animation-timing-function: ease;
+  }
+}

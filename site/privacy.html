@@ -7,63 +7,195 @@
     <meta name="description" content="Glint collects no personal data and sends nothing to any server." />
     <link rel="icon" type="image/png" href="icon.png" />
     <link rel="apple-touch-icon" href="icon.png" />
-    <link rel="stylesheet" href="styles.css?v=3" />
+    <link rel="stylesheet" href="styles.css?v=11" />
     <style>
       .legal { max-width: 720px; margin: 0 auto; padding: 64px 24px 96px; }
+      .legal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; gap: 16px; }
       .legal h1 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.025em; margin-bottom: 8px; }
       .legal .updated { color: var(--ink-3); font-size: 14px; margin-bottom: 32px; }
       .legal h2 { font-size: 19px; margin: 32px 0 10px; letter-spacing: -0.01em; }
       .legal p, .legal li { color: var(--ink-2); font-size: 15.5px; line-height: 1.6; }
       .legal ul { padding-left: 20px; display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
       .legal a { color: var(--accent-ink); }
-      .legal .back { display: inline-block; margin-bottom: 28px; font-size: 14px; color: var(--accent-ink); text-decoration: none; }
+      .legal .back { display: inline-block; font-size: 14px; color: var(--accent-ink); text-decoration: none; }
     </style>
   </head>
   <body>
     <main class="legal">
-      <a class="back" href="/">&larr; Glint</a>
-      <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: 14 July 2026</p>
+      <div class="legal-top">
+        <a class="back" href="/">&larr; Glint</a>
+        <div class="mb-lang" role="group" aria-label="Language">
+          <button class="lang-btn" type="button" data-lang="en" title="English">EN</button>
+          <button class="lang-btn" type="button" data-lang="el" title="Ελληνικά">ΕΛ</button>
+          <button class="lang-btn" type="button" data-lang="sq" title="Shqip">SQ</button>
+        </div>
+      </div>
+      <h1 data-i18n="ppH1">Privacy Policy</h1>
+      <p class="updated" data-i18n="ppUpdated">Last updated: 14 July 2026</p>
 
-      <p>
+      <p data-i18n-html="ppIntro">
         Glint is a menu-bar Git client. It is built to stay out of your way, and
         that includes your data. In short: <strong>Glint collects nothing and
         sends nothing to us.</strong> There are no accounts, no analytics, and no
         telemetry.
       </p>
 
-      <h2>What Glint does not do</h2>
+      <h2 data-i18n="ppH2a">What Glint does not do</h2>
       <ul>
-        <li>It does not collect, store, or transmit personal data to us or any third party we control.</li>
-        <li>It has no analytics, tracking, crash reporting, or advertising.</li>
-        <li>It does not require an account and never asks for one.</li>
+        <li data-i18n="ppNot1">It does not collect, store, or transmit personal data to us or any third party we control.</li>
+        <li data-i18n="ppNot2">It has no analytics, tracking, crash reporting, or advertising.</li>
+        <li data-i18n="ppNot3">It does not require an account and never asks for one.</li>
       </ul>
 
-      <h2>Data that stays on your device</h2>
+      <h2 data-i18n="ppH2b">Data that stays on your device</h2>
       <ul>
-        <li><strong>Your repositories.</strong> Glint reads and writes your local Git repositories directly on your machine. That data never leaves your device through Glint.</li>
-        <li><strong>Preferences and license.</strong> Your chosen theme, language, trial start, and license key are stored locally (in the app's config folder and the OS Keychain). They are not sent to us.</li>
+        <li data-i18n-html="ppDev1"><strong>Your repositories.</strong> Glint reads and writes your local Git repositories directly on your machine. That data never leaves your device through Glint.</li>
+        <li data-i18n-html="ppDev2"><strong>Preferences and license.</strong> Your chosen theme, language, trial start, and license key are stored locally (in the app's config folder and the OS Keychain). They are not sent to us.</li>
       </ul>
 
-      <h2>Connections Glint makes on your behalf</h2>
+      <h2 data-i18n="ppH2c">Connections Glint makes on your behalf</h2>
       <ul>
-        <li><strong>Git remotes.</strong> When you fetch, pull, or push, Glint connects to the Git remote you configured (for example GitHub) using your own SSH keys or credentials. This is the same connection your command-line Git uses.</li>
-        <li><strong>Pull request and CI status.</strong> If you have the GitHub CLI signed in, Glint uses your existing token to ask GitHub about the current branch's pull request and checks. The request goes directly from your machine to GitHub; Glint stores nothing and no data passes through us.</li>
-        <li><strong>Updates (direct download build only).</strong> The Ko-fi build checks GitHub Releases for a newer version and downloads it. No personal data is sent. The Mac App Store build does not do this; Apple delivers updates.</li>
+        <li data-i18n-html="ppConn1"><strong>Git remotes.</strong> When you fetch, pull, or push, Glint connects to the Git remote you configured (for example GitHub) using your own SSH keys or credentials. This is the same connection your command-line Git uses.</li>
+        <li data-i18n-html="ppConn2"><strong>Pull request and CI status.</strong> If you have the GitHub CLI signed in, Glint uses your existing token to ask GitHub about the current branch's pull request and checks. The request goes directly from your machine to GitHub; Glint stores nothing and no data passes through us.</li>
+        <li data-i18n-html="ppConn3"><strong>Updates (direct download build only).</strong> The Ko-fi build checks GitHub Releases for a newer version and downloads it. No personal data is sent. The Mac App Store build does not do this; Apple delivers updates.</li>
       </ul>
 
-      <h2>Purchases</h2>
-      <p>
+      <h2 data-i18n="ppH2d">Purchases</h2>
+      <p data-i18n="ppPurch">
         Purchases are handled by Ko-fi or the Mac App Store, each under its own
         privacy policy. If you buy on Ko-fi, your email is used solely to send you
         your license key. We do not use it for anything else.
       </p>
 
-      <h2>Contact</h2>
-      <p>
+      <h2 data-i18n="ppH2e">Contact</h2>
+      <p data-i18n-html="ppContact">
         Questions about privacy? Email
         <a href="mailto:info@peterdsp.dev">info@peterdsp.dev</a>.
       </p>
     </main>
+
+    <script>
+      (function () {
+        var PP = {
+          en: {
+            title: "Glint - Privacy Policy",
+            ppH1: "Privacy Policy",
+            ppUpdated: "Last updated: 14 July 2026",
+            ppIntro: `Glint is a menu-bar Git client. It is built to stay out of your way, and that includes your data. In short: <strong>Glint collects nothing and sends nothing to us.</strong> There are no accounts, no analytics, and no telemetry.`,
+            ppH2a: "What Glint does not do",
+            ppNot1: "It does not collect, store, or transmit personal data to us or any third party we control.",
+            ppNot2: "It has no analytics, tracking, crash reporting, or advertising.",
+            ppNot3: "It does not require an account and never asks for one.",
+            ppH2b: "Data that stays on your device",
+            ppDev1: `<strong>Your repositories.</strong> Glint reads and writes your local Git repositories directly on your machine. That data never leaves your device through Glint.`,
+            ppDev2: `<strong>Preferences and license.</strong> Your chosen theme, language, trial start, and license key are stored locally (in the app's config folder and the OS Keychain). They are not sent to us.`,
+            ppH2c: "Connections Glint makes on your behalf",
+            ppConn1: `<strong>Git remotes.</strong> When you fetch, pull, or push, Glint connects to the Git remote you configured (for example GitHub) using your own SSH keys or credentials. This is the same connection your command-line Git uses.`,
+            ppConn2: `<strong>Pull request and CI status.</strong> If you have the GitHub CLI signed in, Glint uses your existing token to ask GitHub about the current branch's pull request and checks. The request goes directly from your machine to GitHub; Glint stores nothing and no data passes through us.`,
+            ppConn3: `<strong>Updates (direct download build only).</strong> The Ko-fi build checks GitHub Releases for a newer version and downloads it. No personal data is sent. The Mac App Store build does not do this; Apple delivers updates.`,
+            ppH2d: "Purchases",
+            ppPurch: "Purchases are handled by Ko-fi or the Mac App Store, each under its own privacy policy. If you buy on Ko-fi, your email is used solely to send you your license key. We do not use it for anything else.",
+            ppH2e: "Contact",
+            ppContact: `Questions about privacy? Email <a href="mailto:info@peterdsp.dev">info@peterdsp.dev</a>.`,
+          },
+          el: {
+            title: "Glint - Πολιτική Απορρήτου",
+            ppH1: "Πολιτική Απορρήτου",
+            ppUpdated: "Τελευταία ενημέρωση: 14 Ιουλίου 2026",
+            ppIntro: `Το Glint είναι ένας Git client στη γραμμή μενού. Είναι φτιαγμένο για να μη σας ενοχλεί, και αυτό περιλαμβάνει τα δεδομένα σας. Με λίγα λόγια: <strong>το Glint δεν συλλέγει τίποτα και δεν στέλνει τίποτα σε εμάς.</strong> Δεν υπάρχουν λογαριασμοί, ούτε analytics, ούτε τηλεμετρία.`,
+            ppH2a: "Τι δεν κάνει το Glint",
+            ppNot1: "Δεν συλλέγει, δεν αποθηκεύει και δεν μεταδίδει προσωπικά δεδομένα σε εμάς ή σε οποιονδήποτε τρίτο ελέγχουμε.",
+            ppNot2: "Δεν έχει analytics, παρακολούθηση, αναφορά σφαλμάτων ή διαφημίσεις.",
+            ppNot3: "Δεν απαιτεί λογαριασμό και δεν ζητά ποτέ.",
+            ppH2b: "Δεδομένα που παραμένουν στη συσκευή σας",
+            ppDev1: `<strong>Τα αποθετήριά σας.</strong> Το Glint διαβάζει και γράφει τα τοπικά σας αποθετήρια Git απευθείας στη συσκευή σας. Αυτά τα δεδομένα δεν φεύγουν ποτέ από τη συσκευή σας μέσω του Glint.`,
+            ppDev2: `<strong>Προτιμήσεις και άδεια.</strong> Το θέμα, η γλώσσα, η έναρξη της δοκιμής και το κλειδί άδειας που επιλέξατε αποθηκεύονται τοπικά (στον φάκελο ρυθμίσεων της εφαρμογής και στο Keychain του λειτουργικού). Δεν στέλνονται σε εμάς.`,
+            ppH2c: "Συνδέσεις που κάνει το Glint για λογαριασμό σας",
+            ppConn1: `<strong>Απομακρυσμένα Git (remotes).</strong> Όταν κάνετε fetch, pull ή push, το Glint συνδέεται με το Git remote που ρυθμίσατε (για παράδειγμα το GitHub) χρησιμοποιώντας τα δικά σας κλειδιά SSH ή διαπιστευτήρια. Είναι η ίδια σύνδεση που χρησιμοποιεί το Git της γραμμής εντολών σας.`,
+            ppConn2: `<strong>Κατάσταση pull request και CI.</strong> Αν έχετε συνδεθεί στο GitHub CLI, το Glint χρησιμοποιεί το υπάρχον token σας για να ρωτήσει το GitHub σχετικά με το pull request και τους ελέγχους του τρέχοντος branch. Το αίτημα πηγαίνει απευθείας από τη συσκευή σας στο GitHub· το Glint δεν αποθηκεύει τίποτα και κανένα δεδομένο δεν περνά από εμάς.`,
+            ppConn3: `<strong>Ενημερώσεις (μόνο έκδοση άμεσης λήψης).</strong> Η έκδοση Ko-fi ελέγχει τα GitHub Releases για νεότερη έκδοση και τη λαμβάνει. Δεν αποστέλλονται προσωπικά δεδομένα. Η έκδοση του Mac App Store δεν το κάνει αυτό· η Apple παραδίδει τις ενημερώσεις.`,
+            ppH2d: "Αγορές",
+            ppPurch: "Οι αγορές διαχειρίζονται από το Ko-fi ή το Mac App Store, το καθένα υπό τη δική του πολιτική απορρήτου. Αν αγοράσετε μέσω Ko-fi, το email σας χρησιμοποιείται αποκλειστικά για να σας στείλουμε το κλειδί άδειας. Δεν το χρησιμοποιούμε για τίποτα άλλο.",
+            ppH2e: "Επικοινωνία",
+            ppContact: `Ερωτήσεις για το απόρρητο; Στείλτε email στο <a href="mailto:info@peterdsp.dev">info@peterdsp.dev</a>.`,
+          },
+          sq: {
+            title: "Glint - Politika e Privatësisë",
+            ppH1: "Politika e Privatësisë",
+            ppUpdated: "Përditësuar së fundmi: 14 korrik 2026",
+            ppIntro: `Glint është një klient Git në shiritin e menysë. Është ndërtuar që të mos të pengojë, dhe kjo përfshin të dhënat e tua. Shkurt: <strong>Glint nuk mbledh asgjë dhe nuk dërgon asgjë tek ne.</strong> S'ka llogari, s'ka analitikë dhe s'ka telemetri.`,
+            ppH2a: "Çfarë nuk bën Glint",
+            ppNot1: "Nuk mbledh, nuk ruan dhe nuk transmeton të dhëna personale tek ne ose te ndonjë palë e tretë që kontrollojmë.",
+            ppNot2: "Nuk ka analitikë, gjurmim, raportim përplasjesh ose reklama.",
+            ppNot3: "Nuk kërkon llogari dhe nuk të kërkon kurrë një të tillë.",
+            ppH2b: "Të dhëna që qëndrojnë në pajisjen tënde",
+            ppDev1: `<strong>Depot e tua.</strong> Glint lexon dhe shkruan depot e tua lokale Git drejtpërdrejt në makinën tënde. Ato të dhëna nuk largohen kurrë nga pajisja jote përmes Glint.`,
+            ppDev2: `<strong>Preferencat dhe licenca.</strong> Tema, gjuha, fillimi i provës dhe çelësi i licencës që zgjodhe ruhen lokalisht (në dosjen e konfigurimit të aplikacionit dhe në Keychain të sistemit). Nuk dërgohen tek ne.`,
+            ppH2c: "Lidhjet që bën Glint në emrin tënd",
+            ppConn1: `<strong>Remote-t e Git.</strong> Kur bën fetch, pull ose push, Glint lidhet me remote-in e Git që konfigurove (për shembull GitHub) duke përdorur çelësat e tu SSH ose kredencialet. Është e njëjta lidhje që përdor Git-i i rreshtit të komandës.`,
+            ppConn2: `<strong>Statusi i pull request dhe CI.</strong> Nëse ke hyrë në GitHub CLI, Glint përdor token-in tënd ekzistues për të pyetur GitHub-in për pull request-in dhe kontrollet e degës aktuale. Kërkesa shkon drejtpërdrejt nga makina jote te GitHub; Glint nuk ruan asgjë dhe asnjë e dhënë nuk kalon përmes nesh.`,
+            ppConn3: `<strong>Përditësimet (vetëm versioni me shkarkim të drejtpërdrejtë).</strong> Versioni Ko-fi kontrollon GitHub Releases për një version më të ri dhe e shkarkon. Nuk dërgohen të dhëna personale. Versioni i Mac App Store nuk e bën këtë; Apple i shpërndan përditësimet.`,
+            ppH2d: "Blerjet",
+            ppPurch: "Blerjet menaxhohen nga Ko-fi ose Mac App Store, secili nën politikën e vet të privatësisë. Nëse blen në Ko-fi, email-i yt përdoret vetëm për të të dërguar çelësin e licencës. Nuk e përdorim për asgjë tjetër.",
+            ppH2e: "Kontakti",
+            ppContact: `Pyetje për privatësinë? Dërgo email te <a href="mailto:info@peterdsp.dev">info@peterdsp.dev</a>.`,
+          },
+        };
+
+        function detect() {
+          try {
+            var s = localStorage.getItem("glint.site.lang");
+            if (s && PP[s]) return s;
+          } catch (e) {}
+          var n = (navigator.language || "en").toLowerCase();
+          if (n.indexOf("el") === 0) return "el";
+          if (n.indexOf("sq") === 0) return "sq";
+          return "en";
+        }
+
+        function apply(lang) {
+          var d = PP[lang] || PP.en;
+          document.querySelectorAll("[data-i18n]").forEach(function (el) {
+            var v = d[el.dataset.i18n];
+            if (v != null) el.textContent = v;
+          });
+          document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+            var v = d[el.dataset.i18nHtml];
+            if (v != null) el.innerHTML = v;
+          });
+          document.documentElement.lang = lang;
+          if (d.title) document.title = d.title;
+          document.querySelectorAll(".lang-btn").forEach(function (b) {
+            var on = b.dataset.lang === lang;
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-pressed", String(on));
+          });
+          try {
+            localStorage.setItem("glint.site.lang", lang);
+          } catch (e) {}
+        }
+
+        function reduce() {
+          return (
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          );
+        }
+
+        function switchLang(lang) {
+          if (!reduce() && document.startViewTransition) {
+            document.startViewTransition(function () { apply(lang); });
+          } else {
+            apply(lang);
+          }
+        }
+
+        document.querySelectorAll(".lang-btn").forEach(function (b) {
+          b.addEventListener("click", function () { switchLang(b.dataset.lang); });
+        });
+
+        apply(detect());
+      })();
+    </script>
   </body>
 </html>

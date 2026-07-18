@@ -432,7 +432,20 @@ function applySiteI18n(lang) {
 window.GLINT_T = (k) =>
   (GLINT_SITE_I18N[window.__glintLang || "en"] || GLINT_SITE_I18N.en)[k] || k;
 
+// Crossfade the in-place language swap via the View Transitions API,
+// falling back to an instant swap. Respects prefers-reduced-motion.
+function switchSiteLang(lang) {
+  const reduce =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduce && document.startViewTransition) {
+    document.startViewTransition(() => applySiteI18n(lang));
+  } else {
+    applySiteI18n(lang);
+  }
+}
+
 document.querySelectorAll(".lang-btn").forEach((b) =>
-  b.addEventListener("click", () => applySiteI18n(b.dataset.lang))
+  b.addEventListener("click", () => switchSiteLang(b.dataset.lang))
 );
 applySiteI18n(detectSiteLang());
