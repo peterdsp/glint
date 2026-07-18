@@ -5,6 +5,9 @@
    native menu-bar app. Theme tokens mirror the app's themes.js.
    ============================================================ */
 
+/* Animate navigations between pages (no reload flicker) where supported. */
+@view-transition { navigation: auto; }
+
 :root {
   /* accent (swapped live by the theme switcher) */
   --accent: #5b8cff;

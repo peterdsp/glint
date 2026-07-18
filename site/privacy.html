@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="stylesheet" href="styles.css?v=11" />
     <style>
+      @view-transition { navigation: auto; }
       .legal { max-width: 720px; margin: 0 auto; padding: 64px 24px 96px; }
       .legal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; gap: 16px; }
       .legal h1 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.025em; margin-bottom: 8px; }
@@ -195,6 +196,17 @@
         });
 
         apply(detect());
+
+        try {
+          if (HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules")) {
+            var sr = document.createElement("script");
+            sr.type = "speculationrules";
+            sr.textContent = JSON.stringify({
+              prefetch: [{ source: "document", where: { href_matches: "/*" }, eagerness: "moderate" }],
+            });
+            document.head.appendChild(sr);
+          }
+        } catch (e) {}
       })();
     </script>
   </body>

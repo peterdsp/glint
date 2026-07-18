@@ -448,4 +448,16 @@ function switchSiteLang(lang) {
 document.querySelectorAll(".lang-btn").forEach((b) =>
   b.addEventListener("click", () => switchSiteLang(b.dataset.lang))
 );
+
+// Prefetch same-origin pages just before click so navigation has no wait.
+try {
+  if (HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules")) {
+    const sr = document.createElement("script");
+    sr.type = "speculationrules";
+    sr.textContent = JSON.stringify({
+      prefetch: [{ source: "document", where: { href_matches: "/*" }, eagerness: "moderate" }],
+    });
+    document.head.appendChild(sr);
+  }
+} catch (e) {}
 applySiteI18n(detectSiteLang());
