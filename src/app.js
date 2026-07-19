@@ -196,6 +196,19 @@ async function activateKey(inputId, msgId) {
 
 // Trial / license state drives the gate (base screen) and the settings panel.
 // In a plain browser (no Tauri) everything is unlocked.
+// Show or hide the in-app purchase controls (the Ko-fi buy button and the
+// license-key input/activate). These belong to the direct build's trial gate
+// only. When the app is already licensed - which is ALWAYS the case in the App
+// Store build, where Apple gates the purchase - they must be hidden: shipping a
+// "Get a license on Ko-fi" link inside the App Store binary is an external-
+// purchase steering violation (App Store Review Guideline 3.1.1).
+function showPurchaseUI(on) {
+  for (const id of ["set-buy", "set-key", "set-activate"]) {
+    const el = document.getElementById(id);
+    if (el) el.hidden = !on;
+  }
+}
+
 async function loadLicense() {
   const gate = document.getElementById("license-gate");
   const bar = document.getElementById("trial-bar");
@@ -204,6 +217,7 @@ async function loadLicense() {
     if (gate) gate.hidden = true;
     if (bar) bar.hidden = true;
     if (setLic) setLic.textContent = t("unlockedDev");
+    showPurchaseUI(false);
     return;
   }
   let s;
@@ -219,6 +233,7 @@ async function loadLicense() {
     if (gate) gate.hidden = true;
     if (bar) bar.hidden = true;
     if (setLic) setLic.textContent = s.email ? t("licensedTo", { email: s.email }) : t("licensedThanks");
+    showPurchaseUI(false);
   } else if (s.state === "trial") {
     if (gate) gate.hidden = true;
     if (bar) {
@@ -227,11 +242,13 @@ async function loadLicense() {
     }
     if (setLic)
       setLic.textContent = s.days_left === 1 ? t("freeTrialLeft1") : t("freeTrialLeft", { n: s.days_left });
+    showPurchaseUI(true);
   } else {
     // expired: block the base panel until a valid key is entered
     if (bar) bar.hidden = true;
     if (gate) gate.hidden = false;
     if (setLic) setLic.textContent = t("trialEndedShort");
+    showPurchaseUI(true);
   }
 }
 

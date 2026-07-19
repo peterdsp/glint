@@ -110,9 +110,12 @@
           <section class="set-section">
             <div class="section-label" data-i18n="license">License</div>
             <div class="set-license" id="set-license">-</div>
-            <button class="set-btn accent" id="set-buy" type="button" data-i18n="getLicenseKofi">Get a license on Ko-fi</button>
-            <input class="lg-input" id="set-key" placeholder="Paste license key" data-i18n-ph="pasteKey" spellcheck="false" />
-            <button class="set-btn" id="set-activate" type="button" data-i18n="activateKey">Activate key</button>
+            <!-- Purchase controls: hidden by default (fail-closed for the App Store
+                 build, which is always licensed) and revealed by loadLicense() only
+                 in the direct build's trial/expired states. See app.js showPurchaseUI. -->
+            <button class="set-btn accent" id="set-buy" type="button" data-i18n="getLicenseKofi" hidden>Get a license on Ko-fi</button>
+            <input class="lg-input" id="set-key" placeholder="Paste license key" data-i18n-ph="pasteKey" spellcheck="false" hidden />
+            <button class="set-btn" id="set-activate" type="button" data-i18n="activateKey" hidden>Activate key</button>
           </section>
 
           <section class="set-section">
