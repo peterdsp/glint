@@ -4,8 +4,8 @@ Glint ships through two channels with different rules.
 
 | Channel | Price | Trial | Updates | Build |
 |---|---|---|---|---|
-| **Ko-fi** (direct download, macOS/Windows/Linux) | **$4.99** | 7-day free, then license key | Self-updates via GitHub Releases | default features |
-| **Mac App Store** | **$2.99** | none (Apple gates purchase) | Apple pushes updates | `--no-default-features --features appstore` |
+| **Ko-fi** (direct download, macOS/Windows/Linux) | **$2.99** | 7-day free, then license key | Self-updates via GitHub Releases | default features |
+| **Mac App Store** | **$4.99** | none (Apple gates purchase) | Apple pushes updates | `--no-default-features --features appstore` |
 
 The two builds come from the same code. A Cargo feature flips the behavior:
 
@@ -44,7 +44,7 @@ Until you set a real `GLINT_LICENSE_PUBKEY`, the app uses a placeholder that rej
 
 ### 3. Ko-fi
 
-Create a $4.99 shop item / digital product. Delivery: link buyers to the latest GitHub Release assets (or upload the installers to Ko-fi). After a purchase, mint and email their key (see below). Update `KOFI_URL` in `src/app.js` to your Ko-fi page.
+Create a $2.99 shop item / digital product. Delivery: link buyers to the latest GitHub Release assets (or upload the installers to Ko-fi). After a purchase, mint and email their key (see below). Update `KOFI_URL` in `src/app.js` to your Ko-fi page.
 
 ---
 
@@ -77,14 +77,14 @@ Send the printed key to the buyer. They paste it into Glint when the trial ends 
 
 ---
 
-## App Store build ($2.99, no self-updater)
+## App Store build ($4.99, no self-updater)
 
 ```sh
 cd src-tauri
 cargo tauri build --no-default-features --features appstore
 ```
 
-This compiles out the trial, license gate, and updater. From there it's the standard Apple path: an Apple Developer account, App Store Connect app record, provisioning profile, code signing, and setting the price to the **$2.99** tier. Apple delivers updates, so no `latest.json` is involved.
+This compiles out the trial, license gate, and updater. From there it's the standard Apple path: an Apple Developer account, App Store Connect app record, provisioning profile, code signing, and setting the price to the **$4.99** tier. Apple delivers updates, so no `latest.json` is involved.
 
 ---
 

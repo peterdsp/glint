@@ -56,7 +56,7 @@ def kofi_cover():
     b.append(bullet(126, 590, "Five themes, three languages, auto-updates", "#ffffff"))
     # price pill
     b.append('<rect x="124" y="660" width="290" height="72" rx="36" fill="#ffffff"/>')
-    b.append(txt(150, 706, "4.99", 40, "#3a54b8", 700))
+    b.append(txt(150, 706, "2.99", 40, "#3a54b8", 700))
     b.append(txt(250, 700, "one-time", 18, "#5a5f6b", 600))
     b.append(txt(250, 722, "macOS - Win - Linux", 14, "#5a5f6b"))
     b.append(f'<g filter="url(#sh)" transform="translate({px},{py}) scale({scale})">{p}</g>')
