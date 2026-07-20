@@ -1,6 +1,6 @@
 {
   "name": "glint",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "license": "UNLICENSED",
   "description": "A glint of Git in your menu bar - ultralightweight, liquid glass, themeable.",

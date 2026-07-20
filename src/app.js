@@ -9,6 +9,28 @@ const invoke = window.__TAURI__?.core?.invoke;
 // The currently rendered status; the commit path reads staged files from it.
 let current = { files: [] };
 
+// Sandboxed Mac App Store build. Set from the Rust `is_app_store` command
+// before boot. When true, the license/trial and self-update surfaces are
+// removed entirely (Apple gates the purchase and pushes updates; shipping
+// either violates guidelines 3.1.1 and 2.4.5). Defaults to false so the direct
+// build - and a plain-browser preview - behave normally.
+let isAppStore = false;
+
+// Strip the license and self-update UI from the DOM. Not merely hidden: the
+// nodes are removed so there is no license-key entry or update check anywhere
+// in the App Store build.
+function stripStoreProhibitedUI() {
+  for (const id of [
+    "license-gate",       // trial-expired purchase/key overlay
+    "trial-bar",          // "N days left" banner
+    "set-license-section",// Settings > License (buy + key input)
+    "set-updates-section",// Settings > Updates (check now)
+  ]) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+}
+
 function repoPath() {
   try {
     return localStorage.getItem("glint.repo");
@@ -210,6 +232,8 @@ function showPurchaseUI(on) {
 }
 
 async function loadLicense() {
+  // The App Store build has no license/trial concept - the surface is removed.
+  if (isAppStore) return;
   const gate = document.getElementById("license-gate");
   const bar = document.getElementById("trial-bar");
   const setLic = document.getElementById("set-license");
@@ -356,7 +380,8 @@ function wireSettings() {
 // and relaunches with no prompts. No-op if the updater isn't configured, on the
 // App Store build, or offline - the app just keeps running.
 async function autoUpdate() {
-  if (!invoke) return;
+  // The App Store build ships no self-updater; Apple delivers updates.
+  if (!invoke || isAppStore) return;
   try {
     await invoke("update_now");
   } catch (e) {
@@ -564,6 +589,17 @@ function wireMode() {
 }
 
 async function boot() {
+  // Resolve the build variant first, then strip the App Store-prohibited
+  // license/update UI before anything renders.
+  if (invoke) {
+    try {
+      isAppStore = await invoke("is_app_store");
+    } catch {
+      isAppStore = false;
+    }
+  }
+  if (isAppStore) stripStoreProhibitedUI();
+
   loadDiskThemes();
   loadLicense();
   autoUpdate();

@@ -1,6 +1,6 @@
 [package]
 name = "glint"
-version = "1.0.1"
+version = "1.0.2"
 description = "A glint of Git in your menu bar"
 edition = "2021"
 authors = ["peterdsp"]

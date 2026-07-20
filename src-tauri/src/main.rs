@@ -12,39 +12,63 @@ use tauri::{
 };
 use tauri_plugin_positioner::{Position, WindowExt};
 
-#[tauri::command]
-fn get_status(path: String) -> Result<git::RepoStatus, String> {
-    git::get_status(&path)
+/// Run blocking libgit2 work off the main thread. Synchronous Tauri commands
+/// execute on the main thread, so doing libgit2 I/O inline freezes the UI while
+/// it runs - on a large or slow repository that reads as the app hanging right
+/// after you pick a folder (App Store review, guideline 2.1). Offloading to the
+/// blocking pool keeps the panel responsive; errors still surface as before.
+async fn run_blocking<T, F>(f: F) -> Result<T, String>
+where
+    F: FnOnce() -> Result<T, String> + Send + 'static,
+    T: Send + 'static,
+{
+    tauri::async_runtime::spawn_blocking(f)
+        .await
+        .map_err(|e| format!("git task failed to run: {e}"))?
 }
 
 #[tauri::command]
-fn commit(
+async fn get_status(path: String) -> Result<git::RepoStatus, String> {
+    run_blocking(move || git::get_status(&path)).await
+}
+
+#[tauri::command]
+async fn commit(
     path: String,
     files: Vec<String>,
     summary: String,
     description: String,
 ) -> Result<(), String> {
-    git::commit(&path, &files, &summary, &description)
+    run_blocking(move || git::commit(&path, &files, &summary, &description)).await
 }
 
 #[tauri::command]
-fn fetch(path: String) -> Result<git::RepoStatus, String> {
-    git::fetch(&path)
+async fn fetch(path: String) -> Result<git::RepoStatus, String> {
+    run_blocking(move || git::fetch(&path)).await
 }
 
 #[tauri::command]
-fn pull(path: String) -> Result<git::RepoStatus, String> {
-    git::pull(&path)
+async fn pull(path: String) -> Result<git::RepoStatus, String> {
+    run_blocking(move || git::pull(&path)).await
 }
 
 #[tauri::command]
-fn push(path: String) -> Result<git::RepoStatus, String> {
-    git::push(&path)
+async fn push(path: String) -> Result<git::RepoStatus, String> {
+    run_blocking(move || git::push(&path)).await
 }
 
 #[tauri::command]
-fn diff(path: String, file: String) -> Result<git::FileDiff, String> {
-    git::diff(&path, &file)
+async fn diff(path: String, file: String) -> Result<git::FileDiff, String> {
+    run_blocking(move || git::diff(&path, &file)).await
+}
+
+/// Whether this is the sandboxed Mac App Store build. The frontend uses it to
+/// strip the license and self-update surfaces entirely (Apple gates the
+/// purchase and pushes updates; shipping either is against guidelines 3.1.1 and
+/// 2.4.5). Compile-time constant, so it can't be spoofed at runtime.
+#[tauri::command]
+fn is_app_store() -> bool {
+    cfg!(feature = "appstore")
 }
 
 /// PR + CI status for the current branch (issue #3). Returns None when there's
@@ -336,6 +360,9 @@ fn toggle_panel(win: &WebviewWindow) {
 }
 
 fn main() {
+    // `mut` is only needed when the updater plugin is added below; the App Store
+    // build omits that feature, so tell the compiler not to flag it there.
+    #[cfg_attr(not(feature = "updater"), allow(unused_mut))]
     let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_dialog::init());
@@ -354,7 +381,7 @@ fn main() {
             get_status, commit, fetch, pull, push, diff, open_diff, load_themes,
             pr_status, open_url, license_status, activate_license, update_now,
             app_version, set_github_token, github_token_set, pick_repo,
-            app_mode, set_app_mode
+            app_mode, set_app_mode, is_app_store
         ])
         .setup(|app| {
             let win = app
