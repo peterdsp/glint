@@ -144,6 +144,7 @@ jobs:
           export PROFILE="$RUNNER_TEMP/glint.provisionprofile"
 
           # 4. Build + sign + package (sandboxed, license feature off, universal).
+          export BUILD_NUMBER="${{ github.run_number }}"
           ./scripts/mas-package.sh
 
           # 5. Write the App Store Connect API key for the upload.

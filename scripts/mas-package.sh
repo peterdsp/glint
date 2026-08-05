@@ -47,6 +47,13 @@ $TAURI build --config tauri.appstore.conf.json --bundles app \
 APP="$(ls -d "$ROOT/src-tauri/target/release/bundle/macos/"*.app 2>/dev/null | head -1)"
 echo "Built app bundle: $APP"
 
+# 1b. Stamp a real build number into CFBundleVersion. Tauri sets it to the
+#     marketing version by default, so App Store Connect shows "1.0.3 (1.0.3)".
+#     CI passes GITHUB_RUN_NUMBER; local builds fall back to a date stamp.
+BUILD_NUMBER="${BUILD_NUMBER:-$(date +%Y%m%d%H%M)}"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP/Contents/Info.plist"
+echo "Build number: $BUILD_NUMBER"
+
 # 2. Embed the provisioning profile.
 cp "$PROFILE" "$APP/Contents/embedded.provisionprofile"
 
