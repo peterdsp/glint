@@ -5,12 +5,24 @@ mod github;
 mod license;
 mod theme;
 
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::OnceLock;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Manager, WebviewWindow,
 };
 use tauri_plugin_positioner::{Position, WindowExt};
+
+/// True while the native folder-picker dialog is open. The focus-lost handler
+/// checks this so it doesn't hide the menu-bar panel while the user is
+/// choosing a folder (which would make the app appear to freeze).
+static PICKING_FOLDER: AtomicBool = AtomicBool::new(false);
+
+/// Presentation mode, read once at startup from a config file and cached for
+/// the lifetime of the process. Using a cache avoids a file read on every
+/// window-focus event.
+static APP_MODE: OnceLock<Mode> = OnceLock::new();
 
 /// Run blocking libgit2 work off the main thread. Synchronous Tauri commands
 /// execute on the main thread, so doing libgit2 I/O inline freezes the UI while
@@ -106,13 +118,13 @@ fn open_url(url: String) -> Result<(), String> {
 /// Cross-platform: `app_config_dir` resolves to Application Support / AppData /
 /// ~/.config per OS.
 #[tauri::command]
-fn load_themes(app: tauri::AppHandle) -> Result<Vec<theme::DiskTheme>, String> {
+async fn load_themes(app: tauri::AppHandle) -> Result<Vec<theme::DiskTheme>, String> {
     let dir = app
         .path()
         .app_config_dir()
         .map_err(|e| e.to_string())?
         .join("themes");
-    Ok(theme::parse_dir(&dir))
+    run_blocking(move || Ok(theme::parse_dir(&dir))).await
 }
 
 #[cfg_attr(feature = "appstore", allow(dead_code))]
@@ -145,10 +157,31 @@ fn kv_set(key: &str, val: &str) {
     }
 }
 
+#[cfg(not(feature = "appstore"))]
+fn license_status_sync(dir: &std::path::Path) -> Result<license::LicenseState, String> {
+    std::fs::create_dir_all(dir).ok();
+    let now = now_secs();
+
+    let fr_path = dir.join("first_run");
+    let file_fr = std::fs::read_to_string(&fr_path)
+        .ok()
+        .and_then(|s| s.trim().parse::<u64>().ok());
+    let key_fr = kv_get("first_run").and_then(|s| s.parse::<u64>().ok());
+    let first_run = [file_fr, key_fr].into_iter().flatten().min().unwrap_or(now);
+    let _ = std::fs::write(&fr_path, first_run.to_string());
+    kv_set("first_run", &first_run.to_string());
+
+    let license = kv_get("license")
+        .or_else(|| std::fs::read_to_string(dir.join("license.key")).ok())
+        .and_then(|k| license::verify(k.trim(), license::pubkey_b64()).ok());
+
+    Ok(license::evaluate(first_run, now, license))
+}
+
 /// Trial / license state. The App Store build is always "licensed" (Apple gates
 /// the purchase); the direct build tracks a 7-day trial then requires a key.
 #[tauri::command]
-fn license_status(app: tauri::AppHandle) -> Result<license::LicenseState, String> {
+async fn license_status(app: tauri::AppHandle) -> Result<license::LicenseState, String> {
     #[cfg(feature = "appstore")]
     {
         let _ = app;
@@ -157,33 +190,13 @@ fn license_status(app: tauri::AppHandle) -> Result<license::LicenseState, String
     #[cfg(not(feature = "appstore"))]
     {
         let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
-        std::fs::create_dir_all(&dir).ok();
-        let now = now_secs();
-
-        // Trial start = the EARLIEST timestamp found in the Keychain or the
-        // config file. Clearing one store won't reset the trial; both must go,
-        // and the Keychain entry is hard to find. On first run, seed both.
-        let fr_path = dir.join("first_run");
-        let file_fr = std::fs::read_to_string(&fr_path)
-            .ok()
-            .and_then(|s| s.trim().parse::<u64>().ok());
-        let key_fr = kv_get("first_run").and_then(|s| s.parse::<u64>().ok());
-        let first_run = [file_fr, key_fr].into_iter().flatten().min().unwrap_or(now);
-        let _ = std::fs::write(&fr_path, first_run.to_string());
-        kv_set("first_run", &first_run.to_string());
-
-        // License: Keychain first, then the config file.
-        let license = kv_get("license")
-            .or_else(|| std::fs::read_to_string(dir.join("license.key")).ok())
-            .and_then(|k| license::verify(k.trim(), license::pubkey_b64()).ok());
-
-        Ok(license::evaluate(first_run, now, license))
+        run_blocking(move || license_status_sync(&dir)).await
     }
 }
 
 /// Validate and store a license key, returning the new state.
 #[tauri::command]
-fn activate_license(app: tauri::AppHandle, key: String) -> Result<license::LicenseState, String> {
+async fn activate_license(app: tauri::AppHandle, key: String) -> Result<license::LicenseState, String> {
     #[cfg(feature = "appstore")]
     {
         let _ = (app, key);
@@ -191,12 +204,15 @@ fn activate_license(app: tauri::AppHandle, key: String) -> Result<license::Licen
     }
     #[cfg(not(feature = "appstore"))]
     {
-        license::verify(key.trim(), license::pubkey_b64())?;
         let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
-        std::fs::create_dir_all(&dir).ok();
-        std::fs::write(dir.join("license.key"), key.trim()).ok();
-        kv_set("license", key.trim());
-        license_status(app)
+        run_blocking(move || {
+            license::verify(key.trim(), license::pubkey_b64())?;
+            std::fs::create_dir_all(&dir).ok();
+            std::fs::write(dir.join("license.key"), key.trim()).ok();
+            kv_set("license", key.trim());
+            license_status_sync(&dir)
+        })
+        .await
     }
 }
 
@@ -206,15 +222,25 @@ fn app_version() -> String {
 }
 
 /// Native folder picker for connecting a repository. Returns the chosen path,
-/// or None if the user cancels. The frontend then validates it is a real Git
-/// repo by loading its status.
+/// or None if the user cancels. The command is async so the main thread stays
+/// responsive while the dialog is open (the previous synchronous version
+/// blocked the event loop and triggered "Not Responding" on App Store review).
 #[tauri::command]
-fn pick_repo(app: tauri::AppHandle) -> Option<String> {
+async fn pick_repo(app: tauri::AppHandle) -> Option<String> {
     use tauri_plugin_dialog::DialogExt;
+    PICKING_FOLDER.store(true, Ordering::SeqCst);
+    let (tx, rx) = std::sync::mpsc::sync_channel(1);
     app.dialog()
         .file()
         .set_title("Choose a Git repository")
-        .blocking_pick_folder()
+        .pick_folder(move |path| {
+            PICKING_FOLDER.store(false, Ordering::SeqCst);
+            let _ = tx.send(path);
+        });
+    tauri::async_runtime::spawn_blocking(move || rx.recv().ok().flatten())
+        .await
+        .ok()
+        .flatten()
         .and_then(|p| p.into_path().ok())
         .map(|p| p.to_string_lossy().into_owned())
 }
@@ -248,15 +274,28 @@ fn read_mode(app: &tauri::AppHandle) -> Mode {
     }
 }
 
+fn cached_mode(app: &tauri::AppHandle) -> Mode {
+    *APP_MODE.get_or_init(|| read_mode(app))
+}
+
 /// The chosen presentation mode ("menubar" | "dock"), or null on first run so
 /// the UI can show the chooser.
 #[tauri::command]
-fn app_mode(app: tauri::AppHandle) -> Option<String> {
-    match read_mode(&app) {
-        Mode::MenuBar => Some("menubar".into()),
-        Mode::Dock => Some("dock".into()),
-        Mode::FirstRun => None,
-    }
+async fn app_mode(app: tauri::AppHandle) -> Option<String> {
+    let path = mode_path(&app);
+    tauri::async_runtime::spawn_blocking(move || {
+        let raw = path
+            .and_then(|p| std::fs::read_to_string(p).ok())
+            .map(|s| s.trim().to_string());
+        match raw.as_deref() {
+            Some("dock") => Some("dock".into()),
+            Some("menubar") => Some("menubar".into()),
+            _ => None,
+        }
+    })
+    .await
+    .ok()
+    .flatten()
 }
 
 /// Persist the presentation mode and relaunch so it applies cleanly from
@@ -278,22 +317,28 @@ fn set_app_mode(app: tauri::AppHandle, mode: String) -> Result<(), String> {
 /// since it cannot reach `~/.ssh`, the credential helper, or the gh CLI. Other
 /// builds treat it as an optional fallback ahead of the gh CLI.
 #[tauri::command]
-fn set_github_token(token: String) -> Result<(), String> {
-    let entry = keyring::Entry::new(KEYRING_SERVICE, "gh_token").map_err(|e| e.to_string())?;
-    let t = token.trim();
-    if t.is_empty() {
-        let _ = entry.delete_credential();
-        Ok(())
-    } else {
-        entry.set_password(t).map_err(|e| e.to_string())
-    }
+async fn set_github_token(token: String) -> Result<(), String> {
+    run_blocking(move || {
+        let entry =
+            keyring::Entry::new(KEYRING_SERVICE, "gh_token").map_err(|e| e.to_string())?;
+        let t = token.trim();
+        if t.is_empty() {
+            let _ = entry.delete_credential();
+            Ok(())
+        } else {
+            entry.set_password(t).map_err(|e| e.to_string())
+        }
+    })
+    .await
 }
 
 /// Whether a GitHub token is currently stored. Never returns the token itself,
 /// so Settings can show its state without the secret round-tripping to the UI.
 #[tauri::command]
-fn github_token_set() -> bool {
-    crate::github::stored_github_token().is_some()
+async fn github_token_set() -> bool {
+    tauri::async_runtime::spawn_blocking(|| crate::github::stored_github_token().is_some())
+        .await
+        .unwrap_or(false)
 }
 
 /// Silent background update (direct build): check GitHub Releases, and if a
@@ -389,6 +434,7 @@ fn main() {
                 .expect("panel window missing");
 
             let mode = read_mode(app.handle());
+            let _ = APP_MODE.set(mode);
 
             // macOS activation policy: a menu-bar app has no Dock icon
             // (Accessory); a Dock app - and the first-run chooser, so it shows
@@ -497,17 +543,18 @@ fn main() {
             Ok(())
         })
         .on_window_event(|win, event| match event {
-            // Menu-bar UX: dismiss the panel when it loses focus. In Dock mode
-            // it is a normal window, so leave it be.
+            // Menu-bar UX: dismiss the panel when it loses focus. Skip while the
+            // folder picker is open so the panel isn't hidden behind the dialog.
             tauri::WindowEvent::Focused(false)
-                if read_mode(win.app_handle()) == Mode::MenuBar =>
+                if !PICKING_FOLDER.load(Ordering::SeqCst)
+                    && cached_mode(win.app_handle()) == Mode::MenuBar =>
             {
                 let _ = win.hide();
             }
             // Dock mode: closing the window hides it (the app stays in the
             // Dock) rather than quitting.
             tauri::WindowEvent::CloseRequested { api, .. }
-                if read_mode(win.app_handle()) == Mode::Dock =>
+                if cached_mode(win.app_handle()) == Mode::Dock =>
             {
                 api.prevent_close();
                 let _ = win.hide();
