@@ -144,11 +144,41 @@ function render(status) {
     path.textContent = f.path;
     path.title = t("openDiff");
     path.onclick = () => openDiff(f.path);
-    li.append(check, path, deltaEl(f));
+    const kids = [check, path];
+    // Flag files that carry BOTH staged and unstaged changes: committing takes
+    // the whole working-tree file, so this marker (and the note below) warns that
+    // the staged/unstaged split will be collapsed.
+    if (f.partially_staged) {
+      const mix = document.createElement("span");
+      mix.className = "file-mixed";
+      mix.textContent = "±";
+      mix.title = t("mixedTitle");
+      mix.setAttribute("aria-label", t("mixedTitle"));
+      kids.push(mix);
+    }
+    kids.push(deltaEl(f));
+    li.append(...kids);
     list.appendChild(li);
   }
 
+  updateMixedNote(status);
   refreshSyncButtons();
+}
+
+// Show a concise, live note when any CHECKED file has both staged and unstaged
+// changes, explaining that committing includes all of it. Re-evaluated on every
+// render (checkbox toggle, locale change), so it tracks the current selection.
+function updateMixedNote(status) {
+  const note = document.getElementById("commit-mixed-note");
+  if (!note) return;
+  const n = (status.files || []).filter((f) => f.staged && f.partially_staged).length;
+  if (n === 0) {
+    note.hidden = true;
+    note.textContent = "";
+  } else {
+    note.hidden = false;
+    note.textContent = n === 1 ? t("mixedNote1") : t("mixedNote", { n });
+  }
 }
 
 // Pull/push are only meaningful when there's something to move.

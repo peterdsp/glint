@@ -40,6 +40,8 @@
           <input class="commit-summary" id="commit-summary" placeholder="Summary" data-i18n-ph="summary" />
           <input class="commit-desc" id="commit-desc" placeholder="Description (optional)" data-i18n-ph="descriptionOptional" />
         </div>
+        <p class="commit-hint" data-i18n="commitWholeFileHint">Each checked file is committed with all its current changes.</p>
+        <p class="commit-mixed-note" id="commit-mixed-note" role="status" aria-live="polite" hidden></p>
         <button class="commit-btn" id="commit-btn">Commit to <span id="commit-branch">-</span></button>
       </footer>
       </div>

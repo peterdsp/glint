@@ -290,6 +290,34 @@ body {
 .commit {
   padding: 8px 14px 12px;
 }
+.commit-hint {
+  margin: 0 2px 8px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.commit-mixed-note {
+  margin: 0 2px 8px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--accent);
+}
+.file-mixed {
+  flex: none;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  cursor: default;
+}
 .commit-box {
   border-radius: 12px;
   background: var(--field);

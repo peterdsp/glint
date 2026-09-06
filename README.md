@@ -56,6 +56,33 @@ first build is fast and dependency-free. Planned upgrade: migrate to
 [`git2`](https://docs.rs/git2) (libgit2 bindings) for in-process reads, then native
 `push`/`pull` with credential handling, and `octocrab` for PR status.
 
+## Commit model
+
+Glint commits whole files. The checklist is a selection of which changed files
+go into the next commit, not a staging area you edit hunk by hunk:
+
+- Checking a file commits its **entire current working-tree content**, which is
+  exactly the diff Glint shows for it (HEAD to working tree).
+- Files you leave unchecked never enter the commit, even if they were staged
+  outside Glint (`git add`). Their staged content and any worktree edits are
+  left untouched.
+- A file that is only partially staged (some hunks staged, further edits on
+  disk) is committed **in full** when you check it, and reads as clean
+  afterwards. Leave it unchecked to keep its staged/worktree split intact:
+  Glint never splits one file across a commit boundary. The commit panel says
+  this at the point of use, and flags any selected file that carries both staged
+  and unstaged changes before you commit.
+
+After a commit, the real index is reconciled with the new `HEAD` from the
+committed snapshot, so the files you committed show as clean while every other
+staged change and worktree edit is preserved (an edit that lands mid-commit stays
+an unstaged edit rather than being silently staged). Glint refuses to commit a
+repository that is mid-merge, mid-rebase, mid-cherry-pick, mid-revert, or
+mid-bisect, or that has unresolved conflicts, and asks you to finish or abort
+that operation first. If another Git process moves the branch while Glint is
+committing, Glint refuses rather than overwriting that commit, and nothing is
+written to the branch.
+
 ## Run it
 
 Prerequisites: Rust, Node (for the Tauri CLI convenience scripts), and
