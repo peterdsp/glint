@@ -239,6 +239,9 @@ body {
 .file:hover {
   background: var(--tint-2);
 }
+/* Rendered as a native <button role="checkbox"> so it is focusable and toggles
+   with Space/Enter; these resets strip the default button chrome while keeping
+   the 16px accent square. */
 .check {
   width: 16px;
   height: 16px;
@@ -248,6 +251,13 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  color: inherit;
+  font: inherit;
 }
 .check.on {
   background: var(--accent);
@@ -257,14 +267,26 @@ body {
 .check.off {
   border: 1.5px solid var(--ink-2);
 }
+/* A native <button> that opens the diff. Text stays selectable so paths can be
+   copied; a plain click (no drag) still opens the diff. */
 .file-path {
   font-size: 12px;
   font-family: var(--mono);
   flex: 1;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
+  padding: 0;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  color: var(--ink);
+  text-align: left;
+  -webkit-user-select: text;
+  user-select: text;
 }
 .file-path:hover {
   text-decoration: underline;
@@ -833,5 +855,142 @@ body[data-mode="dock"] .panel {
   from {
     opacity: 0;
     transform: translateY(6px);
+  }
+}
+
+/* ===========================================================================
+   Accessibility
+   Native macOS WKWebView (this build: Safari/WebKit 26) reads the system
+   Accessibility preferences into CSS media features:
+     - Reduce motion       -> prefers-reduced-motion: reduce
+     - Reduce transparency -> prefers-reduced-transparency: reduce  (Safari 17+)
+     - Increase contrast   -> prefers-contrast: more                (Safari 14.1+)
+     - Appearance light/dark -> prefers-color-scheme (themes are explicit here)
+   The window is transparent with a native NSVisualEffectView behind it; under
+   Reduce transparency AppKit already renders that view opaque, and the rules
+   below additionally paint an opaque themed panel so no desktop shows through.
+   =========================================================================== */
+
+/* Visually hidden but exposed to assistive tech (live regions, SR-only text). */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Selectable, copyable identity + status text. Interactive controls that carry
+   this (the file path) still respond to a plain click. */
+.repo-name,
+.repo-branch,
+.toast,
+.commit-mixed-note,
+.commit-hint,
+.set-license,
+.set-version,
+.theme-name,
+.lg-msg,
+.set-hint,
+#gh-status {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Keyboard focus is visible on every control, in every theme. --ink is the
+   theme's readable text color, so an --ink ring always contrasts with the
+   panel; the 2px offset places it on the glass rather than on an accent fill
+   (where an accent ring would vanish). :focus-visible keeps it keyboard-only. */
+:where(button, input, [tabindex], .check, .file-path):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+/* Selected theme swatch already carries a ring; keep the focus ring distinct. */
+.swatch:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .toast {
+    animation: none !important;
+  }
+  /* Suppress the press/scale micro-animations. */
+  .sync-stat:active,
+  .sync-btn:active,
+  .commit-btn:active,
+  .ob-btn:active,
+  .lg-buy:active,
+  .lg-activate:active,
+  .set-btn:active,
+  .mp-card:active {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  /* Opaque, themed panel background per built-in theme. Disk themes fall back
+     to the default (light) value. */
+  :root {
+    --panel-solid: #e9edf5;
+  }
+  :root[data-theme="midnight"] {
+    --panel-solid: #1b2030;
+  }
+  :root[data-theme="sunset"] {
+    --panel-solid: #f3ebe5;
+  }
+  :root[data-theme="forest"] {
+    --panel-solid: #e6efe9;
+  }
+  :root[data-theme="graphite"] {
+    --panel-solid: #e8eaee;
+  }
+
+  .panel {
+    background: var(--panel-solid);
+  }
+  /* Overlays drop their blur and become fully opaque so nothing shows through. */
+  .settings,
+  .license-gate,
+  .modepick {
+    background: var(--panel-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  /* Raise secondary text to full ink contrast and give surfaces a visible edge. */
+  :root {
+    --ink-2: var(--ink);
+  }
+  .sync-stat,
+  .commit-box,
+  .lg-input,
+  .mode-opt,
+  .lang-btn,
+  .mp-card,
+  .set-btn,
+  .pr-pill {
+    border-color: var(--ink);
+  }
+  .check.off {
+    border-color: var(--ink);
+  }
+  :where(button, input, [tabindex], .check, .file-path):focus-visible {
+    outline-width: 3px;
   }
 }

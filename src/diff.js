@@ -64,6 +64,13 @@ function renderDiff(d) {
   }
   document.getElementById("adds").textContent = `+${adds}`;
   document.getElementById("dels").textContent = `-${dels}`;
+  // The +N / -N glyphs are aria-hidden; give SR users a spoken equivalent.
+  const countsSr = document.getElementById("counts-sr");
+  if (countsSr) {
+    const a = window.t ? window.t("diffAdds", { n: adds }) : `${adds} additions`;
+    const d = window.t ? window.t("diffDels", { n: dels }) : `${dels} deletions`;
+    countsSr.textContent = `${a}, ${d}`;
+  }
 
   const body = document.getElementById("body");
   body.innerHTML = "";
@@ -122,6 +129,7 @@ async function loadDiff(repo, file) {
     body.innerHTML = "";
     const el = document.createElement("div");
     el.className = "empty err";
+    el.setAttribute("role", "alert"); // announce the failure to screen readers
     el.textContent = String(e && e.message ? e.message : e);
     body.appendChild(el);
   }

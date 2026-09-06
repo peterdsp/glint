@@ -132,17 +132,27 @@ function render(status) {
   for (const f of status.files) {
     const li = document.createElement("li");
     li.className = "file";
-    const check = document.createElement("span");
+    li.setAttribute("role", "listitem");
+    // Native <button role="checkbox">: focusable, toggles with Space/Enter, and
+    // exposes its staged state to assistive tech via aria-checked.
+    const check = document.createElement("button");
+    check.type = "button";
     check.className = "check " + (f.staged ? "on" : "off");
-    if (f.staged) check.innerHTML = '<i class="ti ti-check"></i>';
+    check.setAttribute("role", "checkbox");
+    check.setAttribute("aria-checked", f.staged ? "true" : "false");
+    check.setAttribute("aria-label", f.path);
+    if (f.staged) check.innerHTML = '<i class="ti ti-check" aria-hidden="true"></i>';
     check.onclick = () => {
       f.staged = !f.staged;
       render(status);
     };
-    const path = document.createElement("span");
+    // Native <button> that opens the diff; the label names the action + file.
+    const path = document.createElement("button");
+    path.type = "button";
     path.className = "file-path";
     path.textContent = f.path;
     path.title = t("openDiff");
+    path.setAttribute("aria-label", t("openDiff") + ": " + f.path);
     path.onclick = () => openDiff(f.path);
     const kids = [check, path];
     // Flag files that carry BOTH staged and unstaged changes: committing takes
@@ -181,14 +191,37 @@ function updateMixedNote(status) {
   }
 }
 
-// Pull/push are only meaningful when there's something to move.
+// Pull/push are only meaningful when there's something to move. Accessible
+// names carry the live counts and are refreshed here (and on locale change).
 function refreshSyncButtons() {
   const sync = document.getElementById("sync");
   const pull = document.getElementById("pull-btn");
   const push = document.getElementById("push-btn");
-  if (sync) sync.disabled = false;
-  if (pull) pull.disabled = !current.behind;
-  if (push) push.disabled = !current.ahead;
+  if (sync) {
+    sync.disabled = false;
+    sync.setAttribute("aria-label", t("fetchAria"));
+  }
+  if (pull) {
+    pull.disabled = !current.behind;
+    pull.setAttribute("aria-label", t("pullAria", { n: current.behind || 0 }));
+  }
+  if (push) {
+    push.disabled = !current.ahead;
+    push.setAttribute("aria-label", t("pushAria", { n: current.ahead || 0 }));
+  }
+}
+
+// Route a message to the correct off-screen live region: errors are assertive,
+// everything else polite. Clearing first forces re-announcement of a repeat.
+function announce(msg, assertive) {
+  const el = document.getElementById(assertive ? "sr-alert" : "sr-status");
+  if (!el) return;
+  el.textContent = "";
+  const set = () => {
+    el.textContent = msg;
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(set);
+  else setTimeout(set, 16);
 }
 
 function statusToView(path, s) {
@@ -208,6 +241,7 @@ function showToast(msg, kind = "") {
   el.textContent = msg;
   el.className = "toast" + (kind ? " " + kind : "");
   el.hidden = false;
+  announce(msg, kind === "err");
   clearTimeout(toastTimer);
   if (kind !== "busy") {
     toastTimer = setTimeout(() => {
@@ -298,9 +332,16 @@ async function loadLicense() {
       setLic.textContent = s.days_left === 1 ? t("freeTrialLeft1") : t("freeTrialLeft", { n: s.days_left });
     showPurchaseUI(true);
   } else {
-    // expired: block the base panel until a valid key is entered
+    // expired: block the base panel until a valid key is entered. Move focus
+    // into the modal on the show transition (not on every locale re-render).
     if (bar) bar.hidden = true;
-    if (gate) gate.hidden = false;
+    if (gate && gate.hidden) {
+      gate.hidden = false;
+      const lgIn = document.getElementById("lg-input");
+      if (lgIn) lgIn.focus();
+    } else if (gate) {
+      gate.hidden = false;
+    }
     if (setLic) setLic.textContent = t("trialEndedShort");
     showPurchaseUI(true);
   }
@@ -351,13 +392,55 @@ async function refreshGhStatus() {
   }
 }
 
+// Control that opened the current overlay, so focus can return to it on close.
+let overlayReturnFocus = null;
+
+// Make everything behind an overlay unreachable to keyboard and screen readers
+// (native `inert`), so focus stays within the overlay while it is open.
+function setBackgroundInert(on) {
+  const head = document.querySelector(".head");
+  if (head) head.inert = on;
+  for (const id of ["repo-view", "onboard", "trial-bar"]) {
+    const el = document.getElementById(id);
+    if (el) el.inert = on;
+  }
+}
+
+function openSettings() {
+  const panel = document.getElementById("settings");
+  if (!panel) return;
+  overlayReturnFocus = document.activeElement;
+  panel.hidden = false;
+  refreshGhStatus();
+  setBackgroundInert(true);
+  const close = document.getElementById("settings-close");
+  if (close) close.focus();
+}
+
+function closeSettings() {
+  const panel = document.getElementById("settings");
+  if (!panel) return;
+  panel.hidden = true;
+  setBackgroundInert(false);
+  if (overlayReturnFocus && overlayReturnFocus.focus) overlayReturnFocus.focus();
+  overlayReturnFocus = null;
+}
+
 // Settings overlay: theme picker + GitHub + license + updates.
 function wireSettings() {
   const panel = document.getElementById("settings");
   const open = document.getElementById("settings-btn");
   const close = document.getElementById("settings-close");
-  if (open && panel) open.onclick = () => { panel.hidden = false; refreshGhStatus(); };
-  if (close && panel) close.onclick = () => { panel.hidden = true; };
+  if (open && panel) open.onclick = openSettings;
+  if (close && panel) close.onclick = closeSettings;
+  // Escape closes the overlay and returns focus to the opener.
+  if (panel)
+    panel.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeSettings();
+      }
+    });
 
   const buy = document.getElementById("set-buy");
   if (buy) buy.onclick = openKofi;
@@ -433,6 +516,10 @@ async function loadPrStatus() {
     pill.textContent = `#${pr.number}`;
     pill.className = "pr-pill checks-" + (pr.checks || "none");
     pill.title = `${pr.draft ? "Draft · " : ""}${pr.title} - CI: ${pr.checks}`;
+    pill.setAttribute(
+      "aria-label",
+      `${t("prAria", { n: pr.number })}${pr.draft ? " (draft)" : ""}, CI: ${pr.checks}`
+    );
     pill.onclick = () => {
       if (pr.url) invoke("open_url", { url: pr.url }).catch(() => {});
     };
@@ -483,6 +570,20 @@ function showOnboard(on) {
   const rv = document.getElementById("repo-view");
   if (ob) ob.hidden = !on;
   if (rv) rv.hidden = on;
+  // Put the keyboard on the primary action when the card appears.
+  if (on) {
+    const btn = document.getElementById("ob-open");
+    if (btn) btn.focus();
+  }
+}
+
+// After connecting a repo the onboarding button (or its focus) is gone; land the
+// keyboard on the first file's checkbox, else the commit summary, so review can
+// continue without a lost-focus gap.
+function focusRepoStart() {
+  const first =
+    document.querySelector("#files .check") || document.getElementById("commit-summary");
+  if (first && first.focus) first.focus();
 }
 
 async function loadStatus() {
@@ -523,6 +624,7 @@ async function connectRepo() {
     } catch {}
     showOnboard(false);
     render(statusToView(path, s));
+    focusRepoStart();
     loadPrStatus();
   } catch (e) {
     showToast(t("notARepo"), "err");
@@ -553,8 +655,11 @@ async function doCommit() {
     summaryEl.value = "";
     descEl.value = "";
     await loadStatus();
+    announce(t("committed"));
+    summaryEl.focus();
   } catch (e) {
     console.warn("commit failed:", e);
+    showToast(String(e && e.message ? e.message : e), "err");
   } finally {
     btn.style.opacity = "";
   }
@@ -573,6 +678,19 @@ function wireActions() {
   document.getElementById("push-btn").onclick = () =>
     runSync("push", t("pushing"), t("pushed"));
   document.getElementById("commit-btn").onclick = doCommit;
+
+  // Commit from either message field with Cmd/Ctrl+Enter, without stealing the
+  // plain Enter that types a newline-free single-line input still expects.
+  for (const id of ["commit-summary", "commit-desc"]) {
+    const el = document.getElementById(id);
+    if (el)
+      el.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+          e.preventDefault();
+          doCommit();
+        }
+      });
+  }
 }
 
 // Presentation mode (menu bar vs Dock window): detect the saved choice, or
@@ -600,7 +718,11 @@ async function initMode() {
   const ob = document.getElementById("onboard");
   if (rv) rv.hidden = true;
   if (ob) ob.hidden = true;
-  if (mp) mp.hidden = false;
+  if (mp) {
+    mp.hidden = false;
+    const first = document.getElementById("mp-menubar");
+    if (first) first.focus();
+  }
   return null;
 }
 

@@ -7,6 +7,11 @@
   "scripts": {
     "dev": "cargo tauri dev",
     "build": "cargo tauri build",
-    "icon": "cargo tauri icon icon-src.png"
+    "icon": "cargo tauri icon icon-src.png",
+    "test": "node --test test/*.test.js",
+    "test:frontend": "node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
   }
 }

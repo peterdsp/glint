@@ -81,6 +81,13 @@ window.GLINT_I18N = {
     noChanges: "No changes in this file.",
     binaryFile: "Binary file - no line diff.",
     loadingDiff: "Loading diff...",
+    committed: "Committed",
+    pullAria: "Pull from origin, {n} to pull",
+    pushAria: "Push to origin, {n} to push",
+    fetchAria: "Fetch from origin",
+    prAria: "Open pull request #{n}",
+    diffAdds: "{n} additions",
+    diffDels: "{n} deletions",
   },
 
   el: {
@@ -158,6 +165,13 @@ window.GLINT_I18N = {
     noChanges: "Καμία αλλαγή σε αυτό το αρχείο.",
     binaryFile: "Δυαδικό αρχείο - χωρίς διαφορές γραμμών.",
     loadingDiff: "Φόρτωση διαφορών...",
+    committed: "Έγινε υποβολή",
+    pullAria: "Λήψη από το origin, {n} για λήψη",
+    pushAria: "Αποστολή στο origin, {n} για αποστολή",
+    fetchAria: "Λήψη από το origin",
+    prAria: "Άνοιγμα pull request #{n}",
+    diffAdds: "{n} προσθήκες",
+    diffDels: "{n} διαγραφές",
   },
 
   sq: {
@@ -235,6 +249,13 @@ window.GLINT_I18N = {
     noChanges: "Asnjë ndryshim në këtë skedar.",
     binaryFile: "Skedar binar - pa ndryshime rreshtash.",
     loadingDiff: "Duke ngarkuar ndryshimet...",
+    committed: "U krye commit-i",
+    pullAria: "Merr nga origin, {n} për të marrë",
+    pushAria: "Dërgo te origin, {n} për të dërguar",
+    fetchAria: "Merr nga origin",
+    prAria: "Hap pull request #{n}",
+    diffAdds: "{n} shtesa",
+    diffDels: "{n} heqje",
   },
 };
 

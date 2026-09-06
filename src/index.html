@@ -8,15 +8,21 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="panel" role="application" aria-label="Glint Git panel">
+    <main class="panel" aria-label="Glint Git panel">
+      <!-- Off-screen live regions: sync/commit results announce politely here,
+           errors assertively. Kept separate from the visible toast so a single,
+           correctly prioritized announcement reaches VoiceOver. -->
+      <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+      <div id="sr-alert" class="sr-only" role="alert" aria-live="assertive"></div>
+
       <header class="head">
         <span class="repo-icon" aria-hidden="true"><i class="ti ti-git-branch"></i></span>
         <div class="repo-meta">
           <div class="repo-name" id="repo-name">-</div>
           <div class="repo-branch"><i class="ti ti-git-fork" aria-hidden="true"></i><span id="branch">-</span><button class="pr-pill" id="pr-pill" type="button" hidden></button></div>
         </div>
-        <button class="icon-btn" id="switch-repo" aria-label="Switch repository"><i class="ti ti-selector"></i></button>
-        <button class="icon-btn" id="settings-btn" aria-label="Settings"><i class="ti ti-settings"></i></button>
+        <button class="icon-btn" id="switch-repo" aria-label="Switch repository"><i class="ti ti-selector" aria-hidden="true"></i></button>
+        <button class="icon-btn" id="settings-btn" aria-label="Settings"><i class="ti ti-settings" aria-hidden="true"></i></button>
       </header>
 
       <div class="repo-view" id="repo-view">
@@ -29,11 +35,11 @@
           <i class="ti ti-arrow-up" aria-hidden="true"></i>
           <div><div class="sync-num" id="ahead">0</div><div class="sync-lbl" data-i18n="toPush">to push</div></div>
         </button>
-        <button class="sync-btn" id="sync" aria-label="Fetch from origin"><i class="ti ti-refresh"></i></button>
+        <button class="sync-btn" id="sync" aria-label="Fetch from origin"><i class="ti ti-refresh" aria-hidden="true"></i></button>
       </section>
 
       <div class="section-label"><span id="files-count">0 changed files</span></div>
-      <ul class="files" id="files"></ul>
+      <ul class="files" id="files" role="list" aria-labelledby="files-count"></ul>
 
       <footer class="commit">
         <div class="commit-box">
@@ -48,27 +54,30 @@
 
       <button class="trial-bar" id="trial-bar" type="button" hidden></button>
 
-      <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+      <!-- Visible transient status. Not itself a live region: the off-screen
+           #sr-status / #sr-alert regions carry the announcement so it is spoken
+           once, at the right priority. -->
+      <div class="toast" id="toast" hidden></div>
 
       <div class="onboard" id="onboard" hidden>
-        <div class="ob-icon"><i class="ti ti-git-branch"></i></div>
+        <div class="ob-icon"><i class="ti ti-git-branch" aria-hidden="true"></i></div>
         <div class="ob-title" data-i18n="obTitle">Connect a repository</div>
         <div class="ob-sub" data-i18n="obSub">Point Glint at a Git repo on your Mac - one you cloned from GitHub, GitLab, Bitbucket, or any other remote.</div>
         <button class="ob-btn" id="ob-open" type="button" data-i18n="obOpen">Open a repository</button>
         <div class="ob-hint" data-i18n="obHint">Push and pull use your existing SSH keys, or a GitHub token you can add in Settings.</div>
       </div>
 
-      <div class="modepick" id="modepick" hidden>
-        <div class="mp-title" data-i18n="mpTitle">How should Glint live?</div>
+      <div class="modepick" id="modepick" role="dialog" aria-modal="true" aria-labelledby="mp-title" hidden>
+        <div class="mp-title" id="mp-title" data-i18n="mpTitle">How should Glint live?</div>
         <div class="mp-sub" data-i18n="mpSub">Pick how you want to open it. You can change this later in Settings.</div>
         <div class="mp-options">
           <button class="mp-card" id="mp-menubar" type="button">
-            <span class="mp-ic"><i class="ti ti-layout-navbar-collapse"></i></span>
+            <span class="mp-ic"><i class="ti ti-layout-navbar-collapse" aria-hidden="true"></i></span>
             <span class="mp-name" data-i18n="mpMenubar">Menu bar</span>
             <span class="mp-desc" data-i18n="mpMenubarDesc">An icon in the menu bar; the panel drops down on click. No Dock icon.</span>
           </button>
           <button class="mp-card" id="mp-dock" type="button">
-            <span class="mp-ic"><i class="ti ti-app-window"></i></span>
+            <span class="mp-ic"><i class="ti ti-app-window" aria-hidden="true"></i></span>
             <span class="mp-name" data-i18n="mpDock">Dock window</span>
             <span class="mp-desc" data-i18n="mpDockDesc">A normal app window that lives in the Dock, like most apps.</span>
           </button>
@@ -78,7 +87,7 @@
       <div class="settings" id="settings" hidden>
         <div class="set-head">
           <span class="set-title" data-i18n="settings">Settings</span>
-          <button class="icon-btn" id="settings-close" aria-label="Done"><i class="ti ti-x"></i></button>
+          <button class="icon-btn" id="settings-close" aria-label="Done"><i class="ti ti-x" aria-hidden="true"></i></button>
         </div>
         <div class="set-body">
           <section class="set-section">
@@ -131,9 +140,9 @@
         </div>
       </div>
 
-      <div class="license-gate" id="license-gate" hidden>
+      <div class="license-gate" id="license-gate" role="dialog" aria-modal="true" aria-labelledby="lg-title" hidden>
         <div class="lg-card">
-          <div class="lg-title" data-i18n="trialEndedTitle">Your Glint trial has ended</div>
+          <div class="lg-title" id="lg-title" data-i18n="trialEndedTitle">Your Glint trial has ended</div>
           <div class="lg-sub" data-i18n="trialEndedSub">Keep Glint for a one-time $2.99 on Ko-fi. Already bought? Paste your key below.</div>
           <button class="lg-buy" id="lg-buy" type="button" data-i18n="getLicenseKofi">Get a license on Ko-fi</button>
           <div class="lg-or" data-i18n="orEnterKey">or enter your license key</div>

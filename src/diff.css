@@ -204,3 +204,55 @@ body {
   border-radius: 6px;
   border: 3px solid var(--surface);
 }
+
+/* ---- accessibility ---- */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The scroll area is keyboard-focusable; show an inset ring (a positive offset
+   would be clipped at the window edge). --fg is the readable text color. */
+.dbody:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}
+
+/* The diff window is already an opaque, decorated window; only the header uses a
+   translucent blur. Make it fully opaque under Reduce transparency. */
+@media (prefers-reduced-transparency: reduce) {
+  .dhead {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --line: rgba(20, 24, 40, 0.4);
+    --gutter: rgba(20, 24, 40, 0.75);
+  }
+  :root[data-theme="midnight"] {
+    --line: rgba(255, 255, 255, 0.4);
+    --gutter: rgba(255, 255, 255, 0.7);
+  }
+  .dbody:focus-visible {
+    outline-width: 3px;
+  }
+}
