@@ -432,3 +432,29 @@ function startClock() {
   setInterval(tick, 15000);
 }
 startClock();
+
+// Support channel: offer GitHub issues only while the repository is public.
+// The GitHub API answers 200 for a public repository and 404 for a private one;
+// on any other answer the page keeps the wording it shipped with.
+(function () {
+  const hosts = document.querySelectorAll("[data-repo-channel]");
+  if (!hosts.length || !window.fetch) return;
+  hosts.forEach((host) => {
+    const repo = host.getAttribute("data-repo-channel");
+    const key = "repo-public:" + repo;
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) {}
+    const apply = (isPublic) => {
+      host.querySelectorAll("[data-when]").forEach((el) => {
+        el.hidden = (el.getAttribute("data-when") === "public") !== isPublic;
+      });
+    };
+    if (cached && Date.now() - cached.t < 3600000) { apply(cached.v); return; }
+    fetch("https://api.github.com/repos/" + repo, { headers: { accept: "application/vnd.github+json" } }).then((res) => {
+      if (res.status !== 200 && res.status !== 404) return;
+      const isPublic = res.status === 200;
+      try { localStorage.setItem(key, JSON.stringify({ v: isPublic, t: Date.now() })); } catch (e) {}
+      apply(isPublic);
+    }).catch(() => {});
+  });
+})();

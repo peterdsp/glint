@@ -374,7 +374,10 @@
     <nav class="foot-links" aria-label="Footer">
       <a href="https://github.com/peterdsp/glint" data-i18n="footGithub">GitHub</a>
       <a href="https://github.com/peterdsp/glint/blob/main/docs/design-language.md" data-i18n="footDesign">Design language</a>
-      <a href="https://github.com/peterdsp/glint/issues" data-i18n="footIssues">Issues</a>
+      <span data-repo-channel="peterdsp/glint">
+        <a href="https://github.com/peterdsp/glint/issues" data-when="public" data-i18n="footIssues">Issues</a>
+        <a href="mailto:info@peterdsp.dev?subject=Glint%20support&amp;body=What%20I%20did%3A%0A%0AWhat%20happened%3A%0A%0AmacOS%20version%3A%0AGlint%20version%3A%0A%0AAttached%3A%20a%20screenshot%2C%20and%20the%20crash%20report%20from%20Console%20if%20it%20crashed.%0A" data-when="private" data-i18n="footSupport" hidden>Support</a>
+      </span>
       <a href="#download" data-i18n="footDownload">Download</a>
     </nav>
     <p class="foot-legal" data-i18n-html="footLegal">Built by <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year">2026</span></p>
@@ -382,6 +385,6 @@
 
   <script src="i18n.js?v=12"></script>
   <script src="speedtest.js?v=10"></script>
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
