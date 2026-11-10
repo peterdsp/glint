@@ -35,7 +35,7 @@ function buildMenubarSwatches() {
     b.type = "button";
     b.className = "sw";
     b.dataset.themeBtn = key;
-    b.style.background = THEMES[key].swatch;
+    b.style.setProperty("--sw", THEMES[key].swatch);
     b.title = THEMES[key].name;
     b.setAttribute("aria-label", `${THEMES[key].name} theme`);
     b.addEventListener("click", () => applyTheme(key));
@@ -271,7 +271,9 @@ function startGithubStream() {
         time.textContent = relTime(e.created_at);
 
         a.append(img, body, time);
-        list.prepend(a);
+        const item = document.createElement("li");
+        item.append(a);
+        list.prepend(item);
         while (list.children.length > MAX_ROWS) list.lastElementChild.remove();
       }
     }

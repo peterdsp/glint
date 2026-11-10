@@ -15,7 +15,7 @@
   <meta name="twitter:image" content="https://glint.peterdsp.dev/icon-1024.png" />
   <link rel="icon" type="image/png" href="icon.png" />
   <link rel="apple-touch-icon" href="icon.png" />
-  <link rel="stylesheet" href="styles.css?v=11" />
+  <link rel="stylesheet" href="styles.css?v=12" />
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -63,6 +63,11 @@
           <a class="btn btn-ghost" href="https://github.com/peterdsp/glint" data-i18n="ctaGithub">View on GitHub</a>
         </div>
         <p class="hero-trial" data-i18n="heroTrial">Free for 7 days, then a one-time $2.99. No subscription.</p>
+        <aside class="founder-note">
+          <p class="founder-label" data-i18n="founderLabel">A note from Petros</p>
+          <p class="founder-body" data-i18n="founderBody">Glint is my reimagining of GitHub Desktop's ideas as a menu-bar panel, built on Tauri and Rust instead of Electron. I wanted the everyday Git actions, stage, commit, pull, push, one click from the menu bar and then out of the way. There is no account and no telemetry: point it at a local repository and you are set up.</p>
+          <p class="founder-sig">Petros Dhespollari</p>
+        </aside>
         <dl class="stats">
           <div><dt>~6 MB</dt><dd data-i18n="statBundle">app bundle</dd></div>
           <div><dt>~40 MB</dt><dd data-i18n="statMemory">memory</dd></div>
@@ -241,7 +246,6 @@
     <section class="themes" id="themes">
       <div class="themes-inner">
         <div class="themes-copy">
-          <p class="section-eyebrow" data-i18n="themesEyebrow">Themeable by token</p>
           <h2 data-i18n="themesH2">Same glass. Swapped tokens.</h2>
           <p class="lede" data-i18n="themesLede">Light or dark, the material never changes - only the tint and accent do. Midnight is the proof: the tint flips to a dark translucent and the ink inverts, but the radii, blur, and shadow are untouched.</p>
           <p class="themes-hint" data-i18n="themesHint">Pick a theme - the panel and this whole site retint live.</p>
@@ -294,7 +298,7 @@
         </div>
         <figure class="how-code" aria-label="Project structure">
           <div class="code-chrome"><span></span><span></span><span></span><em>glint/</em></div>
-          <pre><code><span class="c-dir">src/</span>              <span class="c-cm"># frontend - system webview</span>
+          <pre tabindex="0"><code><span class="c-dir">src/</span>              <span class="c-cm"># frontend - system webview</span>
 ├─ index.html      the glass panel
 ├─ styles.css      glass + theme vars
 ├─ themes.js       theme token sets
@@ -309,7 +313,6 @@
 
     <!-- ===== Pricing ===== -->
     <section class="pricing" id="pricing">
-      <p class="section-eyebrow" data-i18n="prEyebrow">Pricing</p>
       <h2 data-i18n="prH2">Try it free. Buy it once.</h2>
       <p class="lede" data-i18n="prLede">Every feature works free for 7 days - no account, no card. After the trial, a one-time license keeps Glint yours. No subscription, ever.</p>
       <div class="plan-grid">
@@ -345,7 +348,6 @@
     <section class="download" id="download">
       <div class="dl-card">
         <span class="dl-spark" aria-hidden="true"></span>
-        <p class="section-eyebrow" data-i18n="dlEyebrow">Get Glint</p>
         <h2 data-i18n="dlH2">Free for 7 days. Yours for a coffee.</h2>
         <p class="lede" data-i18n="dlLede">Try every feature free for a week. To keep Glint, grab a one-time license - no subscription, ever.</p>
 
@@ -378,8 +380,8 @@
     <p class="foot-legal" data-i18n-html="footLegal">Built by <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year">2026</span></p>
   </footer>
 
-  <script src="i18n.js?v=11"></script>
+  <script src="i18n.js?v=12"></script>
   <script src="speedtest.js?v=10"></script>
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

@@ -24,7 +24,7 @@
   --line-2: rgba(24, 30, 55, 0.06);
   --ink: #14161d;
   --ink-2: #4c5262;
-  --ink-3: #838a9c;
+  --ink-3: #666d80;         /* 4.5:1+ on every light ground, down to --bg */
 
   --glow: rgba(91, 140, 255, 0.14);
   --shadow-lg: 0 30px 70px rgba(30, 40, 80, 0.16), 0 6px 18px rgba(30, 40, 80, 0.08);
@@ -57,7 +57,7 @@
     --line-2: rgba(255, 255, 255, 0.055);
     --ink: #e9ebf2;
     --ink-2: #a4aabb;
-    --ink-3: #6c7284;
+    --ink-3: #8a90a2;
     --accent-ink: #a9beff;
     --glow: rgba(91, 140, 255, 0.20);
     --shadow-lg: 0 34px 80px rgba(0, 0, 0, 0.6), 0 6px 20px rgba(0, 0, 0, 0.45);
@@ -69,7 +69,7 @@
 :root[data-appearance="dark"] {
   --bg: #0b0d13; --bg-2: #0f121b; --surface: #13161f; --surface-2: #171b26;
   --line: rgba(255,255,255,0.10); --line-2: rgba(255,255,255,0.055);
-  --ink: #e9ebf2; --ink-2: #a4aabb; --ink-3: #6c7284; --accent-ink: #a9beff;
+  --ink: #e9ebf2; --ink-2: #a4aabb; --ink-3: #8a90a2; --accent-ink: #a9beff;
   --glow: rgba(91,140,255,0.20);
   --shadow-lg: 0 34px 80px rgba(0,0,0,0.6), 0 6px 20px rgba(0,0,0,0.45);
   --shadow-md: 0 16px 40px rgba(0,0,0,0.5);
@@ -83,7 +83,15 @@
 :root[data-theme="sunset"]   { --accent:#ff7a59; --accent-deep:#ec5a37; --gp-acc:#ff7a59; --gp-tint:rgba(255,246,240,0.66); --gp-ink:#2a1c18; --gp-ink2:#7a5a4e; --gp-bg:linear-gradient(150deg,#ffe4d2 0%,#ffd6e0 52%,#f0d2ff 100%); }
 :root[data-theme="forest"]   { --accent:#1d9e75; --accent-deep:#158a64; --gp-acc:#1d9e75; --gp-tint:rgba(240,249,245,0.66); --gp-ink:#17251d; --gp-ink2:#4e6a5c; --gp-bg:linear-gradient(150deg,#d6f2e4 0%,#c4ead9 52%,#bfe6dd 100%); }
 :root[data-theme="graphite"] { --accent:#3a3f4a; --accent-deep:#2a2e37; --accent-ink:#3a3f4a; --gp-acc:#3a3f4a; --gp-tint:rgba(246,247,249,0.7); --gp-tint2:rgba(0,0,0,0.045); --gp-field:rgba(255,255,255,0.55); --gp-div:rgba(24,30,55,0.08); --gp-ink:#1b1d22; --gp-ink2:#5f636e; --gp-bg:linear-gradient(150deg,#e3e5ea 0%,#d7d9df 52%,#c9ccd4 100%); }
-:root[data-theme="midnight"] { --accent-ink: #a9beff; }
+/* Accent as text per theme and ground: Midnight is a deep indigo on the light page and the pale
+   tint on dark ground; Graphite's dark-grey accent needs its light swatch grey on dark ground. */
+:root[data-theme="midnight"] { --accent-ink: #4a5be0; }
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="midnight"] { --accent-ink: #a9beff; }
+  :root[data-theme="graphite"] { --accent-ink: #c2c5cd; }
+}
+:root[data-appearance="dark"][data-theme="midnight"] { --accent-ink: #a9beff; }
+:root[data-appearance="dark"][data-theme="graphite"] { --accent-ink: #c2c5cd; }
 
 * { box-sizing: border-box; margin: 0; }
 html { scroll-behavior: smooth; scroll-padding-top: 46px; }
@@ -151,14 +159,19 @@ a { color: inherit; }
 .mb-item.strong { color: var(--ink); font-weight: 600; }
 .mb-item:hover { color: var(--accent-ink); }
 .mb-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
-.mb-swatches { display: flex; gap: 6px; }
+.mb-swatches { display: flex; gap: 0; }
+/* 24px hit area; the visible 15px swatch is the ::before, coloured by --sw. */
 .mb-swatches .sw {
-  width: 15px; height: 15px; border-radius: 5px; border: 0; padding: 0; cursor: pointer;
+  width: 24px; height: 24px; border: 0; padding: 0; cursor: pointer; background: transparent;
+  display: grid; place-items: center; border-radius: 7px;
+}
+.mb-swatches .sw::before {
+  content: ""; width: 15px; height: 15px; border-radius: 5px; background: var(--sw);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
   transition: transform 0.12s, box-shadow 0.15s;
 }
-.mb-swatches .sw:hover { transform: scale(1.12); }
-.mb-swatches .sw[aria-pressed="true"] { box-shadow: 0 0 0 1.5px var(--surface), 0 0 0 3px var(--accent); }
+.mb-swatches .sw:hover::before { transform: scale(1.12); }
+.mb-swatches .sw[aria-pressed="true"]::before { box-shadow: 0 0 0 1.5px var(--surface), 0 0 0 3px var(--accent); }
 .mb-gh { color: var(--ink-2); display: flex; }
 .mb-gh:hover { color: var(--ink); }
 .mb-clock { font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
@@ -183,8 +196,8 @@ section { padding: clamp(64px, 9vw, 120px) 24px; }
   filter: drop-shadow(0 12px 26px rgba(30, 40, 90, 0.28));
 }
 .eyebrow, .section-eyebrow {
-  font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--accent-ink);
+  font-family: var(--mono); font-size: 14px; font-weight: 500; letter-spacing: normal;
+  color: var(--accent-ink);
   display: inline-flex; align-items: center; gap: 9px; margin-bottom: 18px;
 }
 .spark {
@@ -495,6 +508,7 @@ h3 { font-size: 18px; letter-spacing: -0.01em; font-weight: 600; }
 .theme-list { display: flex; flex-direction: column; gap: 8px; max-width: 340px; }
 .theme-row {
   display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer;
+  color: var(--ink);
   background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -561,6 +575,15 @@ a.price:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line))
 .price-amt { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); font-variant-numeric: tabular-nums; }
 .price-where { font-size: 12px; color: var(--ink-2); }
 .hero-trial { margin-top: 14px; font-size: 13px; color: var(--ink-3); }
+
+/* founder note, next to the hero actions */
+.founder-note {
+  margin: 26px 0 30px; max-width: 52ch; padding-left: 16px;
+  border-left: 2px solid var(--accent);
+}
+.founder-label { font-size: 13px; font-weight: 600; color: var(--accent-ink); margin-bottom: 6px; }
+.founder-body { font-size: 14.5px; color: var(--ink-2); }
+.founder-sig { margin-top: 8px; font-size: 13px; color: var(--ink-3); }
 
 /* Pricing */
 .pricing { text-align: center; }
