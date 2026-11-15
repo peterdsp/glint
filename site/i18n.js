@@ -264,7 +264,7 @@ const GLINT_SITE_I18N = {
     footLegal: `Φτιαγμένο από τον <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
     lidhraEyebrow: "Από τον ίδιο δημιουργό",
     lidhraLine: "Η βιβλιοθήκη σου, παντού: ταινίες και σειρές ταξινομημένες με αφίσες και Επόμενο, που παίζουν αμέσως ή μεταδίδονται σε τηλεόραση.",
-    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-el.svg" width="120" height="40" alt="Λήψη από το App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-el.svg" width="120" height="40" alt="Λήψη από το App Store">`,
+    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-el.svg" width="120" height="40" alt="Λήψη στο App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-el.svg" width="120" height="40" alt="Λήψη στο App Store">`,
   },
 
   sq: {
