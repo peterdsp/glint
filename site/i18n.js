@@ -130,6 +130,9 @@ const GLINT_SITE_I18N = {
     footSupport: "Support",
     footDownload: "Download",
     footLegal: `Built by <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
+    lidhraEyebrow: "From the same maker",
+    lidhraLine: "Your library, everywhere: films and series sorted with posters and Next up, played on the fly or cast to a TV.",
+    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-en.svg" width="120" height="40" alt="Download on the App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-en.svg" width="120" height="40" alt="Download on the App Store">`,
   },
 
   el: {
@@ -259,6 +262,9 @@ const GLINT_SITE_I18N = {
     footSupport: "Υποστήριξη",
     footDownload: "Λήψη",
     footLegal: `Φτιαγμένο από τον <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
+    lidhraEyebrow: "Από τον ίδιο δημιουργό",
+    lidhraLine: "Η βιβλιοθήκη σου, παντού: ταινίες και σειρές ταξινομημένες με αφίσες και Επόμενο, που παίζουν αμέσως ή μεταδίδονται σε τηλεόραση.",
+    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-el.svg" width="120" height="40" alt="Λήψη από το App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-el.svg" width="120" height="40" alt="Λήψη από το App Store">`,
   },
 
   sq: {
@@ -388,6 +394,9 @@ const GLINT_SITE_I18N = {
     footSupport: "Mbështetje",
     footDownload: "Shkarko",
     footLegal: `Ndërtuar nga <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
+    lidhraEyebrow: "Nga i njëjti krijues",
+    lidhraLine: "Biblioteka jote, kudo: filma dhe seriale të renditura me postera dhe Në vijim, që luhen menjëherë ose dërgohen në një televizor.",
+    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-en.svg" width="120" height="40" alt="Download on the App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-en.svg" width="120" height="40" alt="Download on the App Store">`,
   },
 };
 
