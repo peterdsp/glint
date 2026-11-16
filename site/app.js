@@ -78,86 +78,27 @@ function buildThemeList() {
   });
 }
 
-// --- the live panel: its files, its counters and the controls beside it ---
-// The switches on the right and the rows in the panel are the same state, so
-// either one stages a file, and the commit button counts what is staged.
+// --- interactive demo panels: toggle staged files + sync spin ---
 function wireDemoPanels() {
-  const panel = document.querySelector(".gpanel[data-demo]");
-  if (!panel) return;
-  const t = (k) => (window.GLINT_T ? window.GLINT_T(k) : k);
-  const rows = Array.from(panel.querySelectorAll(".gp-file"));
-  const state = { pull: 2, push: 5, staged: rows.map((r) => r.querySelector(".gp-check").classList.contains("on")) };
-
-  function render() {
-    rows.forEach((row, i) => {
-      row.querySelector(".gp-check").classList.toggle("on", state.staged[i]);
-      row.setAttribute("aria-checked", String(state.staged[i]));
-    });
-    document.querySelectorAll("[data-toggle]").forEach((sw) => {
-      sw.setAttribute("aria-checked", String(state.staged[+sw.dataset.toggle]));
-    });
-    const n = state.staged.filter(Boolean).length;
-    const commit = panel.querySelector('[data-gp="commit"]');
-    if (commit) {
-      commit.textContent = n === 0 ? t("gpNothing") : n === 1 ? t("gpCommit1") : t("gpCommitN").replace("{n}", n);
-      commit.classList.toggle("is-empty", n === 0);
-    }
-    const changed = panel.querySelector('[data-gp="changed"]');
-    if (changed) changed.textContent = rows.length === 1 ? t("gpChanged1") : t("gpChanged").replace("{n}", rows.length);
-    ["pull", "push"].forEach((k) => {
-      panel.querySelectorAll('[data-gp="' + k + '"]').forEach((el) => (el.textContent = state[k]));
-      document.querySelectorAll('[data-gp="' + k + '-out"]').forEach((el) => (el.textContent = state[k]));
-    });
-  }
-
-  rows.forEach((row, i) => {
-    row.setAttribute("role", "checkbox");
-    row.tabIndex = 0;
-    const flip = () => { state.staged[i] = !state.staged[i]; render(); };
-    row.addEventListener("click", flip);
-    row.addEventListener("keydown", (e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); flip(); } });
-  });
-  document.querySelectorAll("[data-toggle]").forEach((sw) => {
-    sw.addEventListener("click", () => { const i = +sw.dataset.toggle; state.staged[i] = !state.staged[i]; render(); });
-  });
-  document.querySelectorAll("[data-step]").forEach((b) => {
-    b.addEventListener("click", () => {
-      const k = b.dataset.step;
-      state[k] = Math.max(0, Math.min(99, state[k] + Number(b.dataset.by)));
-      render();
+  document.querySelectorAll(".gpanel[data-demo] .gp-file").forEach((row) => {
+    row.addEventListener("click", () => {
+      const check = row.querySelector(".gp-check");
+      const on = check.classList.toggle("on");
+      check.classList.toggle("off", !on);
+      check.innerHTML = on
+        ? '<svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5 9-11"/></svg>'
+        : "";
     });
   });
-  panel.querySelectorAll(".gp-syncbtn").forEach((btn) => {
+  document.querySelectorAll(".gpanel[data-demo] .gp-syncbtn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const icon = btn.querySelector("svg");
-      if (icon.animate) icon.animate([{ transform: "rotate(0)" }, { transform: "rotate(360deg)" }], { duration: 600, easing: "cubic-bezier(0.4,0,0.2,1)" });
-      // a sync pulls what was waiting and pushes what was ahead
-      setTimeout(() => { state.pull = 0; state.push = 0; render(); }, 600);
+      icon.animate(
+        [{ transform: "rotate(0)" }, { transform: "rotate(360deg)" }],
+        { duration: 600, easing: "cubic-bezier(0.4,0,0.2,1)" }
+      );
     });
   });
-  document.addEventListener("glint:lang", render);
-  render();
-}
-
-// --- entrances below the fold: each tile rises as it enters ---
-function wireReveal() {
-  const els = Array.from(document.querySelectorAll(".reveal"));
-  if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    els.forEach((el) => el.classList.add("in"));
-    return;
-  }
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting) return;
-      const sibs = Array.from(e.target.parentNode.children).filter((x) => x.classList.contains("reveal"));
-      e.target.style.setProperty("--i", Math.min(sibs.indexOf(e.target), 6));
-      e.target.classList.add("in");
-      io.unobserve(e.target);
-    });
-  }, { rootMargin: "0px 0px -6% 0px", threshold: 0.01 });
-  els.forEach((el) => io.observe(el));
-  // the entrance is a courtesy; the content is not
-  setTimeout(() => els.forEach((el) => el.classList.add("in")), 4000);
 }
 
 // --- copy install command ---
@@ -386,12 +327,80 @@ function startGithubStream() {
   fetchBatch().then(() => { if (!document.hidden) start(); });
 }
 
+// --- ambient background field: faint Git numbers drifting site-wide ---
+// A fixed layer behind all content. Most items are static Git snippets; a
+// share are live counters (seeded to "today so far") so the scale figures
+// live everywhere, not just the Live section. Kept very low-opacity so text
+// stays perfectly readable, and paused while the tab is hidden.
+function buildBackgroundField() {
+  if (document.querySelector(".bg-field")) return;
+  const field = document.createElement("div");
+  field.className = "bg-field";
+  field.setAttribute("aria-hidden", "true");
+
+  const fmt = new Intl.NumberFormat();
+  const now = new Date();
+  const midnightSecs = (now - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 1000;
+
+  const rates = [412, 74000, 186, 26, 5, 33, 903, 1240];
+  const phrases = [
+    "git push", "git commit", "+42", "-7", "↑5 ↓2", "merged #482",
+    "branch main", "stage 3 files", "pull origin", "+118", "fork", "★ 1.2k",
+    "HEAD~1", "rebase -i", "origin/main",
+  ];
+  const hex = () => {
+    let s = "";
+    for (let i = 0; i < 7; i++) s += "0123456789abcdef"[Math.floor(Math.random() * 16)];
+    return s;
+  };
+
+  const tickers = [];
+  const COUNT = window.innerWidth < 640 ? 34 : 58;
+  for (let i = 0; i < COUNT; i++) {
+    const el = document.createElement("span");
+    el.className = "bg-num";
+    el.style.left = Math.round(Math.random() * 94) + "%";
+    el.style.top = Math.round(Math.random() * 100) + "%";
+    el.style.fontSize = (12 + Math.round(Math.random() * 26)) + "px";
+    el.style.setProperty("--o", (0.14 + Math.random() * 0.11).toFixed(3));
+    el.style.animationDuration = (14 + Math.random() * 24).toFixed(1) + "s";
+    el.style.animationDelay = (-Math.random() * 42).toFixed(1) + "s";
+    if (Math.random() < 0.32) el.classList.add("bg-accent");
+
+    const kind = Math.random();
+    if (kind < 0.55) {
+      const rate = rates[Math.floor(Math.random() * rates.length)];
+      el.dataset.rate = String(rate);
+      el.dataset.seed = String(Math.floor(rate * midnightSecs));
+      el.textContent = fmt.format(Number(el.dataset.seed));
+      tickers.push(el);
+    } else if (kind < 0.72) {
+      el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+    } else {
+      el.textContent = hex();
+    }
+    field.appendChild(el);
+  }
+  document.body.prepend(field);
+
+  if (!tickers.length) return;
+  const start = performance.now();
+  const update = () => {
+    const elapsed = (performance.now() - start) / 1000;
+    for (const el of tickers) {
+      el.textContent = fmt.format(Math.floor(Number(el.dataset.seed) + Number(el.dataset.rate) * elapsed));
+    }
+  };
+  update();
+  setInterval(() => { if (!document.hidden) update(); }, 140);
+}
+
 // --- boot ---
+buildBackgroundField();
 buildMenubarSwatches();
 buildDemoSwatches();
 buildThemeList();
 wireDemoPanels();
-wireReveal();
 wireCopy();
 startLiveCounters();
 startGithubStream();
