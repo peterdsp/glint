@@ -15,23 +15,21 @@
   <meta name="twitter:image" content="https://glint.peterdsp.dev/icon-1024.png" />
   <link rel="icon" type="image/png" href="icon.png" />
   <link rel="apple-touch-icon" href="icon.png" />
-  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="preload" as="image" href="shots/panel-aurora-large.webp" />
+  <link rel="stylesheet" href="styles.css?v=17" />
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
-  <!-- ===== macOS menu bar = site nav ===== -->
+  <!-- The macOS menu bar is the site navigation: the one glass layer on the page. -->
   <header class="menubar" id="top">
-    <span class="mb-apple" aria-hidden="true">&#63743;</span>
+    <a class="mb-brand" href="#top"><img src="icon.png" width="20" height="20" alt="" />Glint</a>
     <nav class="mb-menus" aria-label="Primary">
-      <a class="mb-item strong" href="#top">Glint</a>
       <a class="mb-item" href="#features" data-i18n="navFeatures">Features</a>
-      <a class="mb-item" href="#live" data-i18n="navLive">Live</a>
-      <a class="mb-item" href="#speed" data-i18n="navSpeed">Speed</a>
-      <a class="mb-item" href="#themes" data-i18n="navThemes">Themes</a>
-      <a class="mb-item" href="#how" data-i18n="navHow">How it works</a>
+      <a class="mb-item" href="#try" data-i18n="navTry">Try it</a>
       <a class="mb-item" href="#pricing" data-i18n="navPricing">Pricing</a>
-      <a class="mb-item" href="#download" data-i18n="navDownload">Download</a>
+      <a class="mb-item" href="#faq" data-i18n="navFaq">Questions</a>
     </nav>
     <div class="mb-right">
       <div class="mb-lang" role="group" aria-label="Language">
@@ -40,372 +38,280 @@
         <button class="lang-btn" type="button" data-lang="sq" title="Shqip">SQ</button>
       </div>
       <div class="mb-swatches" id="swatches" role="group" aria-label="Site theme"></div>
-      <a class="mb-gh" href="https://github.com/peterdsp/glint" aria-label="GitHub repository">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 1.5a10.5 10.5 0 0 0-3.32 20.47c.52.1.71-.23.71-.5v-1.76c-2.9.63-3.52-1.4-3.52-1.4-.47-1.2-1.16-1.52-1.16-1.52-.95-.65.07-.64.07-.64 1.05.08 1.6 1.08 1.6 1.08.94 1.6 2.45 1.14 3.05.87.09-.68.36-1.14.66-1.4-2.32-.26-4.76-1.16-4.76-5.16 0-1.14.4-2.07 1.07-2.8-.11-.26-.47-1.32.1-2.75 0 0 .88-.28 2.88 1.07a9.9 9.9 0 0 1 5.24 0c2-1.35 2.87-1.07 2.87-1.07.57 1.43.21 2.49.1 2.75.67.73 1.07 1.66 1.07 2.8 0 4.01-2.45 4.9-4.78 5.15.38.32.71.95.71 1.92v2.84c0 .28.19.61.72.5A10.5 10.5 0 0 0 12 1.5Z"/></svg>
-      </a>
       <span class="mb-clock" aria-hidden="true">9:41</span>
+      <a class="mb-action" href="#download" data-i18n="navDownload">Download</a>
     </div>
   </header>
 
   <main id="main">
-    <!-- ===== Hero ===== -->
-    <section class="hero">
-      <div class="hero-copy">
-        <img class="hero-appicon" src="icon.png" alt="Glint app icon" width="76" height="76" />
-        <p class="eyebrow"><span class="spark" aria-hidden="true"></span> <span data-i18n="heroEyebrow">Menu-bar Git · macOS</span></p>
-        <h1 data-i18n-html="heroH1">Your repo, <em>one click</em> from the menu&nbsp;bar.</h1>
-        <p class="lede" data-i18n-html="heroLede">Glint is an ultralightweight Git client that hangs from your menu bar. Click the icon, the glass drops down - stage, commit, sync - then it's gone. Built on <strong>Tauri&nbsp;+&nbsp;Rust</strong>, not Electron.</p>
-        <div class="cta-row">
-          <a class="btn btn-solid" href="#download">
-            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
-            <span data-i18n="ctaDownload">Download for macOS</span>
-          </a>
-          <a class="btn btn-ghost" href="https://github.com/peterdsp/glint" data-i18n="ctaGithub">View on GitHub</a>
-        </div>
-        <p class="hero-trial" data-i18n="heroTrial">Free for 7 days, then a one-time $2.99. No subscription.</p>
-        <aside class="founder-note">
-          <p class="founder-label" data-i18n="founderLabel">A note from Petros</p>
-          <p class="founder-body" data-i18n="founderBody">Glint is my reimagining of GitHub Desktop's ideas as a menu-bar panel, built on Tauri and Rust instead of Electron. I wanted the everyday Git actions, stage, commit, pull, push, one click from the menu bar and then out of the way. There is no account and no telemetry: point it at a local repository and you are set up.</p>
-          <p class="founder-sig">Petros Dhespollari</p>
-        </aside>
-        <dl class="stats">
-          <div><dt>~6 MB</dt><dd data-i18n="statBundle">app bundle</dd></div>
-          <div><dt>~40 MB</dt><dd data-i18n="statMemory">memory</dd></div>
-          <div><dt>0</dt><dd data-i18n="statChromium">Chromium</dd></div>
-        </dl>
+    <!-- ===== First screen: the board ===== -->
+    <section class="board hero" aria-labelledby="hero-title">
+      <div class="tile t-name">
+        <p class="name">Glint</p>
       </div>
 
-      <div class="hero-stage" aria-hidden="false">
-        <span class="tray-icon" title="Glint in the menu bar">
-          <svg viewBox="0 0 24 24" width="15" height="15"><path fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" d="M6 3.6v16.8M6 6.4a2.4 2.4 0 1 0 0-.01M6 20.4a2.4 2.4 0 1 0 0-.01M18 8a2.4 2.4 0 1 0 0-.01M18 8v2a4 4 0 0 1-4 4H6"/></svg>
-        </span>
-        <div class="panel-drop">
-          <span class="notch" aria-hidden="true"></span>
-          <div class="gpanel" data-demo>
+      <div class="tile t-statement">
+        <h1 id="hero-title" data-i18n="heroH1">Git, one click from the menu bar.</h1>
+        <p class="lead-sm" data-i18n="heroLede">Glint is a small Git client for the Mac menu bar. Click its icon to stage, commit, pull or push, and the panel gets out of your way.</p>
+      </div>
+
+      <div class="tile t-action">
+        <p class="act-h" data-i18n="heroActH">Free for 7 days</p>
+        <p class="act-p" data-i18n="heroActP">Then $2.99 once. No subscription.</p>
+        <div class="act-foot">
+          <a class="btn btn-paper" href="https://github.com/peterdsp/glint/releases" data-i18n="ctaDownload">Download for macOS</a>
+          <a class="act-link" href="https://apps.apple.com/us/app/glint-menu-bar-git/id6790709729" data-i18n="ctaStore">Or get it on the Mac App Store</a>
+        </div>
+      </div>
+
+      <figure class="tile t-shot shutter">
+        <img src="shots/panel-aurora-large.webp" width="752" height="964" data-i18n-alt="altHero" alt="The Glint panel in the Aurora theme: two commits to pull, five to push, three changed files and a Commit to main button" fetchpriority="high" />
+        <figcaption class="strip s-aurora">Aurora</figcaption>
+      </figure>
+
+      <figure class="tile t-theme t-th1">
+        <img src="shots/panel-midnight.webp" width="380" height="489" data-i18n-alt="altMidnight" alt="The Glint panel in the Midnight theme" />
+        <figcaption class="strip s-midnight">Midnight</figcaption>
+      </figure>
+      <figure class="tile t-theme t-th2">
+        <img src="shots/panel-sunset.webp" width="380" height="489" data-i18n-alt="altSunset" alt="The Glint panel in the Sunset theme" />
+        <figcaption class="strip s-sunset">Sunset</figcaption>
+      </figure>
+      <figure class="tile t-theme t-th3">
+        <img src="shots/panel-forest.webp" width="380" height="489" data-i18n-alt="altForest" alt="The Glint panel in the Forest theme" />
+        <figcaption class="strip s-forest">Forest</figcaption>
+      </figure>
+    </section>
+
+    <!-- ===== Showcase: the panel, live, with its controls ===== -->
+    <section class="board show" id="try" aria-labelledby="try-title">
+      <div class="tile t-show-copy reveal">
+        <h2 id="try-title" data-i18n="showH2">Try the panel</h2>
+        <p class="body" data-i18n="showLede">The same layout Glint drops from your menu bar. Stage a file, change the theme, then press sync.</p>
+        <p class="small" data-i18n="showHint">On your Mac it opens from the Glint icon and closes when you click away.</p>
+      </div>
+
+      <div class="tile t-demo reveal">
+        <div class="demo-stage">
+          <div class="gpanel" data-ui data-demo>
             <div class="gp-head">
-              <span class="gp-badge">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" d="M6 3.6v16.8M6 6.4a2.4 2.4 0 1 0 0-.01M6 20.4a2.4 2.4 0 1 0 0-.01M18 8a2.4 2.4 0 1 0 0-.01M18 8v2a4 4 0 0 1-4 4H6"/></svg>
+              <span class="gp-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" d="M6 3.6v16.8M6 6.4a2.4 2.4 0 1 0 0-.01M6 20.4a2.4 2.4 0 1 0 0-.01M18 8a2.4 2.4 0 1 0 0-.01M18 8v2a4 4 0 0 1-4 4H6"/></svg>
               </span>
               <div class="gp-meta">
                 <div class="gp-repo">peterdsp / glint</div>
-                <div class="gp-branch">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 4v9a4 4 0 0 0 4 4h4M6 6.4a2.4 2.4 0 1 0 0-.01M14 19.4a2.4 2.4 0 1 0 0-.01"/></svg>
-                  main
-                </div>
+                <div class="gp-branch">main</div>
               </div>
-              <span class="gp-selector" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg>
-              </span>
+              <span class="gp-selector" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg></span>
             </div>
             <div class="gp-sync">
-              <div class="gp-pill"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M6 13l6 6 6-6"/></svg><div><b>2</b><span>to pull</span></div></div>
-              <div class="gp-pill"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M6 11l6-6 6 6"/></svg><div><b>5</b><span>to push</span></div></div>
-              <button class="gp-syncbtn" type="button" aria-label="Sync"><svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2M18 4v4h-4M6 20v-4h4"/></svg></button>
+              <div class="gp-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M6 13l6 6 6-6"/></svg><div><b data-gp="pull">2</b><span data-i18n="gpPull">to pull</span></div></div>
+              <div class="gp-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M6 11l6-6 6 6"/></svg><div><b data-gp="push">5</b><span data-i18n="gpPush">to push</span></div></div>
+              <button class="gp-syncbtn" type="button" data-i18n-aria="gpSync" aria-label="Sync"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2M18 4v4h-4M6 20v-4h4"/></svg></button>
             </div>
-            <div class="gp-lbl">3 changed files</div>
+            <div class="gp-lbl" data-gp="changed">3 changed files</div>
             <ul class="gp-files">
-              <li class="gp-file"><span class="gp-check on"><svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5 9-11"/></svg></span><span class="gp-path">src/panel.tsx</span><span class="gp-add">+42</span></li>
-              <li class="gp-file"><span class="gp-check on"><svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5 9-11"/></svg></span><span class="gp-path">liquid-glass.css</span><span class="gp-add">+118</span></li>
-              <li class="gp-file"><span class="gp-check off"></span><span class="gp-path">architecture.md</span><span class="gp-del">-7</span></li>
+              <li class="gp-file" data-file="0"><span class="gp-check on" aria-hidden="true"></span><code class="gp-path">src/menu-bar/panel.tsx</code><span class="gp-add">+42</span></li>
+              <li class="gp-file" data-file="1"><span class="gp-check on" aria-hidden="true"></span><code class="gp-path">src/themes/liquid-glass.css</code><span class="gp-add">+118</span></li>
+              <li class="gp-file" data-file="2"><span class="gp-check" aria-hidden="true"></span><code class="gp-path">docs/architecture.md</code><span class="gp-del">-7</span></li>
             </ul>
-            <div class="gp-commit">Commit to main</div>
+            <div class="gp-box"><span class="gp-msg">Add liquid-glass theme engine</span><span class="gp-ph" data-i18n="gpSummary">Summary</span></div>
+            <div class="gp-commit" data-gp="commit">Commit 2 files to main</div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ===== Features ===== -->
-    <section class="features" id="features">
-      <p class="section-eyebrow" data-i18n="featEyebrow">Why Glint</p>
-      <h2 data-i18n="featH2">Small, glassy, and out of your way.</h2>
-      <div class="feature-grid">
-        <article class="feature">
-          <span class="f-icon"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M3 7l9-4 9 4-9 4-9-4Zm0 5 9 4 9-4m-18 5 9 4 9-4"/></svg></span>
-          <h3 data-i18n="feat1Title">Tiny</h3>
-          <p data-i18n="feat1Body">The system webview (WebKit) plus a Rust core - no bundled Chromium riding along. Megabytes, not hundreds of them.</p>
-        </article>
-        <article class="feature">
-          <span class="f-icon"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4 9.5h16"/></svg></span>
-          <h3 data-i18n="feat2Title">Glassy</h3>
-          <p data-i18n="feat2Body">Real macOS vibrancy sits behind a transparent webview - genuine liquid glass, not a flat translucent fill. Themes tint the glass.</p>
-        </article>
-        <article class="feature">
-          <span class="f-icon"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M3 5h18M7 5v2m5-2v2m5-2v2M6 9h12a1 1 0 0 1 1 1v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-8a1 1 0 0 1 1-1Z"/></svg></span>
-          <h3 data-i18n="feat3Title">Menu-bar native</h3>
-          <p data-i18n="feat3Body">A tray-positioned panel that toggles on click and dismisses on blur. Glanceable - identity, sync state, changes, and commit in one dropdown.</p>
-        </article>
-        <article class="feature">
-          <span class="f-icon"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.2 5.6L20 9.2l-4.4 3.8L17 19l-5-3-5 3 1.4-6L4 9.2l5.8-.6Z"/></svg></span>
-          <h3 data-i18n="feat4Title">Yours</h3>
-          <p data-i18n="feat4Body">Every theme is a handful of CSS tokens - an accent, a tint, an ink pair. Drop one in and it appears as a swatch. No redesign required.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- ===== Live counters ===== -->
-    <section class="live" id="live">
-      <div class="live-head">
-        <p class="section-eyebrow">
-          <span class="live-dot" aria-hidden="true"></span>
-          <span data-i18n="liveEyebrow">Live · right now</span>
-        </p>
-        <h2 data-i18n="liveH2">The git universe never sleeps.</h2>
-        <p class="lede" data-i18n="liveLede">Every second, millions of developers stage, commit, push, and merge. Here is roughly how much Git is happening around the world today - counting up live while you read.</p>
-      </div>
-
-      <div class="live-grid" aria-label="Estimated global Git activity so far today">
-        <article class="live-card">
-          <span class="live-ic"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM12 3v5.5M12 15.5V21"/></svg></span>
-          <div class="live-num tabular" id="live-commits" data-rate="410">0</div>
-          <div class="live-label" data-i18n="liveCommits">commits pushed</div>
-          <div class="live-sub"><b>~410</b><span data-i18n="livePerSec">/ sec</span> · <span data-i18n="liveToday">today, worldwide</span></div>
-        </article>
-
-        <article class="live-card">
-          <span class="live-ic"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M6 11l6-6 6 6"/></svg></span>
-          <div class="live-num tabular" id="live-pushes" data-rate="185">0</div>
-          <div class="live-label" data-i18n="livePushes">pushes to remotes</div>
-          <div class="live-sub"><b>~185</b><span data-i18n="livePerSec">/ sec</span> · <span data-i18n="liveToday">today, worldwide</span></div>
-        </article>
-
-        <article class="live-card">
-          <span class="live-ic"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M6 4v12M6 6.4a2.4 2.4 0 1 0 0-.01M6 18.4a2.4 2.4 0 1 0 0-.01M18 8v2a4 4 0 0 1-4 4H8M18 8a2.4 2.4 0 1 0 0-.01"/></svg></span>
-          <div class="live-num tabular" id="live-merges" data-rate="26">0</div>
-          <div class="live-label" data-i18n="liveMerges">pull requests merged</div>
-          <div class="live-sub"><b>~26</b><span data-i18n="livePerSec">/ sec</span> · <span data-i18n="liveToday">today, worldwide</span></div>
-        </article>
-
-        <article class="live-card">
-          <span class="live-ic"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M6 4v9a4 4 0 0 0 4 4h4M6 6.4a2.4 2.4 0 1 0 0-.01M14 19.4a2.4 2.4 0 1 0 0-.01"/></svg></span>
-          <div class="live-num tabular" id="live-branches" data-rate="34">0</div>
-          <div class="live-label" data-i18n="liveBranches">branches created</div>
-          <div class="live-sub"><b>~34</b><span data-i18n="livePerSec">/ sec</span> · <span data-i18n="liveToday">today, worldwide</span></div>
-        </article>
-
-        <article class="live-card">
-          <span class="live-ic"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M3 7l9-4 9 4-9 4-9-4Zm0 5 9 4 9-4m-18 5 9 4 9-4"/></svg></span>
-          <div class="live-num tabular" id="live-repos" data-rate="5">0</div>
-          <div class="live-label" data-i18n="liveRepos">repositories created</div>
-          <div class="live-sub"><b>~5</b><span data-i18n="livePerSec">/ sec</span> · <span data-i18n="liveToday">today, worldwide</span></div>
-        </article>
-
-        <article class="live-card">
-          <span class="live-ic"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></svg></span>
-          <div class="live-num tabular" id="live-lines" data-rate="74000">0</div>
-          <div class="live-label" data-i18n="liveLines">lines of code changed</div>
-          <div class="live-sub"><b>~74k</b><span data-i18n="livePerSec">/ sec</span> · <span data-i18n="liveToday">today, worldwide</span></div>
-        </article>
-      </div>
-
-      <div class="gh-stream-wrap" id="gh-stream-wrap" hidden>
-        <div class="gh-stream-head">
-          <span class="gh-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 1.5a10.5 10.5 0 0 0-3.32 20.47c.52.1.71-.23.71-.5v-1.76c-2.9.63-3.52-1.4-3.52-1.4-.47-1.2-1.16-1.52-1.16-1.52-.95-.65.07-.64.07-.64 1.05.08 1.6 1.08 1.6 1.08.94 1.6 2.45 1.14 3.05.87.09-.68.36-1.14.66-1.4-2.32-.26-4.76-1.16-4.76-5.16 0-1.14.4-2.07 1.07-2.8-.11-.26-.47-1.32.1-2.75 0 0 .88-.28 2.88 1.07a9.9 9.9 0 0 1 5.24 0c2-1.35 2.87-1.07 2.87-1.07.57 1.43.21 2.49.1 2.75.67.73 1.07 1.66 1.07 2.8 0 4.01-2.45 4.9-4.78 5.15.38.32.71.95.71 1.92v2.84c0 .28.19.61.72.5A10.5 10.5 0 0 0 12 1.5Z"/></svg>
-          </span>
-          <div class="gh-stream-titles">
-            <div class="gh-stream-title" data-i18n="ghTitle">Live from GitHub</div>
-            <div class="gh-stream-sub" data-i18n="ghSub">Real public Git events, streaming right now</div>
+        <div class="demo-controls" data-ui>
+          <div class="ctl">
+            <span class="ctl-name" data-i18n="ctlTheme">Theme</span>
+            <div class="ctl-swatches" id="demo-swatches" role="group" aria-label="Theme"></div>
           </div>
-          <span class="live-dot" aria-hidden="true"></span>
-        </div>
-        <ol class="gh-stream" id="gh-stream" aria-live="off"></ol>
-      </div>
-
-      <p class="live-note" data-i18n="liveNote">Scale figures are rough, illustrative estimates - a live meter of Git's global reach, reset at your local midnight. The feed below is real: public events straight from the GitHub API.</p>
-    </section>
-
-    <!-- ===== Speed test ===== -->
-    <section class="speed" id="speed">
-      <div class="speed-head">
-        <p class="section-eyebrow"><span class="spark" aria-hidden="true"></span> <span data-i18n="spEyebrow">Speed test</span></p>
-        <h2 data-i18n="spH2">Can your home handle it all at once?</h2>
-        <p class="lede" data-i18n="spLede">Measure your real connection - download, upload, ping, and jitter - then see which modern-home scenarios it can run, on their own and combined. Runs right in your browser over Cloudflare's global network. No app, no account.</p>
-      </div>
-
-      <div class="sp-card">
-        <div class="sp-dials">
-          <div class="sp-dial"><div class="sp-val" id="sp-down">--</div><div class="sp-unit"><b>Mbps</b> <span data-i18n="spDown">download</span></div><div class="sp-bar"><i id="sp-down-bar"></i></div></div>
-          <div class="sp-dial"><div class="sp-val" id="sp-up">--</div><div class="sp-unit"><b>Mbps</b> <span data-i18n="spUp">upload</span></div><div class="sp-bar"><i id="sp-up-bar"></i></div></div>
-          <div class="sp-dial"><div class="sp-val" id="sp-ping">--</div><div class="sp-unit"><b>ms</b> <span data-i18n="spPing">ping</span></div></div>
-          <div class="sp-dial"><div class="sp-val" id="sp-jit">--</div><div class="sp-unit"><b>ms</b> <span data-i18n="spJitter">jitter</span></div></div>
-        </div>
-        <div class="sp-actions">
-          <button class="btn btn-solid" id="sp-run" type="button">
-            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 1 9-9M12 12l5-3"/></svg>
-            <span id="sp-run-label" data-i18n="spRun">Start speed test</span>
-          </button>
-          <div class="sp-status" id="sp-status" data-i18n="spReady">Runs in your browser - uses roughly 100-200 MB of data.</div>
-        </div>
-      </div>
-
-      <div class="sp-scenarios" id="sp-scenarios" aria-live="polite"></div>
-      <p class="live-note" data-i18n="spNote">Scenario ratings are guidance, not guarantees - real-world quality also depends on your Wi-Fi, the server you reach, and how many devices share the line. Nothing is uploaded anywhere except throwaway test data to Cloudflare.</p>
-    </section>
-
-    <!-- ===== Themes (interactive) ===== -->
-    <section class="themes" id="themes">
-      <div class="themes-inner">
-        <div class="themes-copy">
-          <h2 data-i18n="themesH2">Same glass. Swapped tokens.</h2>
-          <p class="lede" data-i18n="themesLede">Light or dark, the material never changes - only the tint and accent do. Midnight is the proof: the tint flips to a dark translucent and the ink inverts, but the radii, blur, and shadow are untouched.</p>
-          <p class="themes-hint" data-i18n="themesHint">Pick a theme - the panel and this whole site retint live.</p>
-          <div class="theme-list" id="theme-list"></div>
-        </div>
-        <div class="themes-demo">
-          <div class="gpanel" data-demo data-demo-2>
-            <div class="gp-head">
-              <span class="gp-badge">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" d="M6 3.6v16.8M6 6.4a2.4 2.4 0 1 0 0-.01M6 20.4a2.4 2.4 0 1 0 0-.01M18 8a2.4 2.4 0 1 0 0-.01M18 8v2a4 4 0 0 1-4 4H6"/></svg>
-              </span>
-              <div class="gp-meta">
-                <div class="gp-repo">peterdsp / glint</div>
-                <div class="gp-branch">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 4v9a4 4 0 0 0 4 4h4M6 6.4a2.4 2.4 0 1 0 0-.01M14 19.4a2.4 2.4 0 1 0 0-.01"/></svg>
-                  main
-                </div>
-              </div>
-            </div>
-            <div class="gp-sync">
-              <div class="gp-pill"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M6 13l6 6 6-6"/></svg><div><b>2</b><span>to pull</span></div></div>
-              <div class="gp-pill"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M6 11l6-6 6 6"/></svg><div><b>5</b><span>to push</span></div></div>
-              <button class="gp-syncbtn" type="button" aria-label="Sync"><svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2M18 4v4h-4M6 20v-4h4"/></svg></button>
-            </div>
-            <div class="gp-lbl">3 changed files</div>
-            <ul class="gp-files">
-              <li class="gp-file"><span class="gp-check on"><svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5 9-11"/></svg></span><span class="gp-path">src/panel.tsx</span><span class="gp-add">+42</span></li>
-              <li class="gp-file"><span class="gp-check on"><svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5 9-11"/></svg></span><span class="gp-path">liquid-glass.css</span><span class="gp-add">+118</span></li>
-              <li class="gp-file"><span class="gp-check off"></span><span class="gp-path">architecture.md</span><span class="gp-del">-7</span></li>
-            </ul>
-            <div class="gp-commit">Commit to main</div>
-            <div class="gp-themes" id="demo-swatches"></div>
+          <div class="ctl">
+            <code class="ctl-name ctl-file">panel.tsx</code>
+            <button class="switch" type="button" role="switch" aria-checked="true" data-toggle="0" aria-label="src/menu-bar/panel.tsx"></button>
           </div>
+          <div class="ctl">
+            <code class="ctl-name ctl-file">liquid-glass.css</code>
+            <button class="switch" type="button" role="switch" aria-checked="true" data-toggle="1" aria-label="src/themes/liquid-glass.css"></button>
+          </div>
+          <div class="ctl">
+            <code class="ctl-name ctl-file">architecture.md</code>
+            <button class="switch" type="button" role="switch" aria-checked="false" data-toggle="2" aria-label="docs/architecture.md"></button>
+          </div>
+          <div class="ctl">
+            <span class="ctl-name" data-i18n="ctlPull">Commits to pull</span>
+            <span class="stepper"><button type="button" data-step="pull" data-by="-1" data-i18n-aria="ctlLess" aria-label="One fewer">&minus;</button><output data-gp="pull-out">2</output><button type="button" data-step="pull" data-by="1" data-i18n-aria="ctlMore" aria-label="One more">+</button></span>
+          </div>
+          <div class="ctl">
+            <span class="ctl-name" data-i18n="ctlPush">Commits to push</span>
+            <span class="stepper"><button type="button" data-step="push" data-by="-1" data-i18n-aria="ctlLess" aria-label="One fewer">&minus;</button><output data-gp="push-out">5</output><button type="button" data-step="push" data-by="1" data-i18n-aria="ctlMore" aria-label="One more">+</button></span>
+          </div>
+          <a class="ctl-link" href="https://github.com/peterdsp/glint/blob/main/docs/design-language.md" data-i18n="showMore">Read the design language</a>
         </div>
       </div>
     </section>
 
-    <!-- ===== How it works ===== -->
-    <section class="how" id="how">
-      <p class="section-eyebrow" data-i18n="howEyebrow">Under the glass</p>
-      <h2 data-i18n="howH2">A Rust core and the system webview.</h2>
-      <div class="how-grid">
-        <div class="how-text">
-          <p data-i18n="howText">The frontend is plain HTML, CSS, and JavaScript - no framework - rendered by the OS webview. The core is Rust: it owns the tray, the transparent window, native vibrancy, and Git.</p>
-          <ul class="how-list">
-            <li data-i18n-html="howLi1"><strong>Tray &amp; window</strong> - a borderless, always-on-top panel positioned under the menu-bar icon.</li>
-            <li data-i18n-html="howLi2"><strong>Vibrancy</strong> - <code>NSVisualEffectView</code> behind the transparent webview for real glass.</li>
-            <li data-i18n-html="howLi3"><strong>Git</strong> - native push, pull, and PR status in-process via <code>git2</code>, using your SSH keys or a token.</li>
-          </ul>
+    <!-- ===== Features: a mosaic of unlike tiles ===== -->
+    <section class="board mosaic" id="features" aria-labelledby="feat-title">
+      <div class="tile m-head reveal"><h2 id="feat-title" data-i18n="featH2">Small on purpose</h2></div>
+      <div class="tile m-fig reveal">
+        <p class="fig">6&nbsp;MB</p>
+        <p class="body" data-i18n="featFig">The whole app. A Rust core on the system WebKit, no bundled Chromium, about 40 MB of memory.</p>
+      </div>
+      <ul class="tile m-list reveal">
+        <li data-i18n="featL1">Diff pop-out for any file</li>
+        <li data-i18n="featL2">Pull request and CI status</li>
+        <li data-i18n="featL3">Signed background updates</li>
+        <li data-i18n="featL4">English, Greek and Albanian</li>
+      </ul>
+      <figure class="tile m-photo reveal">
+        <img src="shots/panel-midnight-large.webp" width="710" height="910" loading="lazy" decoding="async" data-i18n-alt="altMidLarge" alt="The Glint panel in the Midnight theme, with two files checked for the next commit" />
+      </figure>
+      <div class="tile m-s1 reveal"><p class="lead" data-i18n="featS1">Real macOS vibrancy sits behind the panel, so it is glass, not a grey box.</p></div>
+      <div class="tile m-s2 reveal"><p class="lead" data-i18n="featS2">No account and no telemetry. Point it at a local repository and you are set up.</p></div>
+      <div class="tile m-gh reveal">
+        <h3 class="gh-title" data-i18n="ghTitle">Live from GitHub</h3>
+        <p class="small" data-i18n="ghSub">Real public Git events, streaming right now</p>
+        <div class="gh-stream-wrap" id="gh-stream-wrap" hidden>
+          <ol class="gh-stream" id="gh-stream" aria-live="off"></ol>
         </div>
-        <figure class="how-code" aria-label="Project structure">
-          <div class="code-chrome"><span></span><span></span><span></span><em>glint/</em></div>
-          <pre tabindex="0"><code><span class="c-dir">src/</span>              <span class="c-cm"># frontend - system webview</span>
-├─ index.html      the glass panel
-├─ styles.css      glass + theme vars
-├─ themes.js       theme token sets
-└─ app.js          render + IPC to Rust
-<span class="c-dir">src-tauri/</span>        <span class="c-cm"># Rust core</span>
-├─ src/main.rs     tray, window, vibrancy
-├─ src/git.rs      git status
-└─ tauri.conf.json transparent window</code></pre>
-        </figure>
+        <p class="gh-fallback body" data-i18n="ghFallback">Public Git events from GitHub's API appear here as they happen.</p>
+      </div>
+      <div class="tile m-s3 reveal"><p class="lead" data-i18n="featS3">A theme is a few colour tokens in a file. Drop one in and it becomes a swatch.</p></div>
+      <blockquote class="tile m-s4 reveal">
+        <p class="lead" data-i18n="founderBody">I wanted the everyday Git actions one click away, then gone.</p>
+        <footer class="small" data-i18n="founderSig">Petros Dhespollari, who makes Glint</footer>
+      </blockquote>
+    </section>
+
+    <!-- ===== Pricing: two ways to buy, as a large table ===== -->
+    <section class="board pricing" id="pricing" aria-labelledby="pr-title">
+      <div class="tile t-table reveal">
+        <table class="plans">
+          <thead>
+            <tr>
+              <th scope="col" class="pl-corner"><h2 id="pr-title" data-i18n="prH2">Buy it once</h2></th>
+              <th scope="col" class="pl-rec"><span class="pl-name" data-i18n="prKofiName">Ko-fi</span><span class="pl-price">$2.99 <small data-i18n="prOnce">one-time</small></span></th>
+              <th scope="col"><span class="pl-name" data-i18n="prStoreName">Mac App Store</span><span class="pl-price">$4.99 <small data-i18n="prOnce">one-time</small></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row" data-i18n="prRowTrial">Free trial</th><td class="pl-rec" data-i18n="prKofiTrial">7 days, every feature</td><td data-i18n="prStoreTrial">Not offered</td></tr>
+            <tr><th scope="row" data-i18n="prRowUpdates">Updates</th><td class="pl-rec" data-i18n="prKofiUpd">Automatic, in the background</td><td data-i18n="prStoreUpd">Through the App Store</td></tr>
+            <tr><th scope="row" data-i18n="prRowBuy">Purchase</th><td class="pl-rec" data-i18n="prKofiBuy">Licence key by email</td><td data-i18n="prStoreBuy">Your Apple account</td></tr>
+            <tr><th scope="row" data-i18n="prRowMac">Runs on</th><td class="pl-rec" data-i18n="prMac">macOS 12 or later, Apple silicon and Intel</td><td data-i18n="prMac">macOS 12 or later, Apple silicon and Intel</td></tr>
+            <tr><th scope="row" data-i18n="prRowSandbox">Sandbox</th><td class="pl-rec" data-i18n="prKofiSandbox">Not sandboxed</td><td data-i18n="prStoreSandbox">Sandboxed by Apple</td></tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="pl-note" data-i18n="prNote">The same app either way. Nothing recurring.</td>
+              <td class="pl-rec"><a class="btn btn-paper" href="https://ko-fi.com/s/c2c1f5857a" data-i18n="prKofiCta">Get a licence, $2.99</a></td>
+              <td><a class="btn btn-solid" href="https://apps.apple.com/us/app/glint-menu-bar-git/id6790709729" data-i18n="prStoreCta">Get it on the App Store</a></td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
     </section>
 
-    <!-- ===== Pricing ===== -->
-    <section class="pricing" id="pricing">
-      <h2 data-i18n="prH2">Try it free. Buy it once.</h2>
-      <p class="lede" data-i18n="prLede">Every feature works free for 7 days - no account, no card. After the trial, a one-time license keeps Glint yours. No subscription, ever.</p>
-      <div class="plan-grid">
-        <div class="plan plan-featured">
-          <span class="plan-badge" data-i18n="prBadge">Recommended</span>
-          <div class="plan-name" data-i18n="prKofiName">Ko-fi</div>
-          <div class="plan-price">$2.99 <span data-i18n="prOnce">one-time</span></div>
-          <ul class="plan-list">
-            <li data-i18n="prKofi1">Every feature, forever</li>
-            <li data-i18n="prKofi2">Automatic background updates</li>
-            <li data-i18n="prKofi3">License key emailed instantly</li>
-            <li data-i18n="prKofi4">macOS - Apple silicon &amp; Intel</li>
-          </ul>
-          <a class="btn btn-solid" href="https://ko-fi.com/s/c2c1f5857a" data-i18n="prKofiCta">Get a license - $2.99</a>
+    <!-- ===== Questions and the speed test, side by side on the board ===== -->
+    <div class="board pair">
+      <section class="tile t-faq reveal" id="faq" aria-labelledby="faq-title">
+        <h2 class="giant" id="faq-title" data-i18n="faqH2">Questions</h2>
+        <div class="bars">
+          <details open><summary data-i18n="q1">Does it replace Git?</summary><p data-i18n-html="a1">No. Glint works on the repositories you already have and talks to remotes with your own SSH keys or token, the same way command-line Git does.</p></details>
+          <details><summary data-i18n="q2">Which Macs does it run on?</summary><p data-i18n-html="a2">macOS 12 or later, on Apple silicon and Intel.</p></details>
+          <details><summary data-i18n="q3">What happens after the 7 days?</summary><p data-i18n-html="a3">Glint asks for a licence key. Buy one on Ko-fi for $2.99 and it is yours, with updates. The App Store build has no trial; Apple handles the purchase.</p></details>
+          <details><summary data-i18n="q4">What does it send, and where?</summary><p data-i18n-html="a4">Nothing to me. It connects only to your Git remotes, to GitHub for pull request status if you are signed in, and to GitHub Releases for updates. <a href="privacy.html">Read the privacy policy</a>.</p></details>
+          <details><summary data-i18n="q5">Can I make my own theme?</summary><p data-i18n-html="a5">Yes. Put a small JSON file with an accent, a tint and an ink pair in <code>~/Library/Application Support/dev.peterdsp.glint/themes/</code> and it shows up as a swatch.</p></details>
+          <details><summary data-i18n="q6">Where do I report a problem?</summary><p data-i18n-html="a6">Email <a href="mailto:info@peterdsp.dev?subject=Glint%20support">info@peterdsp.dev</a> with what you did, what happened, and your macOS and Glint versions.</p></details>
         </div>
-        <div class="plan">
-          <span class="plan-badge" data-i18n="prStoreBadge">On the App Store</span>
-          <div class="plan-name" data-i18n="prStoreName">Mac App Store</div>
-          <div class="plan-price">$4.99 <span data-i18n="prOnce">one-time</span></div>
-          <ul class="plan-list">
-            <li data-i18n="prStore1">Every feature, forever</li>
-            <li data-i18n="prStore2">Updates via the App Store</li>
-            <li data-i18n="prStore3">Purchase handled by Apple</li>
-            <li data-i18n="prStore4">Sandboxed for the store</li>
-          </ul>
-          <a class="btn btn-ghost" href="https://apps.apple.com/us/app/glint-menu-bar-git/id6790709729" data-i18n="prStoreCta">Get it on the App Store</a>
+      </section>
+
+      <section class="tile t-speed reveal" id="speed" aria-labelledby="sp-title">
+        <h2 id="sp-title" data-i18n="spH2">Can your home handle it all at once?</h2>
+        <p class="body" data-i18n="spLede">Measure download, upload, ping and jitter in your browser over Cloudflare, then see what your connection can run.</p>
+        <div class="sp-card" data-ui>
+          <div class="sp-dials">
+            <div class="sp-dial"><div class="sp-val" id="sp-down">--</div><div class="sp-unit">Mbps <span data-i18n="spDown">download</span></div><div class="sp-bar"><i id="sp-down-bar"></i></div></div>
+            <div class="sp-dial"><div class="sp-val" id="sp-up">--</div><div class="sp-unit">Mbps <span data-i18n="spUp">upload</span></div><div class="sp-bar"><i id="sp-up-bar"></i></div></div>
+            <div class="sp-dial"><div class="sp-val" id="sp-ping">--</div><div class="sp-unit">ms <span data-i18n="spPing">ping</span></div></div>
+            <div class="sp-dial"><div class="sp-val" id="sp-jit">--</div><div class="sp-unit">ms <span data-i18n="spJitter">jitter</span></div></div>
+          </div>
+          <div class="sp-actions">
+            <button class="btn btn-solid" id="sp-run" type="button"><span id="sp-run-label" data-i18n="spRun">Start speed test</span></button>
+            <p class="sp-status small" id="sp-status" data-i18n="spReady">Runs in your browser - uses roughly 100-200 MB of data.</p>
+          </div>
+          <div class="sp-scenarios" id="sp-scenarios" aria-live="polite"></div>
         </div>
+        <p class="small" data-i18n="spNote">Scenario ratings are guidance, not guarantees.</p>
+      </section>
+    </div>
+
+    <!-- ===== The close: one row of the board, cropped from a longer one ===== -->
+    <section class="board cta" id="download" aria-labelledby="dl-title">
+      <figure class="tile c-left reveal"><img src="shots/panel-graphite.webp" width="380" height="489" loading="lazy" decoding="async" data-i18n-alt="altGraphite" alt="The Glint panel in the Graphite theme" /></figure>
+      <div class="tile c-main reveal">
+        <div class="c-words">
+        <h2 id="dl-title" data-i18n="dlH2">Try Glint free for a week</h2>
+        <p class="body" data-i18n="dlLede">Every feature, no account, no card. macOS 12 or later, Apple silicon and Intel.</p>
+        <div class="c-actions">
+          <a class="btn btn-paper" href="https://github.com/peterdsp/glint/releases" data-i18n="dlDmg">Download for macOS</a>
+          <a class="act-link" href="https://apps.apple.com/us/app/glint-menu-bar-git/id6790709729" data-i18n="ctaStore">Or get it on the Mac App Store</a>
+        </div>
+        </div>
+        <div class="c-fig" aria-hidden="true"><p class="fig">7</p><p data-i18n="dlDays">days, every feature</p></div>
       </div>
-      <p class="pricing-note" data-i18n="prNote">It is the same app either way. The Ko-fi build updates itself silently in the background; the App Store build is updated through the App Store. Buy once - there is no subscription and nothing recurring.</p>
+      <div class="tile c-right reveal" aria-hidden="true"></div>
     </section>
 
-    <!-- ===== Download ===== -->
-    <section class="download" id="download">
-      <div class="dl-card">
-        <span class="dl-spark" aria-hidden="true"></span>
-        <h2 data-i18n="dlH2">Free for 7 days. Yours for a coffee.</h2>
-        <p class="lede" data-i18n="dlLede">Try every feature free for a week. To keep Glint, grab a one-time license - no subscription, ever.</p>
-
-        <div class="dl-actions">
-          <a class="btn btn-solid" href="https://apps.apple.com/us/app/glint-menu-bar-git/id6790709729">
-            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M16.365 1.43c0 1.14-.42 2.2-1.12 3-.76.85-2 .82-2.16.79-.03-1.1.44-2.19 1.11-2.97.75-.86 2.02-.85 2.17-.82ZM19.6 17.02c-.36.82-.53 1.19-1 1.92-.65 1.02-1.57 2.3-2.71 2.3-1.01.01-1.27-.66-2.64-.65-1.37 0-1.66.66-2.67.66-1.14.01-2.01-1.15-2.66-2.17-1.82-2.85-2.01-6.2-.89-7.98.8-1.27 2.06-2.02 3.24-2.02 1.2 0 1.96.66 2.96.66.97 0 1.56-.66 2.95-.66 1.05 0 2.16.57 2.95 1.56-2.59 1.42-2.17 5.12.12 6.35Z"/></svg>
-            <span data-i18n="prStoreCta">Get it on the App Store</span>
-          </a>
-          <a class="btn btn-ghost" href="https://github.com/peterdsp/glint/releases" data-i18n="dlDmg">Download for macOS</a>
-          <a class="btn btn-ghost" href="#pricing" data-i18n="dlSeePricing">See pricing</a>
-        </div>
-
-        <p class="dl-note" data-i18n-html="dlNote">7-day free trial, no account. Requires macOS 12+. Apple silicon &amp; Intel.</p>
-      </div>
-    </section>
     <!-- ===== After the download: Lidhra, from the same maker ===== -->
-    <section class="lidhra-promo" aria-labelledby="lidhra-promo-title">
-      <div class="lidhra-promo__inner">
-      <div class="lidhra-promo__copy">
+    <section class="board lidhra-promo" aria-labelledby="lidhra-promo-title">
+      <div class="tile lidhra-promo__copy reveal">
         <h2 class="lidhra-promo__title" data-i18n="lpH" id="lidhra-promo-title">The debrid download manager for iPhone, Mac and Apple TV</h2>
-        <p class="lidhra-promo__text" data-i18n="lpP">Paste a magnet or a link and Lidhra fetches it through Real-Debrid, AllDebrid, TorBox or six other services, then downloads it natively and resumes where it stopped. Finished files wait in a library, ready to play or cast to a TV.</p>
+        <p class="lidhra-promo__text body" data-i18n="lpP">Paste a magnet or a link and Lidhra fetches it through Real-Debrid, AllDebrid, TorBox or six other services, then downloads it natively and resumes where it stopped. Finished files wait in a library, ready to play or cast to a TV.</p>
         <div class="lidhra-promo__facts" data-i18n-html="lpFacts">
-          <img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Lidhra app icon" loading="lazy" decoding="async">
-          <p><strong>Lidhra for iPhone, iPad, Mac, Apple TV and Vision Pro</strong><br>One purchase, no subscription.</p>
+          <img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Lidhra app icon" loading="lazy" decoding="async"><p><strong>Lidhra for iPhone, iPad, Mac, Apple TV and Vision Pro</strong><br>One purchase, no subscription.</p>
         </div>
         <div class="lidhra-promo__actions">
-          <a class="lidhra-promo__badge" data-i18n-html="lpBadge" href="https://apps.apple.com/app/lidhra-debrid-downloader/id6790952504?ct=glint&mt=8" rel="noopener"><img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async"></a>
+          <a class="lidhra-promo__badge" data-i18n-html="lpBadge" href="https://apps.apple.com/app/lidhra-debrid-downloader/id6790952504?ct=glint&amp;mt=8" rel="noopener"><img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async"></a>
           <a class="lidhra-promo__more" data-i18n="lpMore" href="https://lidhra.peterdsp.dev/" rel="noopener">See how Lidhra works</a>
         </div>
       </div>
-      <figure class="lidhra-promo__shots" data-i18n-html="lpShots">
-        <img class="lidhra-promo__library" src="lidhra/lidhra-transfers-1200.webp" srcset="lidhra/lidhra-transfers-640.webp 640w, lidhra/lidhra-transfers-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Lidhra on Mac: downloads coming to the device and files ready in the debrid cloud, with progress bars" loading="lazy" decoding="async">
-        <img class="lidhra-promo__phone" src="lidhra/lidhra-add-360.webp" srcset="lidhra/lidhra-add-240.webp 240w, lidhra/lidhra-add-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra on iPhone: the Add a transfer sheet, with a field for a magnet or an https link" loading="lazy" decoding="async">
+      <figure class="lidhra-promo__shots reveal" data-i18n-html="lpShots">
+        <img class="lidhra-promo__library" src="lidhra/lidhra-transfers-1200.webp" srcset="lidhra/lidhra-transfers-640.webp 640w, lidhra/lidhra-transfers-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Lidhra on Mac: downloads coming to the device and files ready in the debrid cloud, with progress bars" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-add-360.webp" srcset="lidhra/lidhra-add-240.webp 240w, lidhra/lidhra-add-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra on iPhone: the Add a transfer sheet, with a field for a magnet or an https link" loading="lazy" decoding="async">
       </figure>
-      </div>
     </section>
   </main>
 
-  <!-- ===== Footer ===== -->
+  <!-- ===== Footer: the name built from the five theme colours ===== -->
   <footer class="foot">
-    <div class="foot-brand">
-      <span class="foot-logo"><span class="spark" aria-hidden="true"></span> Glint</span>
-      <p data-i18n="footTagline">A glint of Git in your menu bar.</p>
+    <div class="blocks" aria-label="Glint" role="img">
+      <span class="blk b1" aria-hidden="true">G</span><span class="blk b2" aria-hidden="true">l</span><span class="blk b3" aria-hidden="true">i</span><span class="blk b4" aria-hidden="true">n</span><span class="blk b5" aria-hidden="true">t</span>
     </div>
-    <nav class="foot-links" aria-label="Footer">
-      <a href="https://github.com/peterdsp/glint" data-i18n="footGithub">GitHub</a>
-      <a href="https://github.com/peterdsp/glint/blob/main/docs/design-language.md" data-i18n="footDesign">Design language</a>
-      <span data-repo-channel="peterdsp/glint">
-        <a href="https://github.com/peterdsp/glint/issues" data-when="public" data-i18n="footIssues">Issues</a>
-        <a href="mailto:info@peterdsp.dev?subject=Glint%20support&amp;body=What%20I%20did%3A%0A%0AWhat%20happened%3A%0A%0AmacOS%20version%3A%0AGlint%20version%3A%0A%0AAttached%3A%20a%20screenshot%2C%20and%20the%20crash%20report%20from%20Console%20if%20it%20crashed.%0A" data-when="private" data-i18n="footSupport" hidden>Support</a>
-      </span>
-      <a href="#download" data-i18n="footDownload">Download</a>
-    </nav>
-    <p class="foot-legal" data-i18n-html="footLegal">Built by <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year">2026</span></p>
+    <div class="foot-cols">
+      <nav class="foot-links" aria-label="Footer">
+        <a href="https://github.com/peterdsp/glint" data-i18n="footGithub">GitHub</a>
+        <a href="https://github.com/peterdsp/glint/blob/main/docs/design-language.md" data-i18n="footDesign">Design language</a>
+        <span data-repo-channel="peterdsp/glint">
+          <a href="https://github.com/peterdsp/glint/issues" data-when="public" data-i18n="footIssues">Issues</a>
+          <a href="mailto:info@peterdsp.dev?subject=Glint%20support&amp;body=What%20I%20did%3A%0A%0AWhat%20happened%3A%0A%0AmacOS%20version%3A%0AGlint%20version%3A%0A%0AAttached%3A%20a%20screenshot%2C%20and%20the%20crash%20report%20from%20Console%20if%20it%20crashed.%0A" data-when="private" data-i18n="footSupport" hidden>Support</a>
+        </span>
+        <a href="privacy.html" data-i18n="footPrivacy">Privacy</a>
+        <a href="#download" data-i18n="footDownload">Download</a>
+      </nav>
+      <div class="foot-contact">
+        <p class="small" data-i18n="footContact">Questions and support</p>
+        <p><a href="mailto:info@peterdsp.dev">info@peterdsp.dev</a></p>
+        <p class="small" data-i18n="footTagline">A glint of Git in your menu bar.</p>
+      </div>
+    </div>
+    <div class="foot-last">
+      <p class="small" data-i18n-html="footLegal">Built by <a href="https://peterdsp.dev">peterdsp</a> with Tauri and Rust. <span id="year">2026</span></p>
+      <a class="btn btn-small" href="#top" data-i18n="footTop">Back to top</a>
+    </div>
   </footer>
 
-  <script src="i18n.js?v=15"></script>
+  <script src="i18n.js?v=17"></script>
   <script src="speedtest.js?v=10"></script>
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
