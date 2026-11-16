@@ -130,9 +130,12 @@ const GLINT_SITE_I18N = {
     footSupport: "Support",
     footDownload: "Download",
     footLegal: `Built by <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
-    lidhraEyebrow: "From the same maker",
-    lidhraLine: "Your library, everywhere: films and series sorted with posters and Next up, played on the fly or cast to a TV.",
-    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-en.svg" width="120" height="40" alt="Download on the App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-en.svg" width="120" height="40" alt="Download on the App Store">`,
+    lpH: `Your films and series, sorted and ready to play`,
+    lpP: `Lidhra gathers your downloads into one library with posters, seasons and Up Next, then plays them on the spot or sends them to your TV.`,
+    lpMore: `See how Lidhra works`,
+    lpFacts: `<img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Lidhra app icon" loading="lazy" decoding="async"><p><strong>Lidhra for iPhone, iPad, Mac, Apple TV and Vision Pro</strong><br>One purchase, no subscription.</p>`,
+    lpBadge: `<img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async">`,
+    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-library-1200.webp" srcset="lidhra/lidhra-library-640.webp 640w, lidhra/lidhra-library-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Lidhra library on Apple TV: a grid of film and series posters with filters for films, series and genres" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-play-360.webp" srcset="lidhra/lidhra-play-240.webp 240w, lidhra/lidhra-play-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra on iPhone: a saved film with Play in Lidhra and Cast to TV buttons" loading="lazy" decoding="async">`,
   },
 
   el: {
@@ -262,9 +265,12 @@ const GLINT_SITE_I18N = {
     footSupport: "Υποστήριξη",
     footDownload: "Λήψη",
     footLegal: `Φτιαγμένο από τον <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
-    lidhraEyebrow: "Από τον ίδιο δημιουργό",
-    lidhraLine: "Η βιβλιοθήκη σου, παντού: ταινίες και σειρές ταξινομημένες με αφίσες και Επόμενο, που παίζουν αμέσως ή μεταδίδονται σε τηλεόραση.",
-    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-el.svg" width="120" height="40" alt="Λήψη στο App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-el.svg" width="120" height="40" alt="Λήψη στο App Store">`,
+    lpH: `Οι ταινίες και οι σειρές σου, ταξινομημένες και έτοιμες να παίξουν`,
+    lpP: `Το Lidhra συγκεντρώνει τις λήψεις σου σε μία βιβλιοθήκη με αφίσες, σεζόν και Επόμενο, και τις παίζει αμέσως ή τις στέλνει στην τηλεόρασή σου.`,
+    lpMore: `Δες πώς λειτουργεί το Lidhra`,
+    lpFacts: `<img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Εικονίδιο της εφαρμογής Lidhra" loading="lazy" decoding="async"><p><strong>Lidhra για iPhone, iPad, Mac, Apple TV και Vision Pro</strong><br>Μία αγορά, χωρίς συνδρομή.</p>`,
+    lpBadge: `<img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black-el-gr.svg" width="120" height="40" alt="Λήψη του Lidhra στο App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white-el-gr.svg" width="120" height="40" alt="Λήψη του Lidhra στο App Store" loading="lazy" decoding="async">`,
+    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-library-1200.webp" srcset="lidhra/lidhra-library-640.webp 640w, lidhra/lidhra-library-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Η βιβλιοθήκη του Lidhra στην Apple TV: αφίσες ταινιών και σειρών με φίλτρα για ταινίες, σειρές και είδη" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-play-360.webp" srcset="lidhra/lidhra-play-240.webp 240w, lidhra/lidhra-play-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Το Lidhra στο iPhone: μια αποθηκευμένη ταινία με τα κουμπιά Αναπαραγωγή στο Lidhra και Μετάδοση σε TV" loading="lazy" decoding="async">`,
   },
 
   sq: {
@@ -394,9 +400,12 @@ const GLINT_SITE_I18N = {
     footSupport: "Mbështetje",
     footDownload: "Shkarko",
     footLegal: `Ndërtuar nga <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
-    lidhraEyebrow: "Nga i njëjti krijues",
-    lidhraLine: "Biblioteka jote, kudo: filma dhe seriale të renditura me postera dhe Në vijim, që luhen menjëherë ose dërgohen në një televizor.",
-    lidhraBadge: `<img class="lidhra-badge lidhra-badge-light" src="lidhra/app-store-black-en.svg" width="120" height="40" alt="Download on the App Store"><img class="lidhra-badge lidhra-badge-dark" src="lidhra/app-store-white-en.svg" width="120" height="40" alt="Download on the App Store">`,
+    lpH: `Filmat dhe serialet e tua, të renditura dhe gati për t'u parë`,
+    lpP: `Lidhra i mbledh shkarkimet e tua në një bibliotekë me postera, sezone dhe Në vijim, dhe i luan menjëherë ose i dërgon në televizor.`,
+    lpMore: `Shiko si funksionon Lidhra`,
+    lpFacts: `<img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Ikona e aplikacionit Lidhra" loading="lazy" decoding="async"><p><strong>Lidhra për iPhone, iPad, Mac, Apple TV dhe Vision Pro</strong><br>Një blerje, pa abonim.</p>`,
+    lpBadge: `<img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black.svg" width="120" height="40" alt="Shkarko Lidhra në App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white.svg" width="120" height="40" alt="Shkarko Lidhra në App Store" loading="lazy" decoding="async">`,
+    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-library-1200.webp" srcset="lidhra/lidhra-library-640.webp 640w, lidhra/lidhra-library-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Biblioteka e Lidhra në Apple TV: postera filmash dhe serialesh me filtra për filma, seriale dhe zhanre" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-play-360.webp" srcset="lidhra/lidhra-play-240.webp 240w, lidhra/lidhra-play-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra në iPhone: një film i ruajtur me butonat Luaj në Lidhra dhe Dërgo në TV" loading="lazy" decoding="async">`,
   },
 };
 
