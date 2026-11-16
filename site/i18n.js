@@ -130,12 +130,12 @@ const GLINT_SITE_I18N = {
     footSupport: "Support",
     footDownload: "Download",
     footLegal: `Built by <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
-    lpH: `Your films and series, sorted and ready to play`,
-    lpP: `Lidhra gathers your downloads into one library with posters, seasons and Up Next, then plays them on the spot or sends them to your TV.`,
+    lpH: `The debrid download manager for iPhone, Mac and Apple TV`,
+    lpP: `Paste a magnet or a link and Lidhra fetches it through Real-Debrid, AllDebrid, TorBox or six other services, then downloads it natively and resumes where it stopped. Finished files wait in a library, ready to play or cast to a TV.`,
     lpMore: `See how Lidhra works`,
     lpFacts: `<img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Lidhra app icon" loading="lazy" decoding="async"><p><strong>Lidhra for iPhone, iPad, Mac, Apple TV and Vision Pro</strong><br>One purchase, no subscription.</p>`,
     lpBadge: `<img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white.svg" width="120" height="40" alt="Download Lidhra on the App Store" loading="lazy" decoding="async">`,
-    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-library-1200.webp" srcset="lidhra/lidhra-library-640.webp 640w, lidhra/lidhra-library-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Lidhra library on Apple TV: a grid of film and series posters with filters for films, series and genres" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-play-360.webp" srcset="lidhra/lidhra-play-240.webp 240w, lidhra/lidhra-play-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra on iPhone: a saved film with Play in Lidhra and Cast to TV buttons" loading="lazy" decoding="async">`,
+    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-transfers-1200.webp" srcset="lidhra/lidhra-transfers-640.webp 640w, lidhra/lidhra-transfers-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Lidhra on Mac: downloads coming to the device and files ready in the debrid cloud, with progress bars" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-add-360.webp" srcset="lidhra/lidhra-add-240.webp 240w, lidhra/lidhra-add-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra on iPhone: the Add a transfer sheet, with a field for a magnet or an https link" loading="lazy" decoding="async">`,
   },
 
   el: {
@@ -265,12 +265,12 @@ const GLINT_SITE_I18N = {
     footSupport: "Υποστήριξη",
     footDownload: "Λήψη",
     footLegal: `Φτιαγμένο από τον <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
-    lpH: `Οι ταινίες και οι σειρές σου, ταξινομημένες και έτοιμες να παίξουν`,
-    lpP: `Το Lidhra συγκεντρώνει τις λήψεις σου σε μία βιβλιοθήκη με αφίσες, σεζόν και Επόμενο, και τις παίζει αμέσως ή τις στέλνει στην τηλεόρασή σου.`,
+    lpH: `Ο διαχειριστής λήψεων debrid για iPhone, Mac και Apple TV`,
+    lpP: `Επικόλλησε ένα magnet ή έναν σύνδεσμο και το Lidhra το φέρνει μέσω Real-Debrid, AllDebrid, TorBox ή έξι ακόμη υπηρεσιών, το κατεβάζει εγγενώς και συνεχίζει από εκεί που σταμάτησε. Τα ολοκληρωμένα αρχεία περιμένουν σε μια βιβλιοθήκη, έτοιμα να παίξουν ή να μεταδοθούν σε τηλεόραση.`,
     lpMore: `Δες πώς λειτουργεί το Lidhra`,
     lpFacts: `<img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Εικονίδιο της εφαρμογής Lidhra" loading="lazy" decoding="async"><p><strong>Lidhra για iPhone, iPad, Mac, Apple TV και Vision Pro</strong><br>Μία αγορά, χωρίς συνδρομή.</p>`,
     lpBadge: `<img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black-el-gr.svg" width="120" height="40" alt="Λήψη του Lidhra στο App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white-el-gr.svg" width="120" height="40" alt="Λήψη του Lidhra στο App Store" loading="lazy" decoding="async">`,
-    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-library-1200.webp" srcset="lidhra/lidhra-library-640.webp 640w, lidhra/lidhra-library-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Η βιβλιοθήκη του Lidhra στην Apple TV: αφίσες ταινιών και σειρών με φίλτρα για ταινίες, σειρές και είδη" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-play-360.webp" srcset="lidhra/lidhra-play-240.webp 240w, lidhra/lidhra-play-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Το Lidhra στο iPhone: μια αποθηκευμένη ταινία με τα κουμπιά Αναπαραγωγή στο Lidhra και Μετάδοση σε TV" loading="lazy" decoding="async">`,
+    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-transfers-1200.webp" srcset="lidhra/lidhra-transfers-640.webp 640w, lidhra/lidhra-transfers-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Το Lidhra σε Mac: λήψεις προς τη συσκευή και αρχεία έτοιμα στο cloud του debrid, με γραμμές προόδου" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-add-360.webp" srcset="lidhra/lidhra-add-240.webp 240w, lidhra/lidhra-add-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Το Lidhra σε iPhone: το φύλλο Προσθήκη μεταφοράς, με πεδίο για magnet ή σύνδεσμο https" loading="lazy" decoding="async">`,
   },
 
   sq: {
@@ -400,12 +400,12 @@ const GLINT_SITE_I18N = {
     footSupport: "Mbështetje",
     footDownload: "Shkarko",
     footLegal: `Ndërtuar nga <a href="https://peterdsp.dev">peterdsp</a> · Tauri + Rust · <span id="year"></span>`,
-    lpH: `Filmat dhe serialet e tua, të renditura dhe gati për t'u parë`,
-    lpP: `Lidhra i mbledh shkarkimet e tua në një bibliotekë me postera, sezone dhe Në vijim, dhe i luan menjëherë ose i dërgon në televizor.`,
+    lpH: `Menaxheri i shkarkimeve debrid për iPhone, Mac dhe Apple TV`,
+    lpP: `Ngjit një magnet ose një lidhje dhe Lidhra e merr përmes Real-Debrid, AllDebrid, TorBox ose gjashtë shërbimeve të tjera, pastaj e shkarkon në mënyrë native dhe vazhdon aty ku ndaloi. Skedarët e përfunduar presin në një bibliotekë, gati për t'u luajtur ose për t'u dërguar në televizor.`,
     lpMore: `Shiko si funksionon Lidhra`,
     lpFacts: `<img class="lidhra-promo__icon" src="lidhra/lidhra-icon.webp" width="44" height="44" alt="Ikona e aplikacionit Lidhra" loading="lazy" decoding="async"><p><strong>Lidhra për iPhone, iPad, Mac, Apple TV dhe Vision Pro</strong><br>Një blerje, pa abonim.</p>`,
     lpBadge: `<img class="lidhra-promo__badge-light" src="lidhra/app-store-badge-black.svg" width="120" height="40" alt="Shkarko Lidhra në App Store" loading="lazy" decoding="async"><img class="lidhra-promo__badge-dark" src="lidhra/app-store-badge-white.svg" width="120" height="40" alt="Shkarko Lidhra në App Store" loading="lazy" decoding="async">`,
-    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-library-1200.webp" srcset="lidhra/lidhra-library-640.webp 640w, lidhra/lidhra-library-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Biblioteka e Lidhra në Apple TV: postera filmash dhe serialesh me filtra për filma, seriale dhe zhanre" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-play-360.webp" srcset="lidhra/lidhra-play-240.webp 240w, lidhra/lidhra-play-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra në iPhone: një film i ruajtur me butonat Luaj në Lidhra dhe Dërgo në TV" loading="lazy" decoding="async">`,
+    lpShots: `<img class="lidhra-promo__library" src="lidhra/lidhra-transfers-1200.webp" srcset="lidhra/lidhra-transfers-640.webp 640w, lidhra/lidhra-transfers-1200.webp 1200w" sizes="(min-width: 900px) 560px, 92vw" width="1200" height="600" alt="Lidhra në Mac: shkarkime që po vijnë në pajisje dhe skedarë gati në renë debrid, me shirita progresi" loading="lazy" decoding="async"><img class="lidhra-promo__phone" src="lidhra/lidhra-add-360.webp" srcset="lidhra/lidhra-add-240.webp 240w, lidhra/lidhra-add-360.webp 360w" sizes="(min-width: 900px) 150px, 26vw" width="360" height="570" alt="Lidhra në iPhone: fleta Shto një transferim, me një fushë për magnet ose lidhje https" loading="lazy" decoding="async">`,
   },
 };
 
